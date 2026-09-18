@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chronicle of Conquest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="sigil">⚜</span>
+      <div>
+        <h1>Chronicle of Conquest</h1>
+        <select id="campaign-select" class="campaign-select" aria-label="Campaign"></select>
+      </div>
+    </div>
+    <nav class="settings" aria-label="Setting">
+      <button class="active">The Old World</button>
+      <button disabled title="Coming soon">Age of Sigmar <small>soon</small></button>
+      <button disabled title="Coming soon">Warhammer 40,000 <small>soon</small></button>
+    </nav>
+    <div class="actions">
+      <button id="btn-challenge">⚔ Issue challenge</button>
+      <button id="btn-report" class="primary">Report a result</button>
+      <button id="btn-account" class="ghost">Sign in</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="viewport" id="viewport">
+      <div class="world">
+        <img alt="Map of the Old World" draggable="false">
+        <svg class="territory" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="overlay"></div>
+      </div>
+      <div class="tooltip" id="tooltip" hidden></div>
+      <div class="map-controls">
+        <button id="zoom-in" title="Zoom in">+</button>
+        <button id="zoom-out" title="Zoom out">−</button>
+        <button id="zoom-fit" title="Show whole map">⤢</button>
+      </div>
+      <button class="back-btn" id="back-btn" hidden>← Back to the map</button>
+      <div class="toast" id="toast"></div>
+    </section>
+    <aside class="panel" id="panel"></aside>
+  </main>
+
+  <footer class="timeline">
+    <button id="play" title="Replay the campaign">▶</button>
+    <input type="range" id="scrub" min="0" step="1" aria-label="Campaign date">
+    <div class="date" id="date-label"></div>
+  </footer>
+
+  <dialog id="modal"></dialog>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

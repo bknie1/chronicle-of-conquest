@@ -1,0 +1,106 @@
+import Database from 'better-sqlite3';
+import session from 'express-session';
+
+const SCHEMA = `
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY,
+  username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  display_name TEXT NOT NULL,
+  pass_hash TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS campaigns (
+  id INTEGER PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  setting TEXT NOT NULL,
+  owner_id INTEGER NOT NULL REFERENCES users(id),
+  created_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS members (
+  campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  role TEXT NOT NULL CHECK (role IN ('organizer', 'player')),
+  joined_at INTEGER NOT NULL,
+  PRIMARY KEY (campaign_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS armies (
+  id INTEGER PRIMARY KEY,
+  campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  faction TEXT NOT NULL,
+  name TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  retired_at INTEGER
+);
+CREATE TABLE IF NOT EXISTS games (
+  id INTEGER PRIMARY KEY,
+  campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  node TEXT NOT NULL,
+  winner_army INTEGER NOT NULL REFERENCES armies(id),
+  loser_army INTEGER NOT NULL REFERENCES armies(id),
+  played_at INTEGER NOT NULL,
+  reported_by INTEGER NOT NULL REFERENCES users(id),
+  status TEXT NOT NULL CHECK (status IN ('pending', 'confirmed', 'disputed')),
+  confirmed_at INTEGER
+);
+CREATE TABLE IF NOT EXISTS events (
+  id INTEGER PRIMARY KEY,
+  campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  node TEXT NOT NULL,
+  army_a INTEGER NOT NULL REFERENCES armies(id),
+  army_b INTEGER NOT NULL REFERENCES armies(id),
+  scheduled_for INTEGER NOT NULL,
+  note TEXT NOT NULL DEFAULT '',
+  created_by INTEGER NOT NULL REFERENCES users(id)
+);
+CREATE TABLE IF NOT EXISTS sessions (
+  sid TEXT PRIMARY KEY,
+  sess TEXT NOT NULL,
+  expires INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS games_campaign ON games(campaign_id, played_at);
+CREATE INDEX IF NOT EXISTS events_campaign ON events(campaign_id, scheduled_for);
+CREATE INDEX IF NOT EXISTS armies_campaign ON armies(campaign_id);
+`;
+
+export function openDb(file) {
+  const db = new Database(file);
+  db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
+  db.exec(SCHEMA);
+  return db;
+}
+
+// express-session store backed by the same SQLite file.
+export class SqliteSessionStore extends session.Store {
+  constructor(db) {
+    super();
+    this.db = db;
+    this.getStmt = db.prepare('SELECT sess FROM sessions WHERE sid = ? AND expires > ?');
+    this.setStmt = db.prepare('INSERT OR REPLACE INTO sessions (sid, sess, expires) VALUES (?, ?, ?)');
+    this.delStmt = db.prepare('DELETE FROM sessions WHERE sid = ?');
+    this.touchStmt = db.prepare('UPDATE sessions SET expires = ? WHERE sid = ?');
+    this.pruneStmt = db.prepare('DELETE FROM sessions WHERE expires <= ?');
+    this.timer = setInterval(() => this.pruneStmt.run(Date.now()), 3600e3);
+    this.timer.unref();
+  }
+  expiry(sess) {
+    return sess.cookie?.expires ? new Date(sess.cookie.expires).getTime() : Date.now() + 86400e3;
+  }
+  get(sid, cb) {
+    try {
+      const row = this.getStmt.get(sid, Date.now());
+      cb(null, row ? JSON.parse(row.sess) : null);
+    } catch (e) { cb(e); }
+  }
+  set(sid, sess, cb) {
+    try { this.setStmt.run(sid, JSON.stringify(sess), this.expiry(sess)); cb?.(null); } catch (e) { cb?.(e); }
+  }
+  destroy(sid, cb) {
+    try { this.delStmt.run(sid); cb?.(null); } catch (e) { cb?.(e); }
+  }
+  touch(sid, sess, cb) {
+    try { this.touchStmt.run(this.expiry(sess), sid); cb?.(null); } catch (e) { cb?.(e); }
+  }
+}
