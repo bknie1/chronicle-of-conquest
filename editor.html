@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chronicle of Conquest — Map Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="sigil">⚜</span>
+      <div>
+        <h1>Map Editor</h1>
+        <select id="map-select" class="map-select" aria-label="Map"></select>
+      </div>
+    </div>
+    <div class="modes" role="group" aria-label="Edit mode">
+      <button id="mode-select" class="mode active" title="Select / drag points">Select</button>
+      <button id="mode-add" class="mode" title="Click the map to add a point">＋ Add point</button>
+      <button id="mode-link" class="mode" title="Click two points to toggle a forced/blocked link">🔗 Link</button>
+    </div>
+    <div class="actions">
+      <button id="btn-undo" title="Undo (Ctrl+Z)" disabled>↺ Undo</button>
+      <button id="btn-new-map">New map…</button>
+      <button id="btn-download">Download JSON</button>
+      <button id="btn-copy">Copy JSON</button>
+      <button id="btn-save" class="primary">Save</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="viewport" id="viewport">
+      <div class="world" id="world">
+        <img id="map-image" alt="" draggable="false">
+        <svg class="overlay-svg" id="overlay-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="empty-state" id="empty-state" hidden>
+        <p>No map loaded. Pick one above, or start a <button class="link" id="empty-new-map">New map…</button></p>
+      </div>
+      <div class="map-controls">
+        <button id="zoom-in" title="Zoom in">+</button>
+        <button id="zoom-out" title="Zoom out">−</button>
+        <button id="zoom-fit" title="Fit to screen">⤢</button>
+      </div>
+      <div class="hint" id="hint"></div>
+      <div class="toast" id="toast"></div>
+    </section>
+    <aside class="panel" id="panel"></aside>
+  </main>
+
+  <dialog id="modal"></dialog>
+  <script type="module" src="/src/editor.js"></script>
+</body>
+</html>

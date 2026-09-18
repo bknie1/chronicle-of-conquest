@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { openDb } from './db.js';
 import { createApp } from './app.js';
+import { devMapRoutes } from './dev-maps.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const production = process.env.NODE_ENV === 'production' || process.argv.includes('--production');
@@ -21,7 +22,14 @@ function sessionSecret() {
 }
 
 const db = openDb(path.join(dataDir, 'chronicle.db'));
-const app = createApp({ db, sessionSecret: sessionSecret(), secureCookies: process.env.SECURE_COOKIES === '1' });
+const inner = createApp({ db, sessionSecret: sessionSecret(), secureCookies: process.env.SECURE_COOKIES === '1' });
+
+// A thin outer app so dev-only routes can be registered ahead of the main
+// app's own /api router (whose catch-all 404 would otherwise shadow them)
+// without touching server/app.js.
+const app = express();
+if (!production) app.use('/api/dev', devMapRoutes(root)); // /editor.html and its save/list endpoints never ship in production
+app.use(inner);
 
 if (production) {
   const dist = path.join(root, 'dist');

@@ -8,7 +8,7 @@ import { demoView, campaignView, dayToMs } from './sources.js';
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
-const graph = buildGraph(MAP.nodes, MAP.width, MAP.height, MAP.maxEdge);
+const graph = buildGraph(MAP.nodes, MAP.width, MAP.height, MAP.maxEdge, { extraLinks: MAP.extraLinks, blockedLinks: MAP.blockedLinks });
 const nodeIndex = new Map(MAP.nodes.map((n, i) => [n.id, i]));
 const factionById = new Map(MAP.factions.map(f => [f.id, f]));
 
