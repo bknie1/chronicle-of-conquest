@@ -1,6 +1,7 @@
-// Draws territory over the map image and handles pan / zoom / tilt.
+// Draws territory over a map image and handles pan / zoom / tilt.
 // Territory = one Voronoi cell per point, coloured by its controller, softened
 // at the edges by a blurred mask so control reads as an aura, not a grid.
+// Indices here are local to the loaded map; main.js translates to setting-wide ones.
 const SVG = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs = {}, parent) => {
   const e = document.createElementNS(SVG, tag);
@@ -8,33 +9,45 @@ const el = (tag, attrs = {}, parent) => {
   if (parent) parent.appendChild(e);
   return e;
 };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
 const TILT_DEG = 42;
 const FOCUS_ZOOM = 3.2; // relative to the fit-to-screen zoom
 
 export class MapView {
-  constructor({ viewport, map, graph, factions, onHover, onSelect }) {
-    Object.assign(this, { viewport, map, graph, factions, onHover, onSelect });
-    this.factionById = new Map(factions.map(f => [f.id, f]));
+  constructor({ viewport, onHover, onSelect, onGate }) {
+    Object.assign(this, { viewport, onHover, onSelect, onGate });
     this.view = { k: 1, x: 0, y: 0 };
     this.focus = null;
-
+    this.map = null;
     this.world = viewport.querySelector('.world');
+    this.svg = this.world.querySelector('svg');
+    this.img = this.world.querySelector('img');
+    this.overlay = this.world.querySelector('.overlay');
+    this.bindInput();
+    new ResizeObserver(() => {
+      if (!this.map) return;
+      if (this.focus == null) this.fit(); else this.focusOn(this.focus, false);
+    }).observe(viewport);
+  }
+
+  // gates: [{ local, label, title }], the realmgates on this map, labelled with where they lead.
+  load(map, graph, factions, gates = []) {
+    Object.assign(this, { map, graph, factionById: new Map(factions.map(f => [f.id, f])) });
+    this.focus = null;
+    this.saved = null;
     this.world.style.width = `${map.width}px`;
     this.world.style.height = `${map.height}px`;
-    this.world.querySelector('img').src = map.image;
-    this.overlay = this.world.querySelector('.overlay');
-
+    this.img.src = map.image;
+    this.svg.replaceChildren();
+    this.overlay.replaceChildren();
     this.buildSvg();
-    this.buildMarkers();
-    this.bindInput();
+    this.buildMarkers(gates);
     this.fit();
-    new ResizeObserver(() => (this.focus == null ? this.fit() : this.focusOn(this.focus))).observe(viewport);
   }
 
   buildSvg() {
-    const { map, graph } = this;
-    const svg = this.world.querySelector('svg');
+    const { map, graph, svg } = this;
     svg.setAttribute('viewBox', `0 0 ${map.width} ${map.height}`);
     this.defs = el('defs', {}, svg);
 
@@ -72,23 +85,35 @@ export class MapView {
     return `url(#${id})`;
   }
 
-  buildMarkers() {
+  buildMarkers(gates) {
+    const gatesAt = new Map();
+    gates.forEach((g, k) => {
+      if (!gatesAt.has(g.local)) gatesAt.set(g.local, []);
+      gatesAt.get(g.local).push({ ...g, k });
+    });
     this.markers = this.map.nodes.map((n, i) => {
       const m = document.createElement('div');
       m.className = 'marker';
       m.style.left = `${n.x}px`;
       m.style.top = `${n.y}px`;
+      const portals = gatesAt.get(i) || [];
+      m.classList.toggle('gate', portals.length > 0);
       m.innerHTML = `
         <div class="standee">
           <div class="battle-badge"></div>
           <svg class="banner" viewBox="0 0 24 34"><path d="M3 1v32" class="pole"/><path d="M4 3h17l-4 6 4 6H4z" class="flag"/></svg>
-          <button class="pin" aria-label="${n.name}"></button>
-          <div class="label">${n.name}</div>
+          <button class="pin" aria-label="${esc(n.name)}"></button>
+          <div class="label">${esc(n.name)}</div>
+          ${portals.map(g => `<button class="portal" data-gate="${g.k}" title="${esc(g.title)}">⟁ ${esc(g.label)}</button>`).join('')}
         </div>`;
       const pin = m.querySelector('.pin');
       pin.addEventListener('pointerenter', e => this.onHover(i, e));
       pin.addEventListener('pointerleave', () => this.onHover(null));
       pin.addEventListener('click', e => { e.stopPropagation(); this.onSelect(i); });
+      m.querySelectorAll('.portal').forEach(b => b.addEventListener('click', e => {
+        e.stopPropagation();
+        this.onGate(Number(b.dataset.gate));
+      }));
       this.overlay.appendChild(m);
       return m;
     });
@@ -128,6 +153,11 @@ export class MapView {
     }
   }
 
+  pulse(i) {
+    const m = this.markers[i];
+    m.classList.remove('pulse'); void m.offsetWidth; m.classList.add('pulse');
+  }
+
   // --- camera -------------------------------------------------------------
 
   apply(animate) {
@@ -152,20 +182,22 @@ export class MapView {
     this.focus = null;
     this.view = { k, x: (r.width - this.map.width * k) / 2, y: (r.height - this.map.height * k) / 2 };
     this.apply(animate);
+    this.markers?.forEach(m => m.classList.remove('selected'));
   }
 
-  focusOn(i) {
+  focusOn(i, animate = true) {
     const r = this.viewport.getBoundingClientRect();
     const n = this.map.nodes[i];
     if (this.focus == null) this.saved = { ...this.view };
     this.focus = i;
     const k = FOCUS_ZOOM * Math.min(r.width / this.map.width, r.height / this.map.height);
     this.view = { k, x: r.width / 2 - k * n.x, y: r.height * 0.58 - k * n.y };
-    this.apply(true);
+    this.apply(animate);
     this.markers.forEach((m, j) => m.classList.toggle('selected', j === i));
   }
 
   unfocus() {
+    if (this.focus == null) return;
     this.focus = null;
     this.view = this.saved || this.view;
     this.apply(true);
@@ -198,14 +230,18 @@ export class MapView {
   bindInput() {
     const vp = this.viewport;
     let drag = null;
+    // While the all-realms overview is showing, the map underneath ignores input.
+    const active = () => this.map && !vp.classList.contains('overview');
+    const chrome = '.tooltip, .realm-bar, .realms-overview, .map-controls, .back-btn';
     vp.addEventListener('wheel', e => {
+      if (!active() || e.target.closest(chrome)) return;
       e.preventDefault();
       const r = vp.getBoundingClientRect();
       this.zoomBy(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
     }, { passive: false });
 
     vp.addEventListener('pointerdown', e => {
-      if (e.button !== 0 || e.target.closest('button, .tooltip')) return;
+      if (!active() || e.button !== 0 || e.target.closest(`button, ${chrome}`)) return;
       drag = { x: e.clientX, y: e.clientY, vx: this.view.x, vy: this.view.y, moved: false };
     });
     window.addEventListener('pointermove', e => {
@@ -221,9 +257,8 @@ export class MapView {
         this.apply(false);
         return;
       }
-      if (this.focus == null && e.target.closest('.viewport') === vp && !e.target.closest('.pin, button')) {
-        const i = this.nodeAt(e.clientX, e.clientY);
-        this.onHover(i, e);
+      if (active() && this.focus == null && e.target.closest('.viewport') === vp && !e.target.closest(`.pin, button, ${chrome}`)) {
+        this.onHover(this.nodeAt(e.clientX, e.clientY), e);
       }
     });
     window.addEventListener('pointerup', e => {

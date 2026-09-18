@@ -30,9 +30,14 @@ export function buildGraph(nodes, width, height, maxEdge) {
     }
   }
 
-  const hopCache = new Map();
-  const hops = start => {
-    if (hopCache.has(start)) return hopCache.get(start);
+  return { delaunay, voronoi, polys, adj, borders, hops: hopsOver(adj) };
+}
+
+// Points within two steps of `start`, with their distance. Cached per start.
+function hopsOver(adj) {
+  const cache = new Map();
+  return start => {
+    if (cache.has(start)) return cache.get(start);
     const out = new Map([[start, 0]]);
     let frontier = [start];
     for (let d = 1; d <= 2; d++) {
@@ -40,11 +45,31 @@ export function buildGraph(nodes, width, height, maxEdge) {
       for (const i of frontier) for (const j of adj[i]) if (!out.has(j)) { out.set(j, d); next.push(j); }
       frontier = next;
     }
-    hopCache.set(start, out);
+    cache.set(start, out);
     return out;
   };
+}
 
-  return { delaunay, voronoi, polys, adj, borders, hops };
+// One graph over every map in a setting (see src/data/settings.js). Each map keeps
+// its own geometry for drawing; gates add neighbours across maps, so a win beside
+// a realmgate pushes influence into the realm on the other side.
+export function buildSettingGraph(setting) {
+  const adj = [];
+  const maps = new Map();
+  let offset = 0;
+  for (const map of setting.maps) {
+    const graph = buildGraph(map.nodes, map.width, map.height, map.maxEdge);
+    maps.set(map.id, { map, graph, offset });
+    for (const js of graph.adj) adj.push(js.map(j => j + offset));
+    offset += map.nodes.length;
+  }
+  const index = new Map(setting.nodes.map((n, i) => [n.id, i]));
+  const gates = setting.gates.map(([a, b, name]) => ({ a: index.get(a), b: index.get(b), name }));
+  for (const { a, b } of gates) {
+    if (!adj[a].includes(b)) adj[a].push(b);
+    if (!adj[b].includes(a)) adj[b].push(a);
+  }
+  return { adj, hops: hopsOver(adj), maps, gates, index };
 }
 
 function sharedEdge(p, q) {

@@ -167,3 +167,18 @@ test('auth: bad logins, duplicates, sessions, CSRF guard', async () => {
   assert.equal(form.status, 415);
   assert.equal((await client().get('/campaigns/ZZZ-ZZZ')).status, 404);
 });
+
+test('Age of Sigmar campaigns accept realm factions and battlefields in any realm', async () => {
+  const a = await signup('realm_a');
+  const b = await signup('realm_b');
+  assert.equal((await a.post('/campaigns', { name: 'Nope', setting: 'horus-heresy' })).status, 400);
+  const { code } = (await a.post('/campaigns', { name: 'Realmgate Wars', setting: 'mortal-realms' })).body;
+  await b.post(`/campaigns/${code}/join`);
+  assert.equal((await a.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Wrong setting' })).status, 400);
+  const ironjawz = (await a.post(`/campaigns/${code}/armies`, { faction: 'orruks', name: 'Ironjawz' })).body.armies.at(-1).id;
+  const freeguild = (await b.post(`/campaigns/${code}/armies`, { faction: 'cities', name: 'Freeguild' })).body.armies.at(-1).id;
+  assert.equal((await a.post(`/campaigns/${code}/games`, { winner: ironjawz, loser: freeguild, node: 'altdorf' })).status, 400);
+  const r = await a.post(`/campaigns/${code}/games`, { winner: ironjawz, loser: freeguild, node: 'hammerhal-ghyra' });
+  assert.equal(r.status, 201);
+  assert.equal(r.body.campaign.setting, 'mortal-realms');
+});

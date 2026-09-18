@@ -1,28 +1,56 @@
 import './style.css';
-import { buildGraph, computeInfluence, RULES } from './engine.js';
+import { buildSettingGraph, computeInfluence, RULES } from './engine.js';
 import { MapView } from './map.js';
-import { OLD_WORLD as MAP } from './data/old-world.js';
+import { SETTINGS } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
 
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
-const graph = buildGraph(MAP.nodes, MAP.width, MAP.height, MAP.maxEdge);
-const nodeIndex = new Map(MAP.nodes.map((n, i) => [n.id, i]));
-const factionById = new Map(MAP.factions.map(f => [f.id, f]));
+// Everything derived from a setting (its maps, the graph across them, lookups).
+// Point indices are setting-wide; each map's points occupy [offset, offset + count).
+const contexts = new Map();
+function contextFor(id) {
+  if (!contexts.has(id)) {
+    const setting = SETTINGS[id];
+    const graph = buildSettingGraph(setting);
+    contexts.set(id, {
+      setting,
+      graph,
+      nodes: setting.nodes,
+      nodeIndex: graph.index,
+      factionById: new Map(setting.factions.map(f => [f.id, f])),
+      mapById: new Map(setting.maps.map(m => [m.id, m])),
+    });
+  }
+  return contexts.get(id);
+}
 
 const state = {
   session: { user: null, campaigns: [] },
-  view: null,       // what's on the map: the demo or a campaign (see sources.js)
+  view: null,       // what's on the map: a demo or a campaign (see sources.js)
+  ctx: null,        // contextFor(view.setting)
+  mapId: null,      // which of the setting's maps is showing
+  overview: false,  // showing every realm at once
   at: 0,            // the day being shown; < view.today while replaying
-  selected: null,
+  selected: null,   // setting-wide point index
   influence: null,
 };
 
 // --- derived data --------------------------------------------------------
 
 const V = () => state.view;
+const C = () => state.ctx;
+const NODES = () => C().nodes;
+const idx = id => C().nodeIndex.get(id);
+const faction = id => C().factionById.get(id);
+const current = () => C().graph.maps.get(state.mapId);
+const multiMap = () => C().setting.maps.length > 1;
+const toGlobal = local => local + current().offset;
+const onCurrentMap = i => NODES()[i].map === state.mapId;
+const toLocal = i => i - current().offset;
+
 const playerById = id => V().players.find(p => p.id === id);
 const isToday = () => state.at >= V().today;
 const sameDay = (a, b) => Math.floor(a) === Math.floor(b);
@@ -33,14 +61,18 @@ const myArmies = () => (V().me ? V().players.filter(p => V().me.armyIds.has(p.id
 const isOrganizer = () => V().me?.role === 'organizer';
 const canAct = () => V().kind === 'demo' || myArmies().length > 0;
 
+// Realmgates touching point i: [{ gate, other }] where other is the far end.
+const gatesAt = i => C().graph.gates.filter(g => g.a === i || g.b === i).map(g => ({ gate: g, other: g.a === i ? g.b : g.a }));
+const mapName = id => C().mapById.get(id).name;
+
 function recompute() {
   const games = gamesSoFar().map(g => ({
     day: g.day,
-    nodeIndex: nodeIndex.get(g.node),
+    nodeIndex: idx(g.node),
     winnerFaction: playerById(g.winner).faction,
     loserFaction: playerById(g.loser).faction,
   }));
-  state.influence = computeInfluence({ graph, nodes: MAP.nodes, factions: MAP.factions, games, at: state.at });
+  state.influence = computeInfluence({ graph: C().graph, nodes: NODES(), factions: C().setting.factions, games, at: state.at });
 }
 
 function eventsByNode() {
@@ -66,14 +98,15 @@ function playerStats() {
 }
 
 function factionStats() {
-  const held = new Map(MAP.factions.map(f => [f.id, 0]));
+  const factions = C().setting.factions;
+  const held = new Map(factions.map(f => [f.id, 0]));
   state.influence.forEach(s => s.owner && held.set(s.owner, held.get(s.owner) + 1));
-  const recent = new Map(MAP.factions.map(f => [f.id, 0]));
+  const recent = new Map(factions.map(f => [f.id, 0]));
   for (const g of gamesSoFar()) if (state.at - g.day <= 14) {
     const f = playerById(g.winner).faction;
     recent.set(f, recent.get(f) + 1);
   }
-  return MAP.factions.map(f => ({ ...f, held: held.get(f.id), recent: recent.get(f.id) }))
+  return factions.map(f => ({ ...f, held: held.get(f.id), recent: recent.get(f.id) }))
     .sort((a, b) => b.held - a.held || b.recent - a.recent);
 }
 
@@ -90,16 +123,21 @@ const swatch = f => `<span class="swatch" style="--c:${f.color}"></span>`;
 const army = id => {
   const p = playerById(id);
   if (!p) return '<span class="muted">an unknown army</span>';
-  return `<span class="army" style="--c:${factionById.get(p.faction).color}">${esc(p.army)}</span>`;
+  return `<span class="army" style="--c:${faction(p.faction).color}">${esc(p.army)}</span>`;
 };
-const place = i => `<button class="link" data-node="${i}">${esc(MAP.nodes[i].name)}</button>`;
+// A link to a point; names the realm too when it isn't the one on screen.
+const place = i => {
+  const n = NODES()[i];
+  const where = multiMap() && n.map !== state.mapId ? ` <span class="muted">(${esc(mapName(n.map))})</span>` : '';
+  return `<button class="link" data-node="${i}">${esc(n.name)}</button>${where}`;
+};
 
 function controlLine(s) {
-  if (s.home) return `${swatch(factionById.get(s.home))} Homeland of <b>${esc(factionById.get(s.home).name)}</b>. Cannot fall.`;
+  if (s.home) return `${swatch(faction(s.home))} Homeland of <b>${esc(faction(s.home).name)}</b>. Cannot fall.`;
   if (!s.owner) return '<span class="muted">Unclaimed. No one holds sway here.</span>';
-  const f = factionById.get(s.owner);
+  const f = faction(s.owner);
   if (s.contested) {
-    const r = factionById.get(s.rival);
+    const r = faction(s.rival);
     return `${swatch(f)}${swatch(r)} <b>Contested</b> between ${esc(f.name)} and ${esc(r.name)}`;
   }
   return `${swatch(f)} Held by <b>${esc(f.name)}</b>`;
@@ -108,14 +146,14 @@ function controlLine(s) {
 function influenceBars(s, limit = 8) {
   const max = Math.max(30, ...s.ranked.map(r => r.value));
   return `<div class="bars">${s.ranked.slice(0, limit).map(r => {
-    const f = factionById.get(r.faction);
+    const f = faction(r.faction);
     return `<div class="bar"><span>${esc(f.name)}</span><i style="--c:${f.color};--w:${(100 * Math.min(r.value, max) / max).toFixed(1)}%"></i><b>${r.value >= 100 ? 'Home' : r.value.toFixed(0)}</b></div>`;
   }).join('') || '<p class="muted">No influence yet.</p>'}</div>`;
 }
 
 const statusTag = g => (g.status === 'pending' ? '<span class="tag wait">Awaiting confirmation</span>'
   : g.status === 'disputed' ? '<span class="tag fade">Disputed</span>' : '');
-const gameLine = g => `<li>${army(g.winner)} defeated ${army(g.loser)} at ${place(nodeIndex.get(g.node))}
+const gameLine = g => `<li>${army(g.winner)} defeated ${army(g.loser)} at ${place(idx(g.node))}
   <span class="muted">· ${ago(g.day)}</span> ${statusTag(g)}
   ${isOrganizer() ? `<button class="small ghost" data-void="${g.id}" title="Remove this result">Void</button>` : ''}</li>`;
 
@@ -125,10 +163,21 @@ function eventLine(e, withPlace = true) {
   const canCancel = V().kind === 'campaign' && (involved || isOrganizer());
   return `<li class="${live ? 'live' : ''}">
     <span class="when">${live ? 'Tonight' : `${ago(e.day)} · ${fmtDate(e.day)}`}</span>
-    ${army(e.players[0])} <span class="muted">vs</span> ${army(e.players[1])}${withPlace ? ` at ${place(nodeIndex.get(e.node))}` : ''}
+    ${army(e.players[0])} <span class="muted">vs</span> ${army(e.players[1])}${withPlace ? ` at ${place(idx(e.node))}` : ''}
     ${e.note ? `<div class="note">"${esc(e.note)}"</div>` : ''}
     ${involved ? `<button class="small" data-report-event="${e.id}">Report result</button>` : ''}
     ${canCancel ? `<button class="small ghost" data-cancel-event="${e.id}">Call off</button>` : ''}</li>`;
+}
+
+function gateLines(i) {
+  const gates = gatesAt(i);
+  if (!gates.length) return '';
+  return `<h3>Realmgates</h3><ul class="gates">${gates.map(({ gate, other }) => {
+    const s = state.influence[other];
+    const f = s.owner && faction(s.owner);
+    return `<li><span class="gate-name">⟁ ${esc(gate.name)}</span> leads to ${place(other)}
+      <div class="sub">${f ? `${swatch(f)}${esc(f.name)} ${s.contested ? 'contest' : 'hold'} the far side` : 'The far side is unclaimed'}</div></li>`;
+  }).join('')}</ul>`;
 }
 
 // --- panel ---------------------------------------------------------------
@@ -137,7 +186,7 @@ function campaignHeader() {
   const v = V();
   if (v.kind === 'demo') {
     return `<div class="callout">
-      <b>This is a demo.</b> Brett, Maria and friends are a made-up store. Try reporting a result or replaying the timeline.
+      <b>This is a demo.</b> The players are a made-up store. Try reporting a result or replaying the timeline.
       Nothing you do here is saved.
       <div class="row"><button class="primary" data-act="create">Start your own campaign</button><button data-act="join">Join with a code</button></div>
     </div>`;
@@ -164,7 +213,7 @@ function attention() {
   const me = v.me.userId;
   const items = [];
   for (const g of v.games) {
-    const line = `${army(g.winner)} defeated ${army(g.loser)} at ${place(nodeIndex.get(g.node))} <span class="muted">· ${ago(g.day)}</span>`;
+    const line = `${army(g.winner)} defeated ${army(g.loser)} at ${place(idx(g.node))} <span class="muted">· ${ago(g.day)}</span>`;
     if (g.status === 'pending' && g.confirmer === me) {
       items.push(`<li>${line}<div class="row"><button class="small primary" data-confirm="${g.id}">Confirm</button>
         <button class="small" data-dispute="${g.id}">That's not what happened</button></div></li>`);
@@ -184,7 +233,7 @@ function yourArmies() {
   if (v.kind !== 'campaign' || !v.me?.role) return '';
   const mine = myArmies();
   return `<h3>Your armies</h3>
-    ${mine.length ? `<ul class="players">${mine.map(p => `<li>${army(p.id)} <span class="muted">${esc(factionById.get(p.faction).name)}</span>
+    ${mine.length ? `<ul class="players">${mine.map(p => `<li>${army(p.id)} <span class="muted">${esc(faction(p.faction).name)}</span>
       <button class="small ghost" data-retire="${p.id}" title="Retire this army and start fresh">Retire</button></li>`).join('')}</ul>` : ''}
     <div class="row"><button class="small" data-act="muster">＋ Muster ${mine.length ? 'another' : 'an'} army</button></div>`;
 }
@@ -202,7 +251,7 @@ function renderPanel() {
 
   panel.innerHTML = `
     <h2>${esc(v.name)}</h2>
-    <p class="muted">${fmtDate(Math.floor(state.at))}${isToday() ? '' : ' · <b class="replay">Replaying history</b>'}</p>
+    <p class="muted">${esc(C().setting.name)} · ${fmtDate(Math.floor(state.at))}${isToday() ? '' : ' · <b class="replay">Replaying history</b>'}</p>
     ${campaignHeader()}
     ${attention()}
     ${yourArmies()}
@@ -232,20 +281,21 @@ function renderPanel() {
 }
 
 function renderRegion(panel, i) {
-  const n = MAP.nodes[i];
+  const n = NODES()[i];
   const s = state.influence[i];
   const events = upcoming().filter(e => e.node === n.id);
   const history = gamesSoFar().filter(g => g.node === n.id).slice(-8).reverse();
   panel.innerHTML = `
     <button class="link back" id="panel-back">← ${esc(V().name)}</button>
     <h2>${esc(n.name)}</h2>
-    <p class="muted">${esc(n.region)}</p>
+    <p class="muted">${esc(multiMap() ? `${mapName(n.map)} · ${C().mapById.get(n.map).title ?? ''}` : n.region)}</p>
     <p class="control">${controlLine(s)}</p>
     <h3>Influence</h3>
     ${influenceBars(s)}
     ${isToday() ? `<div class="row">
       <button data-challenge="${i}">⚔ Challenge for ${esc(n.name)}</button>
       <button class="primary" data-report="${i}">Report a result here</button></div>` : ''}
+    ${gateLines(i)}
     ${events.length ? `<h3>Battles here</h3><ul class="events">${events.map(e => eventLine(e, false)).join('')}</ul>` : ''}
     <h3>Battles fought here</h3>
     ${history.length ? `<ul class="chronicle">${history.map(gameLine).join('')}</ul>` : '<p class="muted">No blood has been spilled here. Yet.</p>'}`;
@@ -256,14 +306,16 @@ function renderRegion(panel, i) {
 function showTooltip(i, e) {
   const tip = $('#tooltip');
   if (i == null || !state.influence) { tip.hidden = true; return; }
-  const n = MAP.nodes[i];
+  const n = NODES()[i];
   const s = state.influence[i];
   const last = gamesSoFar().filter(g => g.node === n.id).at(-1);
   const count = upcoming().filter(ev => ev.node === n.id).length;
+  const gates = gatesAt(i);
   tip.innerHTML = `
-    <b>${esc(n.name)}</b> <span class="muted">${esc(n.region)}</span>
+    <b>${esc(n.name)}</b> <span class="muted">${esc(multiMap() ? mapName(n.map) : n.region)}</span>
     <p class="control">${controlLine(s)}</p>
     ${influenceBars(s, 3)}
+    ${gates.map(({ gate, other }) => `<p class="small gate-name">⟁ ${esc(gate.name)} to ${esc(NODES()[other].name)} (${esc(mapName(NODES()[other].map))})</p>`).join('')}
     ${last ? `<p class="small">Last battle: ${army(last.winner)} beat ${army(last.loser)}, ${ago(last.day)}</p>` : ''}
     ${count ? `<p class="small live">⚔ ${count} battle${count > 1 ? 's' : ''} scheduled</p>` : ''}
     <p class="hint">Click to zoom in</p>`;
@@ -274,19 +326,138 @@ function showTooltip(i, e) {
   tip.style.top = `${Math.max(8, Math.min(y + 18, r.height - tip.offsetHeight - 8))}px`;
 }
 
+// --- realms: tab bar and the all-realms overview ---------------------------
+
+function realmStats(mapId) {
+  const { offset, map } = C().graph.maps.get(mapId);
+  const held = new Map();
+  for (let i = offset; i < offset + map.nodes.length; i++) {
+    const o = state.influence[i].owner;
+    if (o) held.set(o, (held.get(o) || 0) + 1);
+  }
+  const battles = upcoming().filter(e => NODES()[idx(e.node)].map === mapId).length;
+  return { held: [...held].sort((a, b) => b[1] - a[1]), total: map.nodes.length, battles };
+}
+
+function renderRealmBar() {
+  const bar = $('#realm-bar');
+  bar.hidden = !multiMap();
+  if (!multiMap()) return;
+  bar.innerHTML = `<button class="${state.overview ? 'active' : ''}" data-realm="__all">All realms</button>${C().setting.maps.map(m => {
+    const { held, battles } = realmStats(m.id);
+    const lead = held[0] && faction(held[0][0]);
+    return `<button class="${!state.overview && m.id === state.mapId ? 'active' : ''}" data-realm="${m.id}">
+      ${lead ? `<span class="swatch" style="--c:${lead.color}"></span>` : ''}${esc(m.name)}${battles ? ` <span class="bb">⚔${battles}</span>` : ''}</button>`;
+  }).join('')}`;
+}
+
+// Realms sit on a ring around the hub (the realm with the most gates), joined by their realmgates.
+function renderOverview() {
+  const box = $('#realms-overview');
+  $('#viewport').classList.toggle('overview', state.overview);
+  box.hidden = !state.overview;
+  if (!state.overview) return;
+  const maps = C().setting.maps;
+  const gateCount = id => C().graph.gates.filter(g => NODES()[g.a].map === id || NODES()[g.b].map === id).length;
+  const hub = maps.reduce((best, m) => (gateCount(m.id) > gateCount(best.id) ? m : best), maps[0]);
+  const ring = maps.filter(m => m !== hub);
+  // Lay the ring out in pixels so cards never overlap, whatever the box size.
+  const { width: W, height: H } = box.getBoundingClientRect();
+  const cardW = Math.max(104, Math.min(190, W / 5.2));
+  const cardH = cardW >= 140 ? cardW * 0.72 : cardW * 0.42;
+  box.style.setProperty('--card-w', `${cardW}px`);
+  box.classList.toggle('compact', cardW < 140);
+  const rx = Math.max(0, W / 2 - cardW / 2 - 10), ry = Math.max(0, H / 2 - cardH / 2 - 10);
+  const pos = new Map([[hub.id, [W / 2, H / 2]]]);
+  ring.forEach((m, k) => {
+    const a = -Math.PI / 2 + (k / ring.length) * Math.PI * 2;
+    pos.set(m.id, [W / 2 + rx * Math.cos(a), H / 2 + ry * Math.sin(a)]);
+  });
+
+  // One line per pair of realms; coloured when a single faction holds both ends of every gate on it.
+  const pairs = new Map();
+  for (const g of C().graph.gates) {
+    const [ma, mb] = [NODES()[g.a].map, NODES()[g.b].map];
+    const key = [ma, mb].sort().join('|');
+    if (!pairs.has(key)) pairs.set(key, { ma, mb, gates: [] });
+    pairs.get(key).gates.push(g);
+  }
+  const lines = [...pairs.values()].map(({ ma, mb, gates }) => {
+    const owners = new Set(gates.flatMap(g => [state.influence[g.a].owner, state.influence[g.b].owner]));
+    const holder = owners.size === 1 && [...owners][0] ? faction([...owners][0]) : null;
+    const [x1, y1] = pos.get(ma), [x2, y2] = pos.get(mb);
+    const title = gates.map(g => `${g.name}: ${NODES()[g.a].name} ↔ ${NODES()[g.b].name}`).join('\n');
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="${holder ? `stroke:${holder.color}` : ''}"
+      class="${holder ? 'held' : ''}" stroke-width="${1.5 + gates.length}"><title>${esc(title)}${holder ? `\nHeld by ${esc(holder.name)}` : ''}</title></line>`;
+  }).join('');
+
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="gate-lines">${lines}</svg>
+    ${maps.map(m => {
+      const [x, y] = pos.get(m.id);
+      const { held, total, battles } = realmStats(m.id);
+      const claimed = held.reduce((s, [, n]) => s + n, 0);
+      return `<button class="realm-card${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px">
+        <span class="thumb" style="background-image:url('${m.image}')"></span>
+        <span class="name">${esc(m.name)}</span>
+        <span class="title">${esc(m.title ?? '')}</span>
+        <span class="control-bar">${held.map(([f, n]) => `<i style="--c:${faction(f).color};flex:${n}" title="${esc(faction(f).name)}: ${n}"></i>`).join('')}<i class="unclaimed" style="flex:${total - claimed}"></i></span>
+        <span class="meta">${held[0] ? `${esc(faction(held[0][0]).name)} lead` : 'Unclaimed'}${battles ? ` · ⚔${battles}` : ''}${m.placeholder ? ' · placeholder art' : ''}</span>
+      </button>`;
+    }).join('')}`;
+}
+
+// Put one of the setting's maps under the camera (no redraw).
+function loadMap(mapId) {
+  if (mapId === state.mapId) return;
+  state.mapId = mapId;
+  const cur = current();
+  const gates = C().graph.gates.flatMap(g => {
+    const out = [];
+    for (const [here, there] of [[g.a, g.b], [g.b, g.a]]) {
+      if (NODES()[here].map !== mapId) continue;
+      const far = NODES()[there];
+      out.push({ local: here - cur.offset, label: mapName(far.map), title: `${g.name} to ${far.name}`, to: there });
+    }
+    return out;
+  });
+  state.gateTargets = gates.map(g => g.to);
+  mapView.load(cur.map, cur.graph, C().setting.factions, gates);
+}
+
+function showMap(mapId) {
+  state.overview = false;
+  loadMap(mapId);
+  draw();
+}
+
+function showOverview() {
+  if (state.selected != null) select(null);
+  state.overview = true;
+  draw();
+}
+
 // --- drawing ---------------------------------------------------------------
 
 function select(i) {
   state.selected = i;
   $('#tooltip').hidden = true;
-  if (i == null) { mapView.unfocus(); $('#back-btn').hidden = true; }
-  else { mapView.focusOn(i); $('#back-btn').hidden = false; }
+  if (i == null) {
+    mapView.unfocus();
+    $('#back-btn').hidden = true;
+  } else {
+    if (state.overview || !onCurrentMap(i)) showMap(NODES()[i].map);
+    mapView.focusOn(toLocal(i));
+    $('#back-btn').hidden = false;
+  }
   renderPanel();
 }
 
 function draw() {
   recompute();
-  mapView.render(state.influence, eventsByNode());
+  const cur = current();
+  mapView.render(state.influence.slice(cur.offset, cur.offset + cur.map.nodes.length), eventsByNode());
+  renderRealmBar();
+  renderOverview();
   renderPanel();
   const max = Math.max(1, Math.ceil(V().today));
   const scrub = $('#scrub');
@@ -301,15 +472,21 @@ function renderTopbar() {
   const user = state.session.user;
   $('#btn-account').textContent = user ? user.displayName : 'Sign in';
   const mine = state.session.campaigns;
-  const current = v.kind === 'campaign' ? v.code : 'demo';
+  const currentValue = v.kind === 'campaign' ? v.code : 'demo';
   const options = [
     ['demo', 'Demo store campaign'],
     ...mine.map(c => [c.code, c.name]),
     ...(v.kind === 'campaign' && !mine.some(c => c.code === v.code) ? [[v.code, v.name]] : []),
   ];
   $('#campaign-select').innerHTML = `${options.map(([val, label]) =>
-    `<option value="${esc(val)}" ${val === current ? 'selected' : ''}>${esc(label)}</option>`).join('')}
+    `<option value="${esc(val)}" ${val === currentValue ? 'selected' : ''}>${esc(label)}</option>`).join('')}
     <option value="__join">Join with a code…</option><option value="__create">＋ Start a new campaign…</option>`;
+  // Demos can switch setting; a real campaign is played in one setting.
+  document.querySelectorAll('.settings [data-setting]').forEach(b => {
+    const available = !!SETTINGS[b.dataset.setting];
+    b.classList.toggle('active', b.dataset.setting === v.setting);
+    b.disabled = !available || (v.kind === 'campaign' && b.dataset.setting !== v.setting);
+  });
   document.title = v.kind === 'demo' ? 'Chronicle of Conquest' : `${v.name} · Chronicle of Conquest`;
 }
 
@@ -321,14 +498,13 @@ function toast(html) {
 
 // Announce what a newly-counted result did to the map.
 function announce(before, g) {
-  const i = nodeIndex.get(g.node);
-  const wf = factionById.get(playerById(g.winner).faction);
+  const i = idx(g.node);
+  const wf = faction(playerById(g.winner).faction);
   const flipped = state.influence.map((s, j) => (s.owner !== before[j] && s.owner === wf.id ? j : -1)).filter(j => j >= 0);
-  const m = mapView.markers[i];
-  m.classList.remove('pulse'); void m.offsetWidth; m.classList.add('pulse');
+  if (!state.overview && onCurrentMap(i)) mapView.pulse(toLocal(i));
   toast(flipped.length
-    ? `${army(g.winner)} seize ${flipped.map(j => `<b>${esc(MAP.nodes[j].name)}</b>`).join(', ')} for ${esc(wf.name)}!`
-    : `${army(g.winner)} win at <b>${esc(MAP.nodes[i].name)}</b>. ${esc(wf.name)}'s influence grows.`);
+    ? `${army(g.winner)} seize ${flipped.map(j => `<b>${esc(NODES()[j].name)}</b>`).join(', ')} for ${esc(wf.name)}!`
+    : `${army(g.winner)} win at <b>${esc(NODES()[i].name)}</b>. ${esc(wf.name)}'s influence grows.`);
 }
 
 // --- loading & navigation -----------------------------------------------
@@ -341,7 +517,14 @@ async function refreshSession() {
 
 function setView(view, { keepDay = false } = {}) {
   const wasToday = !state.view || isToday();
+  const settingChanged = state.view?.setting !== view.setting;
   state.view = view;
+  if (settingChanged) {
+    state.ctx = contextFor(view.setting);
+    state.mapId = null;
+    loadMap(C().setting.maps[0].id);
+    state.overview = multiMap(); // a multi-realm setting opens on the overview
+  }
   if (!keepDay || wasToday) state.at = view.today;
   else state.at = Math.min(state.at, view.today);
   renderTopbar();
@@ -350,20 +533,25 @@ function setView(view, { keepDay = false } = {}) {
 
 async function loadCampaign(code, opts) {
   const payload = await api('GET', `/campaigns/${encodeURIComponent(code)}`);
-  setView(campaignView(payload, MAP), opts);
+  setView(campaignView(payload), opts);
   return payload;
 }
+
+const demoFor = id => { const ctx = contextFor(id); return demoView(ctx.setting, ctx.graph); };
 
 async function route() {
   stopPlayback();
   if (state.selected != null) select(null);
-  const m = location.pathname.match(/^\/c\/([A-Za-z0-9-]{6,7})\/?$/);
-  if (!m) return setView(demoView(graph, MAP));
+  const path = location.pathname;
+  const demo = path.match(/^\/demo\/([a-z-]+)\/?$/);
+  if (demo && SETTINGS[demo[1]]) return setView(demoFor(demo[1]));
+  const m = path.match(/^\/c\/([A-Za-z0-9-]{6,7})\/?$/);
+  if (!m) return setView(demoFor('old-world'));
   try {
     await loadCampaign(m[1]);
   } catch (e) {
     history.replaceState(null, '', '/');
-    setView(demoView(graph, MAP));
+    setView(demoFor('old-world'));
     toast(esc(e.message));
   }
 }
@@ -378,7 +566,7 @@ async function campaignCall(method, url, body) {
   const payload = await api(method, `/campaigns/${V().code}${url}`, body);
   const before = state.influence.map(s => s.owner);
   const seen = new Set(confirmed().map(g => g.id));
-  setView(campaignView(payload, MAP), { keepDay: true });
+  setView(campaignView(payload), { keepDay: true });
   const newlyConfirmed = confirmed().filter(g => !seen.has(g.id));
   if (newlyConfirmed.length === 1) announce(before, newlyConfirmed[0]);
   return payload;
@@ -413,16 +601,24 @@ function openModal(html, onSubmit) {
   return form;
 }
 
-const cancelRow = (label, extra = '') => `<div class="row">${extra}<button value="cancel" formnovalidate>Cancel</button><button class="primary">${label}</button></div>`;
+const cancelRow = label => `<div class="row"><button value="cancel" formnovalidate>Cancel</button><button class="primary">${label}</button></div>`;
 
-const armyOptions = (list, selected) => MAP.factions.map(f => {
+const armyOptions = (list, selected) => C().setting.factions.map(f => {
   const group = list.filter(p => p.faction === f.id);
   return group.length ? `<optgroup label="${esc(f.name)}">${group.map(p =>
     `<option value="${p.id}" ${p.id === selected ? 'selected' : ''}>${esc(p.army)} (${esc(p.name)})</option>`).join('')}</optgroup>` : '';
 }).join('');
-const nodeOptions = selected => MAP.nodes.map((n, i) => ({ n, i })).sort((a, b) => a.n.name.localeCompare(b.n.name))
-  .map(({ n, i }) => `<option value="${i}" ${i === selected ? 'selected' : ''}>${esc(n.name)}</option>`).join('');
+
+// Battlefields, grouped by realm when there's more than one map.
+function nodeOptions(selected) {
+  const opts = list => list.map(({ n, i }) => `<option value="${i}" ${i === selected ? 'selected' : ''}>${esc(n.name)}</option>`).join('');
+  const all = NODES().map((n, i) => ({ n, i }));
+  if (!multiMap()) return opts(all.sort((a, b) => a.n.name.localeCompare(b.n.name)));
+  return C().setting.maps.map(m => `<optgroup label="${esc(m.name)}">${opts(all.filter(x => x.n.map === m.id)
+    .sort((a, b) => a.n.name.localeCompare(b.n.name)))}</optgroup>`).join('');
+}
 const activeArmies = () => V().players.filter(p => !p.retired);
+const defaultNode = () => state.selected ?? current().offset;
 
 // Before a campaign action, walk the player through whatever step they're missing.
 function ensureCanAct() {
@@ -469,7 +665,7 @@ function openAccount() {
     <h2>${esc(user.displayName)}</h2>
     <p class="muted">Signed in as ${esc(user.username)}.</p>
     ${state.session.campaigns.length ? `<h3>Your campaigns</h3><ul class="plain">${state.session.campaigns.map(c =>
-      `<li><button class="link" type="button" data-go="${esc(c.code)}">${esc(c.name)}</button> <span class="muted">${esc(c.code)} · ${esc(c.role)}</span></li>`).join('')}</ul>` : ''}
+      `<li><button class="link" type="button" data-go="${esc(c.code)}">${esc(c.name)}</button> <span class="muted">${esc(c.code)} · ${esc(SETTINGS[c.setting]?.name ?? c.setting)} · ${esc(c.role)}</span></li>`).join('')}</ul>` : ''}
     <div class="row"><button value="cancel" formnovalidate>Close</button><button class="primary">Sign out</button></div>`,
   async () => {
     await api('POST', '/auth/logout');
@@ -481,12 +677,14 @@ function openAccount() {
 
 function openCreate() {
   if (!state.session.user) return openAuth('Sign in to start a campaign. It takes ten seconds.');
+  const settingOptions = Object.values(SETTINGS).map(s =>
+    `<option value="${s.id}" ${s.id === V().setting ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
   openModal(`
     <h2>Start a campaign</h2>
     <p class="muted">For your store, your gaming group, or an official event. You'll get a code to share.</p>
     <label>Campaign name<input name="name" required minlength="3" maxlength="60" placeholder="Tuesday Night Crusade"></label>
-    <label>Setting<select name="setting"><option value="old-world">The Old World</option>
-      <option disabled>Age of Sigmar (coming soon)</option><option disabled>Warhammer 40,000 (coming soon)</option></select></label>
+    <label>Setting<select name="setting">${settingOptions}
+      <option disabled>Warhammer 40,000 (coming soon)</option><option disabled>Horus Heresy (coming soon)</option></select></label>
     ${cancelRow('Create campaign')}`,
   async data => {
     const { code } = await api('POST', '/campaigns', { name: data.get('name'), setting: data.get('setting') });
@@ -530,12 +728,14 @@ function openMuster() {
   openModal(`
     <h2>Muster an army</h2>
     <p class="muted">Each army fights for one faction. Play more than one army? Muster each separately.</p>
-    <label>Faction<select name="faction" required>${MAP.factions.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></label>
-    <label>Army name<input name="name" required minlength="2" maxlength="40" placeholder="The Grail Oath Knights"></label>
+    <label>Faction<select name="faction" required>${C().setting.factions.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></label>
+    <label>Army name<input name="name" required minlength="2" maxlength="40" placeholder="Give your army a name"></label>
     ${cancelRow('Muster')}`,
   async data => {
     await campaignCall('POST', '/armies', { faction: data.get('faction'), name: data.get('name') });
-    toast(`<b>${esc(data.get('name'))}</b> takes the field from ${esc(factionById.get(data.get('faction')).name)}'s homeland.`);
+    const f = faction(data.get('faction'));
+    const home = NODES()[idx(f.home)];
+    toast(`<b>${esc(data.get('name'))}</b> takes the field from ${esc(home.name)}.`);
   });
 }
 
@@ -544,7 +744,7 @@ function goToToday() {
   if (!isToday()) { state.at = V().today; draw(); }
 }
 
-function openReport({ node = state.selected ?? 0, players = [], eventId = null } = {}) {
+function openReport({ node = defaultNode(), players = [], eventId = null } = {}) {
   if (!ensureCanAct()) return;
   goToToday();
   if (V().kind === 'demo') return openDemoReport({ node, players });
@@ -564,14 +764,14 @@ function openReport({ node = state.selected ?? 0, players = [], eventId = null }
     const mineId = Number(data.get('mine')), foe = Number(data.get('foe'));
     if (!foe) return 'Pick your opponent.';
     const won = data.get('outcome') === 'won';
-    const n = MAP.nodes[Number(data.get('node'))];
+    const n = NODES()[Number(data.get('node'))];
     await campaignCall('POST', '/games', { winner: won ? mineId : foe, loser: won ? foe : mineId, node: n.id, eventId });
     toast(`Result sent. <b>${esc(playerById(foe).name)}</b> needs to confirm before ${esc(n.name)} changes hands.`);
   });
 }
 
 function openDemoReport({ node, players }) {
-  const [a = 'brett', b = 'maria'] = players;
+  const [a = V().players[0].id, b = V().players.find(p => p.faction !== playerById(a).faction).id] = players;
   openModal(`
     <h2>Report a result</h2>
     <label>Victor<select name="winner">${armyOptions(activeArmies(), a)}</select></label>
@@ -589,44 +789,45 @@ function openDemoReport({ node, players }) {
     btn.textContent = 'Confirmed by both players ✓';
     await wait(600);
     const before = state.influence.map(s => s.owner);
-    const g = { id: `local${Date.now()}`, day: V().today, node: MAP.nodes[i].id, winner, loser, status: 'confirmed' };
+    const g = { id: `local${Date.now()}`, day: V().today, node: NODES()[i].id, winner, loser, status: 'confirmed' };
     V().games.push(g);
     const ev = V().events.findIndex(e => e.node === g.node && e.players.includes(winner) && e.players.includes(loser));
     if (ev >= 0) V().events.splice(ev, 1);
-    draw();
+    if (!state.overview && !onCurrentMap(i)) showMap(NODES()[i].map); else draw();
     announce(before, g);
   });
 }
 
-function openChallenge({ node = state.selected ?? 0 } = {}) {
+function openChallenge({ node = defaultNode() } = {}) {
   if (!ensureCanAct()) return;
   goToToday();
   const demo = V().kind === 'demo';
   const mine = demo ? activeArmies() : myArmies();
   const foes = demo ? activeArmies() : activeArmies().filter(p => !V().me.armyIds.has(p.id));
   if (!foes.length) return toast('No one to fight yet. Share the join code and wait for a rival to muster.');
+  const first = mine[0];
   const days = [0, 1, 2, 3, 4, 5, 6, 7, 10, 14];
   openModal(`
     <h2>Issue a challenge</h2>
-    <label>${demo ? 'Challenger' : 'Your army'}<select name="a">${armyOptions(mine, demo ? 'brett' : mine[0].id)}</select></label>
-    <label>Opponent<select name="b" required>${armyOptions(foes, demo ? 'dave' : undefined)}</select></label>
+    <label>${demo ? 'Challenger' : 'Your army'}<select name="a">${armyOptions(mine, first.id)}</select></label>
+    <label>Opponent<select name="b" required>${armyOptions(foes, foes.find(p => p.faction !== first.faction)?.id)}</select></label>
     <label>Battlefield<select name="node">${nodeOptions(node)}</select></label>
     <label>When<select name="when">${days.map(d => `<option value="${d}">${d === 0 ? 'Tonight' : d === 1 ? 'Tomorrow' : `In ${d} days`} · ${fmtDate(Math.floor(V().today) + d)}</option>`).join('')}</select></label>
-    <label>Stakes (optional)<input name="note" maxlength="80" placeholder="For the glory of the Lady"></label>
+    <label>Stakes (optional)<input name="note" maxlength="80" placeholder="What's at stake?"></label>
     ${cancelRow('Throw down the gauntlet')}`,
   async data => {
     const a = demo ? data.get('a') : Number(data.get('a'));
     const b = demo ? data.get('b') : Number(data.get('b'));
     if (!b) return 'Pick an opponent.';
     if (playerById(a).faction === playerById(b).faction) return 'Pick armies from two different factions.';
-    const n = MAP.nodes[Number(data.get('node'))];
-    const day = Math.floor(V().today) + Number(data.get('when')) + 19 / 24; // game night, 7pm
+    const n = NODES()[Number(data.get('node'))];
+    const day = Math.floor(V().today) + Number(data.get('when'));
     const note = String(data.get('note')).trim();
     if (demo) {
-      V().events.push({ id: `e${Date.now()}`, day: Math.floor(V().today) + Number(data.get('when')), node: n.id, players: [a, b], note });
+      V().events.push({ id: `e${Date.now()}`, day, node: n.id, players: [a, b], note });
       draw();
     } else {
-      await campaignCall('POST', '/events', { army: a, opponent: b, node: n.id, scheduledFor: dayToMs(V(), day), note });
+      await campaignCall('POST', '/events', { army: a, opponent: b, node: n.id, scheduledFor: dayToMs(V(), day + 19 / 24), note });
     }
     toast(`${army(a)} challenge ${army(b)} at <b>${esc(n.name)}</b>`);
   });
@@ -652,11 +853,9 @@ function play() {
 
 const mapView = new MapView({
   viewport: $('#viewport'),
-  map: MAP,
-  graph,
-  factions: MAP.factions,
-  onHover: showTooltip,
-  onSelect: select,
+  onHover: (local, e) => showTooltip(local == null ? null : toGlobal(local), e),
+  onSelect: local => select(local == null ? null : toGlobal(local)),
+  onGate: k => select(state.gateTargets[k]),
 });
 
 $('#scrub').addEventListener('input', e => {
@@ -678,26 +877,37 @@ $('#campaign-select').addEventListener('change', e => {
   renderTopbar(); // snap the select back; the action below decides where we go
   if (v === '__join') return openJoin();
   if (v === '__create') return openCreate();
-  navigate(v === 'demo' ? '/' : `/c/${v}`);
+  navigate(v === 'demo' ? (V().setting === 'old-world' ? '/' : `/demo/${V().setting}`) : `/c/${v}`);
+});
+document.querySelector('.settings').addEventListener('click', e => {
+  const b = e.target.closest('[data-setting]');
+  if (!b || b.disabled || V().kind !== 'demo') return;
+  navigate(b.dataset.setting === 'old-world' ? '/' : `/demo/${b.dataset.setting}`);
 });
 window.addEventListener('popstate', route);
+window.addEventListener('resize', () => { if (state.overview) renderOverview(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.selected != null && !$('#modal').open) select(null); });
 
 const confirmAct = (question, fn) => { if (window.confirm(question)) fn(); };
-const act = (fn) => fn().catch(e => toast(esc(e.message)));
+const act = fn => fn().catch(e => toast(esc(e.message)));
 
-// Buttons inside the panel, tooltip, modals and toasts.
+// Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],#panel-back');
+  const t = e.target.closest('[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
+  if (d.realm) {
+    if (d.realm === '__all') return showOverview();
+    if (state.selected != null) select(null);
+    return showMap(d.realm);
+  }
   if (d.node) return select(Number(d.node));
   if (d.report) return openReport({ node: Number(d.report) });
   if (d.challenge) return openChallenge({ node: Number(d.challenge) });
   if (d.reportEvent) {
     const ev = V().events.find(x => String(x.id) === d.reportEvent);
-    return openReport({ node: nodeIndex.get(ev.node), players: ev.players, eventId: ev.id });
+    return openReport({ node: idx(ev.node), players: ev.players, eventId: ev.id });
   }
   if (d.cancelEvent) return confirmAct('Call off this battle?', () => act(() => campaignCall('DELETE', `/events/${d.cancelEvent}`)));
   if (d.confirm) return act(() => campaignCall('POST', `/games/${d.confirm}/confirm`));

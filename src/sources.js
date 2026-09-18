@@ -1,27 +1,28 @@
-// Turns either the built-in demo or a server campaign into one shape the UI
+// Turns either a built-in demo or a server campaign into one shape the UI
 // understands. Days are counted from local midnight on the campaign's first day.
-import { CAMPAIGN, PLAYERS, EVENTS, generateHistory } from './data/demo-campaign.js';
+import { DEMOS, DEMO_START, DEMO_TODAY, generateHistory } from './data/demo-campaign.js';
 
 const DAY = 864e5;
 const midnight = ms => { const d = new Date(ms); d.setHours(0, 0, 0, 0); return d; };
 
-export function demoView(graph, map) {
+export function demoView(setting, graph) {
+  const demo = DEMOS[setting.id];
   return {
     kind: 'demo',
+    setting: setting.id,
     code: null,
-    name: CAMPAIGN.name,
-    start: CAMPAIGN.start,
-    today: CAMPAIGN.today,
-    factions: map.factions,
-    players: PLAYERS.map(p => ({ ...p, joinedDay: p.active[0], retired: false })),
-    games: generateHistory(graph, map.nodes).map(g => ({ ...g, status: 'confirmed' })),
-    events: EVENTS.map(e => ({ ...e })),
+    name: demo.name,
+    start: DEMO_START,
+    today: DEMO_TODAY,
+    players: demo.players.map(p => ({ ...p, joinedDay: p.active[0], retired: false })),
+    games: generateHistory(graph, setting, demo).map(g => ({ ...g, status: 'confirmed' })),
+    events: demo.events.map(e => ({ ...e })),
     me: null,
     members: [],
   };
 }
 
-export function campaignView(payload, map) {
+export function campaignView(payload) {
   const start = midnight(payload.campaign.createdAt);
   const dayOf = ms => (ms - start.getTime()) / DAY;
   const me = payload.me && {
@@ -30,11 +31,11 @@ export function campaignView(payload, map) {
   };
   return {
     kind: 'campaign',
+    setting: payload.campaign.setting,
     code: payload.campaign.code,
     name: payload.campaign.name,
     start,
     today: dayOf(Date.now()),
-    factions: map.factions,
     players: payload.armies.map(a => ({
       id: a.id, userId: a.userId, name: a.playerName, army: a.name, faction: a.faction,
       joinedDay: dayOf(a.createdAt), retired: !!a.retiredAt,

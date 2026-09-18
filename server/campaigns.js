@@ -1,11 +1,10 @@
 import crypto from 'node:crypto';
 import express from 'express';
-import { OLD_WORLD } from '../src/data/old-world.js';
+import { SETTINGS } from '../src/data/settings.js';
 import { HttpError, id, requireUser, text } from './util.js';
 
 export const AUTO_CONFIRM_MS = 48 * 3600e3;
 const MAX_ACTIVE_ARMIES = 5;
-const SETTINGS = { 'old-world': OLD_WORLD };
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O or 1/I
 
 function newCode() {
