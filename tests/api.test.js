@@ -73,7 +73,7 @@ test('full campaign flow: create, join, muster, challenge, report, confirm', asy
   r = await maria.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Reiksguard' });
   const reiksguard = r.body.armies.find(a => a.name === 'Reiksguard').id;
 
-  assert.equal((await maria.post(`/campaigns/${code}/armies`, { faction: 'skaven', name: 'Nope' })).status, 400);
+  assert.equal((await maria.post(`/campaigns/${code}/armies`, { faction: 'necrons', name: 'Nope' })).status, 400);
 
   // Challenge.
   r = await brett.post(`/campaigns/${code}/events`, {
@@ -171,7 +171,7 @@ test('auth: bad logins, duplicates, sessions, CSRF guard', async () => {
 test('Age of Sigmar campaigns accept realm factions and battlefields in any realm', async () => {
   const a = await signup('realm_a');
   const b = await signup('realm_b');
-  assert.equal((await a.post('/campaigns', { name: 'Nope', setting: 'horus-heresy' })).status, 400);
+  assert.equal((await a.post('/campaigns', { name: 'Nope', setting: 'blood-bowl' })).status, 400);
   const { code } = (await a.post('/campaigns', { name: 'Realmgate Wars', setting: 'mortal-realms' })).body;
   await b.post(`/campaigns/${code}/join`);
   assert.equal((await a.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Wrong setting' })).status, 400);

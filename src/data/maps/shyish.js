@@ -26,8 +26,8 @@ export default {
       "y": 446
     },
     {
-      "id": "prosperis",
-      "name": "Prosperis",
+      "id": "prime-innerlands",
+      "name": "The Prime Innerlands",
       "region": "Shyish",
       "x": 866,
       "y": 911

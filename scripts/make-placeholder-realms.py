@@ -37,7 +37,7 @@ REALMS = [
         ('gallet', 'Gallet'), ('andtor', 'Andtor'), ('coast-of-tusks', 'Coast of Tusks'), ('maw-of-ghur', 'The Maw of Ghur'),
     ]),
     ('shyish', 'Shyish · The Realm of Death', '#18141f', '#5f5872', '#c6bfd4', 37, [
-        ('nagashizzar', 'Nagashizzar'), ('glymmsforge', 'Glymmsforge'), ('prosperis', 'Prosperis'),
+        ('nagashizzar', 'Nagashizzar'), ('glymmsforge', 'Glymmsforge'), ('prime-innerlands', 'The Prime Innerlands'),
         ('stygxx', 'Stygxx'), ('carstinia', 'Carstinia'), ('ossia', 'Ossia'), ('shyish-nadir', 'The Shyish Nadir'),
         ('sadmoor', 'The Sadmoor'),
     ]),

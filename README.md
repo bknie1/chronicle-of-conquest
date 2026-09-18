@@ -2,11 +2,11 @@
 
 A living campaign map for your game store or gaming group. Every game played pushes a faction's influence across the map, and influence fades when nobody plays. The map shows who's playing, who's winning, and where the next fight is.
 
-Settings: **The Old World** and **Age of Sigmar** (the Mortal Realms). Horus Heresy and Warhammer 40,000 are planned.
+Settings: **The Old World**, **Age of Sigmar** (the Mortal Realms), **Horus Heresy** and **Warhammer 40,000**.
 
 ## How it works
 
-- **Demos** at `/` (The Old World) and `/demo/mortal-realms` (Age of Sigmar), each a made-up store with four months of history.
+- **Demos** at `/` (The Old World), `/demo/mortal-realms`, `/demo/horus-heresy` and `/demo/warhammer-40k`: one made-up store crew playing four months across every setting.
 - **Anyone can look.** A real campaign at `/c/CODE` can be viewed by anyone with the code.
 - **Sign in to take part.** Join with the code, then **muster an army**: pick a faction and give the army a name. Players can field several armies and retire one to start fresh.
 - **Challenge** someone to fight over a region. It appears on the map as ⚔.
@@ -30,7 +30,7 @@ Territory is never stored. It is recalculated from the log of confirmed games, w
 
 Each realm is its own map, and **realmgates** join a point in one realm to a point in another. Influence crosses a gate exactly as it crosses a border, so a win at Hammerhal Aqsha is felt in Hammerhal Ghyra through the Stormrift Realmgate. **All realms** shows every realm around the Eightpoints, with a line for each set of gates, coloured when one faction holds both ends. Click a portal badge (⟁) on the map to travel through a gate.
 
-Aqshy uses Jared Blando's Great Parch map. The other realms use **generated placeholder maps** (`scripts/make-placeholder-realms.py`, which needs Python with numpy and Pillow) until real art is found. Factions, homes and gates are in `src/data/mortal-realms.js`.
+Aqshy uses Jared Blando's Great Parch map. The other realms use **generated placeholder maps** (`scripts/make-placeholder-realms.py`, which needs Python with numpy and Pillow) until real art is found; see [docs/map-sources.md](docs/map-sources.md) for candidates. Factions, homes and gates are in `src/data/mortal-realms.js`.
 
 ## Running it
 
@@ -86,4 +86,4 @@ Every map is a self-contained module in `src/data/maps/` listed in `src/data/map
 
 ## Credits
 
-Map art: *The Old World* colour map, the Gitzman Old World campaign map (gitzmansgallery.com), and Jared Blando's *Great Parch* map. These are fan works: ask the artists before any public deployment and credit them. Warhammer and its settings are trademarks of Games Workshop. This is an unofficial fan project.
+Map art: *The Old World* colour map, the Gitzman Old World campaign map (gitzmansgallery.com), Jared Blando's *Great Parch* map, and the Horus Heresy and 40k galaxy maps. See [docs/map-sources.md](docs/map-sources.md). Some are fan works and some are official Games Workshop art: ask the artists (and GW) before any public deployment, and credit them. Warhammer and its settings are trademarks of Games Workshop. This is an unofficial fan project.

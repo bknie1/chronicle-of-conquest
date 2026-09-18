@@ -55,6 +55,30 @@ export default {
       "name": "Warriors of Chaos",
       "color": "#c4102a",
       "home": "chaos-wastes"
+    },
+    {
+      "id": "high-elves",
+      "name": "High Elves",
+      "color": "#9fa8da",
+      "home": "marienburg"
+    },
+    {
+      "id": "cathay",
+      "name": "Grand Cathay",
+      "color": "#e91e63",
+      "home": "cathay-road"
+    },
+    {
+      "id": "chaos-dwarfs",
+      "name": "Chaos Dwarfs",
+      "color": "#455a64",
+      "home": "azgorh"
+    },
+    {
+      "id": "skaven",
+      "name": "Skaven",
+      "color": "#8b5a2b",
+      "home": "skavenblight"
     }
   ],
   "nodes": [
@@ -456,6 +480,20 @@ export default {
       "region": "Tilea",
       "x": 700,
       "y": 1910
+    },
+    {
+      "id": "skavenblight",
+      "name": "Skavenblight",
+      "region": "The Blighted Marshes",
+      "x": 690,
+      "y": 1500
+    },
+    {
+      "id": "cathay-road",
+      "name": "Caravanserai of the Silk Road",
+      "region": "Road to Cathay",
+      "x": 1950,
+      "y": 1360
     }
   ],
   "extraLinks": [],

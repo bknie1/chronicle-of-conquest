@@ -46,5 +46,12 @@ export default {
       "x": 474,
       "y": 644
     }
-  ]
+  ],
+  "extraLinks": [
+    [
+      "azyrheim",
+      "azyrite-watch"
+    ]
+  ],
+  "blockedLinks": []
 };

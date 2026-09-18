@@ -3,6 +3,8 @@
 // so point ids must be unique across a setting's maps.
 import { MAPS } from './maps/index.js';
 import { MORTAL_REALMS } from './mortal-realms.js';
+import { HORUS_HERESY } from './horus-heresy.js';
+import { WARHAMMER_40K } from './warhammer-40k.js';
 
 function defineSetting({ id, name, maps, factions, gates = [] }) {
   const nodes = maps.flatMap(map => map.nodes.map(n => ({ ...n, map: map.id })));
@@ -23,4 +25,6 @@ function defineSetting({ id, name, maps, factions, gates = [] }) {
 export const SETTINGS = {
   'old-world': defineSetting({ id: 'old-world', name: 'The Old World', maps: [MAPS['old-world']], factions: MAPS['old-world'].factions }),
   'mortal-realms': defineSetting(MORTAL_REALMS),
+  'horus-heresy': defineSetting(HORUS_HERESY),
+  'warhammer-40k': defineSetting(WARHAMMER_40K),
 };

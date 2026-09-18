@@ -20,6 +20,14 @@ export const MORTAL_REALMS = {
     { id: 'lumineth', name: 'Lumineth Realm-lords', color: '#ee5fc7', home: 'xintil' },
     { id: 'slaves', name: 'Slaves to Darkness', color: '#4a4a4a', home: 'varanspire' },
     { id: 'skaven', name: 'Skaven', color: '#8b5a2b', home: 'blight-city' },
+    { id: 'khorne', name: 'Blades of Khorne', color: '#7a0a0a', home: 'khuls-ravage' },
+    { id: 'helsmiths', name: 'Helsmiths of Hashut', color: '#9e3d22', home: 'hel-crown' },
+    { id: 'ogors', name: 'Ogor Mawtribes', color: '#c98d5a', home: 'maw-of-ghur' },
+    { id: 'gloomspite', name: 'Gloomspite Gitz', color: '#5c6bc0', home: 'gallet' },
+    { id: 'nighthaunt', name: 'Nighthaunt', color: '#8fe3cf', home: 'stygxx' },
+    { id: 'ossiarch', name: 'Ossiarch Bonereapers', color: '#d9d2c3', home: 'ossia' },
+    { id: 'idoneth', name: 'Idoneth Deepkin', color: '#1f6f8b', home: 'mirrorshade' },
+    { id: 'seraphon', name: 'Seraphon', color: '#00b894', home: 'azyrite-watch' },
   ],
   // [point, point, name]. A gate joins two points on different realms.
   gates: [

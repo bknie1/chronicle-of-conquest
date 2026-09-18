@@ -552,7 +552,7 @@ async function route() {
   stopPlayback();
   if (state.selected != null) select(null);
   const path = location.pathname;
-  const demo = path.match(/^\/demo\/([a-z-]+)\/?$/);
+  const demo = path.match(/^\/demo\/([a-z0-9-]+)\/?$/);
   if (demo && SETTINGS[demo[1]]) return setView(demoFor(demo[1]));
   const m = path.match(/^\/c\/([A-Za-z0-9-]{6,7})\/?$/);
   if (!m) return setView(demoFor('old-world'));
@@ -692,8 +692,7 @@ function openCreate() {
     <h2>Start a campaign</h2>
     <p class="muted">For your store, your gaming group, or an official event. You'll get a code to share.</p>
     <label>Campaign name<input name="name" required minlength="3" maxlength="60" placeholder="Tuesday Night Crusade"></label>
-    <label>Setting<select name="setting">${settingOptions}
-      <option disabled>Warhammer 40,000 (coming soon)</option><option disabled>Horus Heresy (coming soon)</option></select></label>
+    <label>Setting<select name="setting">${settingOptions}</select></label>
     ${cancelRow('Create campaign')}`,
   async data => {
     const { code } = await api('POST', '/campaigns', { name: data.get('name'), setting: data.get('setting') });

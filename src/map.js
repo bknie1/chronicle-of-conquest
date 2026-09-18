@@ -285,7 +285,8 @@ export class MapView {
         this.applySoon();
         return;
       }
-      if (active() && this.focus == null && e.target.closest('.viewport') === vp && !e.target.closest(`.pin, button, ${chrome}`)) {
+      if (active() && this.focus == null && e.target instanceof Element
+        && e.target.closest('.viewport') === vp && !e.target.closest(`.pin, button, ${chrome}`)) {
         this.onHover(this.nodeAt(e.clientX, e.clientY), e);
       }
     });
