@@ -1,7 +1,7 @@
 // A setting is one or more maps plus the gates between them. Everything that
 // isn't drawing (rules, the server, the demo) works on the flattened point list,
 // so point ids must be unique across a setting's maps.
-import { OLD_WORLD } from './old-world.js';
+import { MAPS } from './maps/index.js';
 import { MORTAL_REALMS } from './mortal-realms.js';
 
 function defineSetting({ id, name, maps, factions, gates = [] }) {
@@ -21,6 +21,6 @@ function defineSetting({ id, name, maps, factions, gates = [] }) {
 }
 
 export const SETTINGS = {
-  'old-world': defineSetting({ id: 'old-world', name: 'The Old World', maps: [OLD_WORLD], factions: OLD_WORLD.factions }),
+  'old-world': defineSetting({ id: 'old-world', name: 'The Old World', maps: [MAPS['old-world']], factions: MAPS['old-world'].factions }),
   'mortal-realms': defineSetting(MORTAL_REALMS),
 };

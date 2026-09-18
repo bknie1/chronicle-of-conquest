@@ -13,12 +13,26 @@ export const RULES = {
   fadingDays: 21,      // players idle this long are marked as fading
 };
 
-export function buildGraph(nodes, width, height, maxEdge) {
+// options.extraLinks / options.blockedLinks are pairs of node ids ([idA, idB])
+// that override the automatic Delaunay + maxEdge adjacency: a map author uses
+// them when two points across a sea auto-link, or a mountain pass that should
+// connect is just past maxEdge. They only affect `adj` (and so `hops`), not
+// the Voronoi geometry or the border segments drawn between cells.
+export function buildGraph(nodes, width, height, maxEdge, options = {}) {
+  const { extraLinks = [], blockedLinks = [], nodeIds } = options;
+  const indexOf = new Map((nodeIds || nodes.map(n => n.id)).map((id, i) => [id, i]));
+  const pairKey = (a, b) => (a < b ? `${a}:${b}` : `${b}:${a}`);
+  const toIndexPair = ([a, b]) => [indexOf.get(a), indexOf.get(b)];
+  const blocked = new Set(
+    blockedLinks.map(toIndexPair).filter(([a, b]) => a != null && b != null).map(([a, b]) => pairKey(a, b))
+  );
+
   const delaunay = Delaunay.from(nodes, n => n.x, n => n.y);
   const voronoi = delaunay.voronoi([0, 0, width, height]);
   const polys = nodes.map((_, i) => voronoi.cellPolygon(i));
   const adj = nodes.map(() => []);
   const borders = [];
+  const linked = new Set();
 
   for (let i = 0; i < nodes.length; i++) {
     for (const j of delaunay.neighbors(i)) {
@@ -26,8 +40,18 @@ export function buildGraph(nodes, width, height, maxEdge) {
       const shared = sharedEdge(polys[i], polys[j]);
       if (shared) borders.push({ i, j, a: shared[0], b: shared[1] });
       const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-      if (d <= maxEdge) { adj[i].push(j); adj[j].push(i); }
+      if (d <= maxEdge && !blocked.has(pairKey(i, j))) {
+        adj[i].push(j); adj[j].push(i); linked.add(pairKey(i, j));
+      }
     }
+  }
+
+  for (const pair of extraLinks) {
+    const [i, j] = toIndexPair(pair);
+    if (i == null || j == null || i === j) continue;
+    const key = pairKey(i, j);
+    if (blocked.has(key) || linked.has(key)) continue;
+    adj[i].push(j); adj[j].push(i); linked.add(key);
   }
 
   return { delaunay, voronoi, polys, adj, borders, hops: hopsOver(adj) };
@@ -58,7 +82,8 @@ export function buildSettingGraph(setting) {
   const maps = new Map();
   let offset = 0;
   for (const map of setting.maps) {
-    const graph = buildGraph(map.nodes, map.width, map.height, map.maxEdge);
+    const graph = buildGraph(map.nodes, map.width, map.height, map.maxEdge,
+      { extraLinks: map.extraLinks, blockedLinks: map.blockedLinks });
     maps.set(map.id, { map, graph, offset });
     for (const js of graph.adj) adj.push(js.map(j => j + offset));
     offset += map.nodes.length;

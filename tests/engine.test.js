@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGraph, computeInfluence, RULES } from '../src/engine.js';
-import { OLD_WORLD as MAP } from '../src/data/old-world.js';
+import MAP from '../src/data/maps/old-world.js';
 
-const graph = buildGraph(MAP.nodes, MAP.width, MAP.height, MAP.maxEdge);
+const graph = buildGraph(MAP.nodes, MAP.width, MAP.height, MAP.maxEdge, { extraLinks: MAP.extraLinks, blockedLinks: MAP.blockedLinks });
 const idx = id => MAP.nodes.findIndex(n => n.id === id);
 const win = (day, node, winnerFaction, loserFaction) => ({ day, nodeIndex: idx(node), winnerFaction, loserFaction });
 const influence = (games, at) => computeInfluence({ graph, nodes: MAP.nodes, factions: MAP.factions, games, at });
@@ -39,4 +39,39 @@ test('influence fades when a faction stops playing', () => {
 test('games after the viewed date are ignored (replay)', () => {
   const games = [win(50, 'badlands', 'dwarfs', 'orcs')];
   assert.notEqual(influence(games, 49)[idx('badlands')].owner, 'dwarfs');
+});
+
+// --- link overrides (extraLinks / blockedLinks) ---------------------------
+
+const linkNodes = [
+  { id: 'a', x: 0, y: 0 },
+  { id: 'b', x: 10, y: 0 },   // close to a: linked by distance alone
+  { id: 'c', x: 1000, y: 1000 }, // far from both: not linked without an override
+];
+
+test('buildGraph still works with no 5th argument (backwards compatible)', () => {
+  const g = buildGraph(linkNodes, 2000, 2000, 50);
+  assert.ok(g.adj[0].includes(1)); // a-b, within maxEdge
+  assert.ok(!g.adj[0].includes(2)); // a-c, too far
+});
+
+test('extraLinks forces adjacency between two points that would not otherwise link', () => {
+  const g = buildGraph(linkNodes, 2000, 2000, 50, { extraLinks: [['a', 'c']] });
+  assert.ok(g.adj[0].includes(2));
+  assert.ok(g.adj[2].includes(0));
+  assert.ok(g.adj[0].includes(1)); // the normal a-b link is untouched
+});
+
+test('blockedLinks removes adjacency between two points that would otherwise link', () => {
+  const g = buildGraph(linkNodes, 2000, 2000, 50, { blockedLinks: [['a', 'b']] });
+  assert.ok(!g.adj[0].includes(1));
+  assert.ok(!g.adj[1].includes(0));
+});
+
+test('a pair in both extraLinks and blockedLinks stays blocked', () => {
+  const g = buildGraph(linkNodes, 2000, 2000, 50, {
+    extraLinks: [['a', 'c']],
+    blockedLinks: [['a', 'c']],
+  });
+  assert.ok(!g.adj[0].includes(2));
 });

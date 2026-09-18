@@ -1,20 +1,12 @@
 // Age of Sigmar: the Mortal Realms. Each realm is its own map; realmgates
 // join a point on one realm to a point on another, and influence flows
 // through them exactly as it does between neighbouring regions.
-import aqshy from './realms/aqshy.js';
-import ghyran from './realms/ghyran.js';
-import ghur from './realms/ghur.js';
-import shyish from './realms/shyish.js';
-import chamon from './realms/chamon.js';
-import ulgu from './realms/ulgu.js';
-import hysh from './realms/hysh.js';
-import azyr from './realms/azyr.js';
-import eightpoints from './realms/eightpoints.js';
+import { MAPS } from './maps/index.js';
 
 export const MORTAL_REALMS = {
   id: 'mortal-realms',
   name: 'Age of Sigmar',
-  maps: [aqshy, ghyran, ghur, shyish, chamon, ulgu, hysh, azyr, eightpoints],
+  maps: ['aqshy', 'ghyran', 'ghur', 'shyish', 'chamon', 'ulgu', 'hysh', 'azyr', 'eightpoints'].map(id => MAPS[id]),
   // Every home can never fall.
   factions: [
     { id: 'stormcast', name: 'Stormcast Eternals', color: '#f2c230', home: 'azyrheim' },

@@ -30,7 +30,7 @@ Territory is never stored. It is recalculated from the log of confirmed games, w
 
 Each realm is its own map, and **realmgates** join a point in one realm to a point in another. Influence crosses a gate exactly as it crosses a border, so a win at Hammerhal Aqsha is felt in Hammerhal Ghyra through the Stormrift Realmgate. **All realms** shows every realm around the Eightpoints, with a line for each set of gates, coloured when one faction holds both ends. Click a portal badge (⟁) on the map to travel through a gate.
 
-Aqshy uses Jared Blando's Great Parch map. The other realms use **generated placeholder maps** (`scripts/make-placeholder-realms.py`, which needs Python with numpy and Pillow) until real art is found. Realms, factions, homes and gates are in `src/data/mortal-realms.js`.
+Aqshy uses Jared Blando's Great Parch map. The other realms use **generated placeholder maps** (`scripts/make-placeholder-realms.py`, which needs Python with numpy and Pillow) until real art is found. Factions, homes and gates are in `src/data/mortal-realms.js`.
 
 ## Running it
 
@@ -65,7 +65,9 @@ server/            Express API: Passport sign-in, campaigns, results, SQLite
 src/engine.js      Influence rules
 src/map.js         Map rendering, pan / zoom / tilt
 src/main.js        UI
-src/data/          Settings (maps, factions, homes, realmgates) and the demo stores
+src/data/          Settings (factions, homes, realmgates) and the demo stores
+src/data/maps/     One module per map, written by the editor
+src/editor.js      Map editor (dev only), with server/dev-maps.js
 scripts/           Placeholder realm map generator
 public/maps/       Map images
 tests/             node:test suites
@@ -73,7 +75,14 @@ tests/             node:test suites
 
 ## Adding or fixing a map
 
-A map is an image plus a list of points in the image's own pixel coordinates (`src/data/old-world.js`, `src/data/realms/*.js`). Regions, borders and neighbours are generated from the points automatically. A setting (`src/data/settings.js`) groups maps with their factions and the gates between them. Point ids must be unique across a setting.
+Run `npm run dev` and open **http://localhost:5173/editor.html** (development only; it isn't in the production build).
+
+- Pick a map, then drag points, add them, or select one to rename it or change its region.
+- **Link** mode (or shift-click two points) cycles a pair between automatic, forced and blocked neighbours. Use it for sea crossings and mountain passes.
+- Tune how far apart neighbours can be (`maxEdge`) and how far colour spreads (`reach`) with the sliders. Ctrl+Z undoes.
+- **Save** writes `src/data/maps/<id>.js`. **New map…** starts a map from any image in `public/maps/`.
+
+Every map is a self-contained module in `src/data/maps/` listed in `src/data/maps/index.js`. A setting (`src/data/settings.js`) groups maps with their factions and realmgates, and point ids must be unique across a setting. Saving is refused if it would delete or rename a point that a setting uses as a home or realmgate.
 
 ## Credits
 
