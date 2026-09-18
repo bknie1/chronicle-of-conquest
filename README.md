@@ -7,7 +7,6 @@ Settings: **The Old World** and **Age of Sigmar** (the Mortal Realms). Horus Her
 ## How it works
 
 - **Demos** at `/` (The Old World) and `/demo/mortal-realms` (Age of Sigmar), each a made-up store with four months of history.
-
 - **Anyone can look.** A real campaign at `/c/CODE` can be viewed by anyone with the code.
 - **Sign in to take part.** Join with the code, then **muster an army**: pick a faction and give the army a name. Players can field several armies and retire one to start fresh.
 - **Challenge** someone to fight over a region. It appears on the map as ⚔.
