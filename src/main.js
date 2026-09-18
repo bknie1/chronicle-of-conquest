@@ -303,9 +303,13 @@ function renderRegion(panel, i) {
 
 // --- tooltip ---------------------------------------------------------------
 
+// Only rebuild the tooltip when the pointer reaches a different region; otherwise just move it.
+let tipFor = null;
 function showTooltip(i, e) {
   const tip = $('#tooltip');
-  if (i == null || !state.influence) { tip.hidden = true; return; }
+  if (i == null || !state.influence) { tip.hidden = true; tipFor = null; return; }
+  if (i === tipFor && !tip.hidden) return placeTooltip(tip, e);
+  tipFor = i;
   const n = NODES()[i];
   const s = state.influence[i];
   const last = gamesSoFar().filter(g => g.node === n.id).at(-1);
@@ -320,6 +324,10 @@ function showTooltip(i, e) {
     ${count ? `<p class="small live">⚔ ${count} battle${count > 1 ? 's' : ''} scheduled</p>` : ''}
     <p class="hint">Click to zoom in</p>`;
   tip.hidden = false;
+  placeTooltip(tip, e);
+}
+
+function placeTooltip(tip, e) {
   const r = $('#viewport').getBoundingClientRect();
   const x = e.clientX - r.left, y = e.clientY - r.top;
   tip.style.left = `${Math.max(8, Math.min(x + 18, r.width - tip.offsetWidth - 8))}px`;
@@ -454,6 +462,7 @@ function select(i) {
 
 function draw() {
   recompute();
+  tipFor = null; // the numbers may have changed; rebuild the tooltip on the next move
   const cur = current();
   mapView.render(state.influence.slice(cur.offset, cur.offset + cur.map.nodes.length), eventsByNode());
   renderRealmBar();

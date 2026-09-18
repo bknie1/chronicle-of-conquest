@@ -51,11 +51,8 @@ export class MapView {
     svg.setAttribute('viewBox', `0 0 ${map.width} ${map.height}`);
     this.defs = el('defs', {}, svg);
 
-    const blur = el('filter', { id: 'soften', filterUnits: 'userSpaceOnUse', x: 0, y: 0, width: map.width, height: map.height }, this.defs);
-    el('feGaussianBlur', { stdDeviation: map.reach * 0.22 }, blur);
     const mask = el('mask', { id: 'reach', maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: map.width, height: map.height }, this.defs);
-    const maskGroup = el('g', { filter: 'url(#soften)' }, mask);
-    for (const n of map.nodes) el('circle', { cx: n.x, cy: n.y, r: map.reach, fill: '#fff' }, maskGroup);
+    el('image', { href: this.reachMask(), x: 0, y: 0, width: map.width, height: map.height, preserveAspectRatio: 'none' }, mask);
 
     // Faint roads between neighbouring points.
     const roads = el('g', { class: 'roads' }, svg);
@@ -72,6 +69,30 @@ export class MapView {
     }, territory));
     this.borderLayer = el('g', { class: 'borders' }, territory);
     this.patterns = new Map();
+  }
+
+  // The soft edge where territory fades out: blurred circles around every point.
+  // Rendered once to a small image; a live SVG blur over the whole map made every
+  // pan and zoom repaint expensive.
+  reachMask() {
+    const { map } = this;
+    const scale = 0.25;
+    const w = Math.ceil(map.width * scale), h = Math.ceil(map.height * scale);
+    const shapes = document.createElement('canvas');
+    shapes.width = w; shapes.height = h;
+    const sc = shapes.getContext('2d');
+    sc.fillStyle = '#fff';
+    for (const n of map.nodes) {
+      sc.beginPath();
+      sc.arc(n.x * scale, n.y * scale, map.reach * scale, 0, Math.PI * 2);
+      sc.fill();
+    }
+    const out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    const oc = out.getContext('2d');
+    oc.filter = `blur(${map.reach * 0.22 * scale}px)`; // browsers without canvas filters get hard edges
+    oc.drawImage(shapes, 0, 0);
+    return out.toDataURL('image/png');
   }
 
   stripes(a, b) {
@@ -160,7 +181,14 @@ export class MapView {
 
   // --- camera -------------------------------------------------------------
 
+  // Wheel and drag fire faster than frames; write the transform at most once per frame.
+  applySoon() {
+    if (this.frame) return;
+    this.frame = requestAnimationFrame(() => { this.frame = null; this.apply(false); });
+  }
+
   apply(animate) {
+    if (this.frame) { cancelAnimationFrame(this.frame); this.frame = null; }
     const { k, x, y } = this.view;
     const f = this.focus != null ? this.map.nodes[this.focus] : { x: 0, y: 0 };
     const tilt = this.focus != null ? TILT_DEG : 0;
@@ -211,7 +239,7 @@ export class MapView {
     const { k, x, y } = this.view;
     const k2 = Math.max(this.minK, Math.min(4, k * factor));
     this.view = { k: k2, x: cx - (cx - x) * (k2 / k), y: cy - (cy - y) * (k2 / k) };
-    this.apply(false);
+    this.applySoon();
   }
 
   toWorld(clientX, clientY) {
@@ -254,7 +282,7 @@ export class MapView {
           vp.classList.add('dragging');
         }
         this.view.x = drag.vx + dx; this.view.y = drag.vy + dy;
-        this.apply(false);
+        this.applySoon();
         return;
       }
       if (active() && this.focus == null && e.target.closest('.viewport') === vp && !e.target.closest(`.pin, button, ${chrome}`)) {
