@@ -38,7 +38,7 @@ export class MapView {
     this.saved = null;
     this.world.style.width = `${map.width}px`;
     this.world.style.height = `${map.height}px`;
-    this.img.src = map.image;
+    this.img.src = import.meta.env.BASE_URL + map.image.replace(/^\//, ''); // '/' locally, '/<repo>/' on Pages
     this.svg.replaceChildren();
     this.overlay.replaceChildren();
     this.buildSvg();

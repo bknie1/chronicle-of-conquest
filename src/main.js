@@ -8,6 +8,18 @@ import { demoView, campaignView, dayToMs } from './sources.js';
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
+// A static build (GitHub Pages) has no server: demos only, no accounts or campaigns.
+const STATIC = import.meta.env.VITE_STATIC === '1';
+const REPO_URL = import.meta.env.VITE_REPO_URL || '';
+// Where the app is served from: '/' locally, '/<repo>/' on GitHub Pages.
+const BASE = import.meta.env.BASE_URL;
+const asset = path => BASE + path.replace(/^\//, '');
+const appPath = () => {
+  const p = location.pathname;
+  return p.startsWith(BASE) ? `/${p.slice(BASE.length)}` : p;
+};
+const urlFor = path => BASE + path.replace(/^\//, '');
+
 // Everything derived from a setting (its maps, the graph across them, lookups).
 // Point indices are setting-wide; each map's points occupy [offset, offset + count).
 const contexts = new Map();
@@ -184,6 +196,14 @@ function gateLines(i) {
 
 function campaignHeader() {
   const v = V();
+  if (v.kind === 'demo' && STATIC) {
+    return `<div class="callout">
+      <b>This is a demo.</b> The players are a made-up store. Try reporting a result, issuing a challenge or
+      replaying the timeline. Nothing you do here is saved.
+      <p class="small muted">Accounts, join codes and real campaigns need the full app running on a server.
+      ${REPO_URL ? `See <a href="${esc(REPO_URL)}" target="_blank" rel="noopener">the project on GitHub</a>.` : ''}</p>
+    </div>`;
+  }
   if (v.kind === 'demo') {
     return `<div class="callout">
       <b>This is a demo.</b> The players are a made-up store. Try reporting a result or replaying the timeline.
@@ -191,7 +211,7 @@ function campaignHeader() {
       <div class="row"><button class="primary" data-act="create">Start your own campaign</button><button data-act="join">Join with a code</button></div>
     </div>`;
   }
-  const link = `${location.origin}/c/${v.code}`;
+  const link = location.origin + urlFor(`/c/${v.code}`);
   let cta = '';
   if (!state.session.user) {
     cta = `<div class="callout">Sign in to join this campaign and put your army on the map.
@@ -369,10 +389,12 @@ function renderOverview() {
   const gateCount = id => C().graph.gates.filter(g => NODES()[g.a].map === id || NODES()[g.b].map === id).length;
   const hub = maps.reduce((best, m) => (gateCount(m.id) > gateCount(best.id) ? m : best), maps[0]);
   const ring = maps.filter(m => m !== hub);
+  // Start below the realm tab bar, which wraps to several rows on a phone.
+  box.style.top = `${$('#realm-bar').offsetTop + $('#realm-bar').offsetHeight + 8}px`;
   // Lay the ring out in pixels so cards never overlap, whatever the box size.
   const { width: W, height: H } = box.getBoundingClientRect();
-  const cardW = Math.max(104, Math.min(190, W / 5.2));
-  const cardH = cardW >= 140 ? cardW * 0.72 : cardW * 0.42;
+  const cardW = Math.max(80, Math.min(190, W / 5.2));
+  const cardH = cardW >= 140 ? cardW * 0.72 : cardW * 0.6;
   box.style.setProperty('--card-w', `${cardW}px`);
   box.classList.toggle('compact', cardW < 140);
   const rx = Math.max(0, W / 2 - cardW / 2 - 10), ry = Math.max(0, H / 2 - cardH / 2 - 10);
@@ -405,7 +427,7 @@ function renderOverview() {
       const { held, total, battles } = realmStats(m.id);
       const claimed = held.reduce((s, [, n]) => s + n, 0);
       return `<button class="realm-card${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px">
-        <span class="thumb" style="background-image:url('${m.image}')"></span>
+        <span class="thumb" style="background-image:url('${asset(m.image)}')"></span>
         <span class="name">${esc(m.name)}</span>
         <span class="title">${esc(m.title ?? '')}</span>
         <span class="control-bar">${held.map(([f, n]) => `<i style="--c:${faction(f).color};flex:${n}" title="${esc(faction(f).name)}: ${n}"></i>`).join('')}<i class="unclaimed" style="flex:${total - claimed}"></i></span>
@@ -480,6 +502,7 @@ function renderTopbar() {
   const v = V();
   const user = state.session.user;
   $('#btn-account').textContent = user ? user.displayName : 'Sign in';
+  $('#btn-account').hidden = STATIC;
   const mine = state.session.campaigns;
   const currentValue = v.kind === 'campaign' ? v.code : 'demo';
   const options = [
@@ -489,7 +512,7 @@ function renderTopbar() {
   ];
   $('#campaign-select').innerHTML = `${options.map(([val, label]) =>
     `<option value="${esc(val)}" ${val === currentValue ? 'selected' : ''}>${esc(label)}</option>`).join('')}
-    <option value="__join">Join with a code…</option><option value="__create">＋ Start a new campaign…</option>`;
+    ${STATIC ? '' : '<option value="__join">Join with a code…</option><option value="__create">＋ Start a new campaign…</option>'}`;
   // Demos can switch setting; a real campaign is played in one setting.
   document.querySelectorAll('.settings [data-setting]').forEach(b => {
     const available = !!SETTINGS[b.dataset.setting];
@@ -520,7 +543,7 @@ function announce(before, g) {
 
 async function refreshSession() {
   let s = {};
-  try { s = await api('GET', '/me'); } catch { /* offline or no server: behave as signed out */ }
+  if (!STATIC) try { s = await api('GET', '/me'); } catch { /* offline or no server: behave as signed out */ }
   state.session = { user: s.user ?? null, campaigns: Array.isArray(s.campaigns) ? s.campaigns : [] };
 }
 
@@ -551,22 +574,27 @@ const demoFor = id => { const ctx = contextFor(id); return demoView(ctx.setting,
 async function route() {
   stopPlayback();
   if (state.selected != null) select(null);
-  const path = location.pathname;
+  const path = appPath();
   const demo = path.match(/^\/demo\/([a-z0-9-]+)\/?$/);
   if (demo && SETTINGS[demo[1]]) return setView(demoFor(demo[1]));
   const m = path.match(/^\/c\/([A-Za-z0-9-]{6,7})\/?$/);
   if (!m) return setView(demoFor('old-world'));
+  if (STATIC) {
+    history.replaceState(null, '', urlFor('/'));
+    setView(demoFor('old-world'));
+    return toast('Campaigns need the full app running on a server. This site is the demo.');
+  }
   try {
     await loadCampaign(m[1]);
   } catch (e) {
-    history.replaceState(null, '', '/');
+    history.replaceState(null, '', urlFor('/'));
     setView(demoFor('old-world'));
     toast(esc(e.message));
   }
 }
 
 function navigate(path) {
-  if (location.pathname !== path) history.pushState(null, '', path);
+  if (appPath() !== path) history.pushState(null, '', urlFor(path));
   return route();
 }
 

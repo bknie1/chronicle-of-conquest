@@ -4,6 +4,8 @@ A living campaign map for your game store or gaming group. Every game played pus
 
 Settings: **The Old World**, **Age of Sigmar** (the Mortal Realms), **Horus Heresy** and **Warhammer 40,000**.
 
+**Live demo:** https://bknie1.github.io/chronicle-of-conquest/ (demos only; accounts and real campaigns need the full app on a server)
+
 ## How it works
 
 - **Demos** at `/` (The Old World), `/demo/mortal-realms`, `/demo/horus-heresy` and `/demo/warhammer-40k`: one made-up store crew playing four months across every setting.
@@ -57,6 +59,14 @@ npm start          # serves dist/ and the API, default port 5173
 | `SECURE_COOKIES` | off | Set to `1` when serving over HTTPS (you should). |
 
 Any host that runs a Node process with a persistent disk works, for example Railway, Render, Fly.io or a small VPS. Mount the disk at `DATA_DIR`.
+
+### Demo site (GitHub Pages)
+
+Every push to `master` runs the tests and publishes a demo-only static build to GitHub Pages (`.github/workflows/pages.yml`). The build sets `VITE_STATIC=1`, which hides sign-in, join codes and campaign creation, and `BASE_PATH=/<repo>/`, because Pages serves the site under the repository name. To try that build locally:
+
+```bash
+VITE_STATIC=1 BASE_PATH=/chronicle-of-conquest/ npm run build
+```
 
 ## Project layout
 
