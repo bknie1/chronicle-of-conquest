@@ -278,10 +278,9 @@ function renderPanel() {
 
     <h3>Factions</h3>
     <ol class="factions">${factions.map(f => `
-      <li>${swatch(f)}<span class="name">${esc(f.name)}</span>
+      <li>${swatch(f)}<span class="name">${esc(f.name)}${f.recent >= 4 ? ' <span class="tag hot" title="4+ wins in the last two weeks">Rising</span>' : ''}</span>
         <span class="held" title="Regions held">${f.held}</span>
         <i class="meter" style="--c:${f.color};--w:${(100 * f.held / maxHeld).toFixed(0)}%"></i>
-        ${f.recent >= 4 ? '<span class="tag hot" title="4+ wins in the last two weeks">Rising</span>' : ''}
       </li>`).join('')}</ol>
 
     <h3>Warriors</h3>
@@ -389,20 +388,10 @@ function renderOverview() {
   const gateCount = id => C().graph.gates.filter(g => NODES()[g.a].map === id || NODES()[g.b].map === id).length;
   const hub = maps.reduce((best, m) => (gateCount(m.id) > gateCount(best.id) ? m : best), maps[0]);
   const ring = maps.filter(m => m !== hub);
-  // Start below the realm tab bar, which wraps to several rows on a phone.
-  box.style.top = `${$('#realm-bar').offsetTop + $('#realm-bar').offsetHeight + 8}px`;
-  // Lay the ring out in pixels so cards never overlap, whatever the box size.
+  // The overview covers the whole map; the ring sits below the realm tab bar,
+  // which wraps to several rows on a phone.
   const { width: W, height: H } = box.getBoundingClientRect();
-  const cardW = Math.max(80, Math.min(190, W / 5.2));
-  const cardH = cardW >= 140 ? cardW * 0.72 : cardW * 0.6;
-  box.style.setProperty('--card-w', `${cardW}px`);
-  box.classList.toggle('compact', cardW < 140);
-  const rx = Math.max(0, W / 2 - cardW / 2 - 10), ry = Math.max(0, H / 2 - cardH / 2 - 10);
-  const pos = new Map([[hub.id, [W / 2, H / 2]]]);
-  ring.forEach((m, k) => {
-    const a = -Math.PI / 2 + (k / ring.length) * Math.PI * 2;
-    pos.set(m.id, [W / 2 + rx * Math.cos(a), H / 2 + ry * Math.sin(a)]);
-  });
+  const top = $('#realm-bar').offsetTop + $('#realm-bar').offsetHeight + 8;
 
   // One line per pair of realms; coloured when a single faction holds both ends of every gate on it.
   const pairs = new Map();
@@ -412,28 +401,55 @@ function renderOverview() {
     if (!pairs.has(key)) pairs.set(key, { ma, mb, gates: [] });
     pairs.get(key).gates.push(g);
   }
-  const lines = [...pairs.values()].map(({ ma, mb, gates }) => {
-    const owners = new Set(gates.flatMap(g => [state.influence[g.a].owner, state.influence[g.b].owner]));
-    const holder = owners.size === 1 && [...owners][0] ? faction([...owners][0]) : null;
-    const [x1, y1] = pos.get(ma), [x2, y2] = pos.get(mb);
-    const title = gates.map(g => `${g.name}: ${NODES()[g.a].name} ↔ ${NODES()[g.b].name}`).join('\n');
-    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="${holder ? `stroke:${holder.color}` : ''}"
-      class="${holder ? 'held' : ''}" stroke-width="${1.5 + gates.length}"><title>${esc(title)}${holder ? `\nHeld by ${esc(holder.name)}` : ''}</title></line>`;
-  }).join('');
 
-  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="gate-lines">${lines}</svg>
-    ${maps.map(m => {
-      const [x, y] = pos.get(m.id);
-      const { held, total, battles } = realmStats(m.id);
-      const claimed = held.reduce((s, [, n]) => s + n, 0);
-      return `<button class="realm-card${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px">
-        <span class="thumb" style="background-image:url('${asset(m.image)}')"></span>
-        <span class="name">${esc(m.name)}</span>
-        <span class="title">${esc(m.title ?? '')}</span>
-        <span class="control-bar">${held.map(([f, n]) => `<i style="--c:${faction(f).color};flex:${n}" title="${esc(faction(f).name)}: ${n}"></i>`).join('')}<i class="unclaimed" style="flex:${total - claimed}"></i></span>
-        <span class="meta">${held[0] ? `${esc(faction(held[0][0]).name)} lead` : 'Unclaimed'}${battles ? ` · ⚔${battles}` : ''}${m.placeholder ? ' · placeholder art' : ''}</span>
-      </button>`;
-    }).join('')}`;
+  const render = cardW => {
+    const cardH = cardW >= 140 ? cardW * 0.72 : cardW * 0.6;
+    const cy = top + (H - top) / 2;
+    const rx = Math.max(0, W / 2 - cardW / 2 - 10), ry = Math.max(0, (H - top) / 2 - cardH / 2 - 10);
+    const pos = new Map([[hub.id, [W / 2, cy]]]);
+    ring.forEach((m, k) => {
+      const a = -Math.PI / 2 + (k / ring.length) * Math.PI * 2;
+      pos.set(m.id, [W / 2 + rx * Math.cos(a), cy + ry * Math.sin(a)]);
+    });
+    const lines = [...pairs.values()].map(({ ma, mb, gates }) => {
+      const owners = new Set(gates.flatMap(g => [state.influence[g.a].owner, state.influence[g.b].owner]));
+      const holder = owners.size === 1 && [...owners][0] ? faction([...owners][0]) : null;
+      const [x1, y1] = pos.get(ma), [x2, y2] = pos.get(mb);
+      const title = gates.map(g => `${g.name}: ${NODES()[g.a].name} ↔ ${NODES()[g.b].name}`).join('\n');
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="${holder ? `stroke:${holder.color}` : ''}"
+        class="${holder ? 'held' : ''}" stroke-width="${1.5 + gates.length}"><title>${esc(title)}${holder ? `\nHeld by ${esc(holder.name)}` : ''}</title></line>`;
+    }).join('');
+    box.style.setProperty('--card-w', `${cardW}px`);
+    box.classList.toggle('compact', cardW < 140);
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="gate-lines">${lines}</svg>
+      ${maps.map(m => {
+        const [x, y] = pos.get(m.id);
+        const { held, total, battles } = realmStats(m.id);
+        const claimed = held.reduce((s, [, n]) => s + n, 0);
+        return `<button class="realm-card${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px">
+          <span class="thumb" style="background-image:url('${asset(m.image)}')"></span>
+          <span class="name">${esc(m.name)}</span>
+          <span class="title">${esc(m.title ?? '')}</span>
+          <span class="control-bar">${held.map(([f, n]) => `<i style="--c:${faction(f).color};flex:${n}" title="${esc(faction(f).name)}: ${n}"></i>`).join('')}<i class="unclaimed" style="flex:${total - claimed}"></i></span>
+          <span class="meta">${held[0] ? `${esc(faction(held[0][0]).name)} lead` : 'Unclaimed'}${battles ? ` · ⚔${battles}` : ''}</span>
+        </button>`;
+      }).join('')}`;
+  };
+
+  // Lay out, then measure: shrink the cards until none overlap or spill past the bar.
+  const overlaps = () => {
+    const r = [...box.querySelectorAll('.realm-card')].map(c => c.getBoundingClientRect());
+    const boxTop = box.getBoundingClientRect().top + top - 4;
+    if (r.some(c => c.top < boxTop)) return true;
+    for (let i = 0; i < r.length; i++) for (let j = i + 1; j < r.length; j++) {
+      const a = r[i], b = r[j];
+      if (a.left < b.right - 2 && b.left < a.right - 2 && a.top < b.bottom - 2 && b.top < a.bottom - 2) return true;
+    }
+    return false;
+  };
+  let cardW = Math.max(80, Math.min(190, W / 5.2));
+  render(cardW);
+  for (let tries = 0; tries < 8 && overlaps() && cardW > 56; tries++) render(cardW *= 0.88);
 }
 
 // Put one of the setting's maps under the camera (no redraw).
@@ -468,9 +484,33 @@ function showOverview() {
 
 // --- drawing ---------------------------------------------------------------
 
+// Phones have no hover, so a tapped region's quick stats and battles show here.
+const narrow = () => matchMedia('(max-width: 900px)').matches;
+function showPeek(i) {
+  const peek = $('#peek');
+  if (i == null || !narrow()) { peek.hidden = true; return; }
+  const n = NODES()[i];
+  const s = state.influence[i];
+  const events = upcoming().filter(e => e.node === n.id).sort((a, b) => a.day - b.day);
+  const last = gamesSoFar().filter(g => g.node === n.id).at(-1);
+  peek.innerHTML = `
+    <div class="head"><b>${esc(n.name)}</b> <span class="muted">${esc(multiMap() ? mapName(n.map) : n.region)}</span>
+      <button class="ghost close" data-peek-close aria-label="Close">×</button></div>
+    <p class="control">${controlLine(s)}</p>
+    ${influenceBars(s, 3)}
+    ${events.length ? `<ul>${events.map(e => `<li class="${sameDay(e.day, V().today) ? 'live' : ''}">
+      <span class="when">${sameDay(e.day, V().today) ? 'Tonight' : esc(ago(e.day))}</span>
+      ${army(e.players[0])} <span class="muted">vs</span> ${army(e.players[1])}</li>`).join('')}</ul>`
+      : last ? `<p class="small">Last battle: ${army(last.winner)} beat ${army(last.loser)}, ${ago(last.day)}</p>` : ''}
+    <div class="row"><button class="small primary" data-peek-details>Details ↓</button>
+      ${isToday() ? `<button class="small" data-challenge="${i}">⚔ Challenge</button>` : ''}</div>`;
+  peek.hidden = false;
+}
+
 function select(i) {
   state.selected = i;
   $('#tooltip').hidden = true;
+  showPeek(i);
   if (i == null) {
     mapView.unfocus();
     $('#back-btn').hidden = true;
@@ -490,6 +530,7 @@ function draw() {
   renderRealmBar();
   renderOverview();
   renderPanel();
+  showPeek(state.overview ? null : state.selected);
   const max = Math.max(1, Math.ceil(V().today));
   const scrub = $('#scrub');
   scrub.max = max;
@@ -893,6 +934,7 @@ const mapView = new MapView({
   onSelect: local => select(local == null ? null : toGlobal(local)),
   onGate: k => select(state.gateTargets[k]),
 });
+if (import.meta.env.DEV) window.__map = mapView; // for poking at the camera from devtools
 
 $('#scrub').addEventListener('input', e => {
   stopPlayback();
@@ -929,10 +971,12 @@ const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
+  if ('peekClose' in d) return select(null);
+  if ('peekDetails' in d) return $('#panel').scrollIntoView({ behavior: 'smooth' });
   if (d.realm) {
     if (d.realm === '__all') return showOverview();
     if (state.selected != null) select(null);

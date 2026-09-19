@@ -128,8 +128,9 @@ export class MapView {
           ${portals.map(g => `<button class="portal" data-gate="${g.k}" title="${esc(g.title)}">⟁ ${esc(g.label)}</button>`).join('')}
         </div>`;
       const pin = m.querySelector('.pin');
-      pin.addEventListener('pointerenter', e => this.onHover(i, e));
+      pin.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') this.onHover(i, e); });
       pin.addEventListener('pointerleave', () => this.onHover(null));
+      m.querySelector('.battle-badge').addEventListener('click', e => { e.stopPropagation(); this.onSelect(i); });
       pin.addEventListener('click', e => { e.stopPropagation(); this.onSelect(i); });
       m.querySelectorAll('.portal').forEach(b => b.addEventListener('click', e => {
         e.stopPropagation();
@@ -257,10 +258,18 @@ export class MapView {
 
   bindInput() {
     const vp = this.viewport;
+    const pointers = new Map(); // pointerId -> { x, y } for every finger or mouse button down on the map
     let drag = null;
+    let pinch = null;
     // While the all-realms overview is showing, the map underneath ignores input.
     const active = () => this.map && !vp.classList.contains('overview');
-    const chrome = '.tooltip, .realm-bar, .realms-overview, .map-controls, .back-btn';
+    const chrome = '.tooltip, .realm-bar, .realms-overview, .map-controls, .back-btn, .peek';
+    const local = e => { const r = vp.getBoundingClientRect(); return [e.x - r.left, e.y - r.top]; };
+    const twoFingers = () => {
+      const [a, b] = [...pointers.values()];
+      return { dist: Math.hypot(a.x - b.x, a.y - b.y), mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } };
+    };
+
     vp.addEventListener('wheel', e => {
       if (!active() || e.target.closest(chrome)) return;
       e.preventDefault();
@@ -269,13 +278,38 @@ export class MapView {
     }, { passive: false });
 
     vp.addEventListener('pointerdown', e => {
-      if (!active() || e.button !== 0 || e.target.closest(`button, ${chrome}`)) return;
-      drag = { x: e.clientX, y: e.clientY, vx: this.view.x, vy: this.view.y, moved: false };
+      if (!active() || (e.pointerType === 'mouse' && e.button !== 0) || e.target.closest(`button, ${chrome}`)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 2) {
+        // Second finger: stop dragging and pinch around the two fingers' midpoint.
+        drag = null;
+        if (this.focus != null) this.unfocus();
+        const { dist, mid } = twoFingers();
+        const [mx, my] = local(mid);
+        pinch = { dist, mx, my, view: { ...this.view } };
+        vp.classList.add('dragging');
+        this.onHover(null);
+      } else if (pointers.size === 1) {
+        drag = { x: e.clientX, y: e.clientY, vx: this.view.x, vy: this.view.y, moved: false };
+      }
     });
+
     window.addEventListener('pointermove', e => {
+      if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch && pointers.size >= 2) {
+        const { dist, mid } = twoFingers();
+        const [mx, my] = local(mid);
+        const v = pinch.view;
+        const k = Math.max(this.minK, Math.min(4, v.k * dist / pinch.dist));
+        // Keep the map point that started under the fingers under them as they move.
+        const wx = (pinch.mx - v.x) / v.k, wy = (pinch.my - v.y) / v.k;
+        this.view = { k, x: mx - wx * k, y: my - wy * k };
+        this.applySoon();
+        return;
+      }
       if (drag) {
         const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-        if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+        if (!drag.moved && Math.hypot(dx, dy) < 6) return;
         if (!drag.moved) {
           drag.moved = true;
           if (this.focus != null) { this.unfocus(); drag.vx = this.view.x; drag.vy = this.view.y; }
@@ -285,21 +319,32 @@ export class MapView {
         this.applySoon();
         return;
       }
-      if (active() && this.focus == null && e.target instanceof Element
+      // Hover tooltips are for mice; a finger tap selects instead.
+      if (e.pointerType !== 'touch' && active() && this.focus == null && e.target instanceof Element
         && e.target.closest('.viewport') === vp && !e.target.closest(`.pin, button, ${chrome}`)) {
         this.onHover(this.nodeAt(e.clientX, e.clientY), e);
       }
     });
-    window.addEventListener('pointerup', e => {
+
+    const release = e => {
+      if (!pointers.delete(e.pointerId)) return;
+      if (pinch) {
+        // Ending a pinch never counts as a tap; the remaining finger can't start a drag either.
+        if (pointers.size < 2) { pinch = null; drag = null; }
+        if (pointers.size === 0) vp.classList.remove('dragging');
+        return;
+      }
       if (!drag) return;
-      const wasClick = !drag.moved;
+      const wasClick = !drag.moved && e.type === 'pointerup';
       drag = null;
       vp.classList.remove('dragging');
       if (!wasClick || e.target.closest('button')) return;
       if (this.focus != null) { this.onSelect(null); return; }
       const i = this.nodeAt(e.clientX, e.clientY);
       if (i != null) this.onSelect(i);
-    });
-    vp.addEventListener('pointerleave', () => this.onHover(null));
+    };
+    window.addEventListener('pointerup', release);
+    window.addEventListener('pointercancel', release);
+    vp.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') this.onHover(null); });
   }
 }

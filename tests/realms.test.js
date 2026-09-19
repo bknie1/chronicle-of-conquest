@@ -72,3 +72,26 @@ test('every setting has a working demo', () => {
     for (const e of DEMOS[s.id].events) assert.ok(g.index.has(e.node), `${s.id}: event at ${e.node} exists`);
   }
 });
+
+test('every map is one connected piece, so every region can be fought over', () => {
+  for (const s of Object.values(SETTINGS)) {
+    const g = buildSettingGraph(s);
+    for (const [id, { map, offset }] of g.maps) {
+      // Only links inside this map count here; gates are checked separately.
+      const inMap = i => i >= offset && i < offset + map.nodes.length;
+      const seen = new Set([offset]);
+      const queue = [offset];
+      while (queue.length) for (const j of g.adj[queue.shift()]) if (inMap(j) && !seen.has(j)) { seen.add(j); queue.push(j); }
+      const stranded = map.nodes.filter((_, k) => !seen.has(offset + k)).map(n => n.id);
+      assert.deepEqual(stranded, [], `${s.id}/${id}: cut off from the rest of the map`);
+    }
+  }
+});
+
+test('every faction has a distinct home', () => {
+  for (const s of Object.values(SETTINGS)) {
+    const homes = s.factions.map(f => f.home);
+    assert.equal(new Set(homes).size, homes.length, `${s.id}: two factions share a home`);
+    assert.equal(new Set(s.factions.map(f => f.id)).size, s.factions.length, `${s.id}: duplicate faction id`);
+  }
+});

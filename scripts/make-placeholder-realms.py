@@ -7,8 +7,7 @@ its named locations on land, writing:
 
 Re-running regenerates both; positions are deterministic per realm. Once a realm
 has real art, drop it from REALMS here and place its points in the map editor.
-Aqshy already uses real art (see src/data/maps/aqshy.js), so it isn't here.
-Regenerating overwrites any edits made in the map editor to these realms.
+Regenerating moves points back to generated spots, but keeps link overrides.
 
     python scripts/make-placeholder-realms.py
 """
@@ -26,47 +25,78 @@ FONT = 'C:/Windows/Fonts/georgiab.ttf' if os.name == 'nt' else 'DejaVuSerif-Bold
 FONT_ITALIC = 'C:/Windows/Fonts/georgiai.ttf' if os.name == 'nt' else 'DejaVuSerif-Italic.ttf'
 
 # id, title, sea, land low, land high, seed, [(point id, name)]
+# Point ids are referenced by faction homes, realmgates and campaign history:
+# never rename or remove one. Add new names at the END of a list, so the
+# points already placed keep their positions.
 REALMS = [
+    ('aqshy', 'Aqshy · The Realm of Fire', '#2a1410', '#a0482a', '#f0b070', 7, [
+        ('hammerhal-aqsha', 'Hammerhal Aqsha'), ('anvilgard', 'Anvilgard'), ('hallowhart', 'Hallowhart'),
+        ('edassa', 'Edassa'), ('anvalor', 'Anvalor'), ('aridian', 'Aridian'), ('vostargi-mont', 'Vostargi Mont'),
+        ('capilaria', 'Capilaria'), ('ruins-of-ahramentia', 'Ruins of Ahramentia'), ('tempests-eye', "Tempest's Eye"),
+        ('steel-spike', 'Steel Spike'), ('khuls-ravage', "Khul's Ravage"), ('brimstone-peninsula', 'Brimstone Peninsula'),
+        ('mordacious-sound', 'Mordacious Sound'), ('the-eye', 'The Eye'), ('sulphuria', 'Sulphuria'),
+        ('hel-crown', 'Hel Crown'), ('thousand-eyes', 'Coast of a Thousand Eyes'), ('broken-keys', 'The Broken Keys'),
+        ('magmar-fjords', 'Magmar Fjords'), ('golvaria', 'Golvaria'), ('vitrolia', 'Vitrolia'), ('lumnos', 'Lumnos'),
+        ('brightspear', 'Brightspear'), ('aspiria', 'Aspiria'), ('bataar', 'Bataar'), ('floating-city', 'The Floating City'),
+        ('cotha', 'Cotha'), ('the-gnaw', 'The Gnaw'),
+    ]),
     ('ghyran', 'Ghyran · The Realm of Life', '#1d3a30', '#55803c', '#c8d98c', 11, [
         ('hammerhal-ghyra', 'Hammerhal Ghyra'), ('athelwyrd', 'The Athelwyrd'), ('verdia', 'Verdia'),
         ('thyria', 'Thyria'), ('jadewound', 'The Jadewound'), ('everdusk', 'Everdusk'),
-        ('living-city', 'The Living City'), ('blight-city', 'Blight City'), ('gnarlwood', 'Gnarlwood'),
+        ('living-city', 'The Living City'), ('gnarlwood', 'Gnarlwood'), ('phoenicium', 'Phoenicium'),
+        ('greywater-fastness', 'Greywater Fastness'), ('rotwater-blight', 'The Rotwater Blight'), ('quogmia', 'Quogmia'),
     ]),
     ('ghur', 'Ghur · The Realm of Beasts', '#33261a', '#9a6a37', '#e3c48e', 23, [
         ('excelsis', 'Excelsis'), ('thondia', 'Thondia'), ('izalend', 'Izalend'), ('beastgrave', 'Beastgrave'),
         ('gallet', 'Gallet'), ('andtor', 'Andtor'), ('coast-of-tusks', 'Coast of Tusks'), ('maw-of-ghur', 'The Maw of Ghur'),
+        ('great-gutfort', 'The Great Gutfort'), ('vanderhal', 'Vanderhal'), ('krondskol', 'Krondskol'),
+        ('amber-steppes', 'The Amber Steppes'), ('crawling-city', 'The Crawling City'), ('rondhol', 'Rondhol'),
+        ('anvil-of-hashut', 'The Anvil of Hashut'),
     ]),
     ('shyish', 'Shyish · The Realm of Death', '#18141f', '#5f5872', '#c6bfd4', 37, [
         ('nagashizzar', 'Nagashizzar'), ('glymmsforge', 'Glymmsforge'), ('prime-innerlands', 'The Prime Innerlands'),
         ('stygxx', 'Stygxx'), ('carstinia', 'Carstinia'), ('ossia', 'Ossia'), ('shyish-nadir', 'The Shyish Nadir'),
-        ('sadmoor', 'The Sadmoor'),
+        ('sadmoor', 'The Sadmoor'), ('nulahmia', 'Nulahmia'), ('sylontum', 'Sylontum'), ('gothizzar', 'Gothizzar'),
+        ('morgaunt', 'Morgaunt'), ('amethyst-princedoms', 'The Amethyst Princedoms'),
     ]),
     ('chamon', 'Chamon · The Realm of Metal', '#2a2317', '#9c7f34', '#f1dc8e', 41, [
         ('barak-nar', 'Barak-Nar'), ('barak-zon', 'Barak-Zon'), ('barak-thryng', 'Barak-Thryng'),
         ('spiral-crux', 'The Spiral Crux'), ('elixia', 'Elixia'), ('argentine', 'Argentine'), ('molten-vale', 'The Molten Vale'),
+        ('prosperis', 'Prosperis'), ('anvrok', 'The Hanging Valleys of Anvrok'), ('golgeth', 'Golgeth'),
+        ('ayadah', 'Ayadah'), ('eldritch-fortress', 'The Eldritch Fortress'),
     ]),
     ('ulgu', 'Ulgu · The Realm of Shadow', '#0e1317', '#3b4750', '#8f9ba4', 53, [
         ('hagg-nar', 'Hagg Nar'), ('barak-mhornar', 'Barak-Mhornar'), ('misthavn', 'Misthåvn'),
         ('mirrorshade', 'Mirrorshade Isles'), ('ashen-veil', 'The Ashen Veil'), ('dolorous-fens', 'Dolorous Fens'),
-        ('umbral-reach', 'The Umbral Reach'),
+        ('umbral-reach', 'The Umbral Reach'), ('ulguroth', 'Ulguroth'), ('va-leth', 'Va-Leth'), ('klarondu', 'Klarondu'),
+        ('caizan', 'Caizan'), ('uhl-gysh', 'Uhl-Gysh, the Hidden Gloaming'), ('morladron', 'Morladron'),
     ]),
     ('hysh', 'Hysh · The Realm of Light', '#8fa9bd', '#e6dcc0', '#fffaf0', 67, [
         ('xintil', 'Xintil'), ('ymetrica', 'Ymetrica'), ('iliatha', 'Iliatha'), ('syar', 'Syar'),
         ('zaitrec', 'Zaitrec'), ('alumnia', 'Alumnia'), ('mirrorlight-peaks', 'Mirrorlight Peaks'),
+        ('haixiah', 'Haixiah'), ('helon', 'Helon'),
     ]),
     ('azyr', 'Azyr · The Celestial Realm', '#0b1433', '#3d5ca3', '#b3c9f5', 71, [
         ('azyrheim', 'Azyrheim'), ('sigmaron', 'Sigmaron'), ('gates-of-azyr', 'The Gates of Azyr'),
         ('celestial-forges', 'The Celestial Forges'), ('azyrite-watch', 'The Azyrite Watch'),
+        ('sigmarabulum', 'The Sigmarabulum'), ('highheim', 'Highheim'), ('perspicarium', 'The Perspicarium'),
+        ('starhold', 'Starhold'), ('skydock', 'The Skydock'),
+    ]),
+    # A hidden sub-realm between the realms; gnawholes break out into them.
+    ('blight-city', 'Blight City · The Hidden Sub-realm', '#141a0e', '#4e5a2a', '#9aa84a', 97, [
+        ('blight-city', 'Blight City'), ('skryre-forges', 'The Skryre Forges'), ('pestilens-pits', 'The Pestilens Plague-pits'),
+        ('moulder-fleshpits', 'The Moulder Fleshpits'), ('eshin-shadows', 'The Eshin Shadow-warrens'),
+        ('verminus-barracks', 'The Verminus Barracks'),
     ]),
 ]
 
 # The Eightpoints is drawn as a hub: the Varanspire in the middle, an Arcway to each realm around it.
 EIGHTPOINTS = ('eightpoints', 'The Eightpoints · Realm of Ruin', '#1a0c0b', '#5a2a22', '#b0705a', 83,
-               [('varanspire', 'The Varanspire')], [
-                   ('arcway-fire', 'Arcway of Fire'), ('arcway-life', 'Arcway of Life'),
-                   ('arcway-beasts', 'Arcway of Beasts'), ('arcway-death', 'Arcway of Death'),
-                   ('arcway-metal', 'Arcway of Metal'), ('arcway-shadow', 'Arcway of Shadow'),
-                   ('arcway-light', 'Arcway of Light'), ('arcway-heavens', 'The Sealed Arcway'),
+               [('varanspire', 'The Varanspire'), ('carngrad', 'Carngrad'), ('flayhaunt', 'Flayhaunt')], [
+                   ('arcway-fire', 'The Brimfire Gate'), ('arcway-life', 'The Genesis Gate'),
+                   ('arcway-beasts', 'The Mawgate'), ('arcway-death', 'The Endgate'),
+                   ('arcway-metal', 'The Mercurial Gate'), ('arcway-shadow', 'The Penumbral Gate'),
+                   ('arcway-light', 'The Arcway of Hysh'), ('arcway-heavens', 'The Meteoric Gate (sealed)'),
                ])
 
 
@@ -127,9 +157,6 @@ def render(realm_id, title, sea, low, high, elevation, land, rng, stars=False):
     tw = d.textlength(title.upper(), font=font)
     d.rectangle((W / 2 - tw / 2 - 24, 40, W / 2 + tw / 2 + 24, 104), fill=(24, 18, 12), outline=(200, 170, 110), width=2)
     d.text((W / 2 - tw / 2, 48), title.upper(), font=font, fill=(240, 215, 150))
-    small = ImageFont.truetype(FONT_ITALIC, 20)
-    note = 'Placeholder map · replace with real art'
-    d.text((W - 40 - d.textlength(note, font=small), H - 58), note, font=small, fill=(230, 220, 200))
     out = os.path.join(ROOT, 'public', 'maps', 'realms', f'{realm_id}.jpg')
     im.save(out, quality=84, optimize=True, progressive=True)
     return out
@@ -149,18 +176,33 @@ def place_points(land, rng, count, min_dist=170, margin=110):
     raise SystemExit(f'Could not fit {count} points on the landmass')
 
 
+def existing_links(path):
+    """Forced/blocked links someone added in the map editor survive regeneration."""
+    try:
+        text = open(path, encoding='utf-8').read()
+        body = json.loads(text[text.index('export default ') + len('export default '):].strip().rstrip(';'))
+        return body.get('extraLinks', []), body.get('blockedLinks', [])
+    except (OSError, ValueError):
+        return [], []
+
+
 def write_def(realm_id, title, points, named):
     name = title.split(' · ')[0]
     nodes = [{'id': pid, 'name': pname, 'region': name, 'x': int(x), 'y': int(y)}
              for (pid, pname), (x, y) in zip(named, points)]
+    path = os.path.join(ROOT, 'src', 'data', 'maps', f'{realm_id}.js')
+    extra, blocked = existing_links(path)
+    ids = {n['id'] for n in nodes}
+    keep = lambda pairs: [p for p in pairs if p[0] in ids and p[1] in ids]
+    dense = len(nodes) > 11
     body = {
         'id': realm_id, 'name': name, 'title': title.split(' · ')[1], 'image': f'/maps/realms/{realm_id}.jpg',
-        'width': W, 'height': H, 'maxEdge': 420, 'reach': 130, 'placeholder': True, 'nodes': nodes,
+        'width': W, 'height': H, 'maxEdge': 360 if dense else 420, 'reach': 115 if dense else 130, 'nodes': nodes,
+        'extraLinks': keep(extra), 'blockedLinks': keep(blocked),
     }
-    path = os.path.join(ROOT, 'src', 'data', 'maps', f'{realm_id}.js')
     with open(path, 'w', encoding='utf-8') as f:
-        f.write('// Generated by scripts/make-placeholder-realms.py. Placeholder art: points sit on the\n')
-        f.write('// generated landmass. Replace the image and re-place points in the map editor.\n')
+        f.write('// Generated by scripts/make-placeholder-realms.py. Points sit on the generated\n')
+        f.write('// landmass; move them in the map editor if you like.\n')
         f.write(f'export default {json.dumps(body, indent=2, ensure_ascii=False)};\n')
     return path
 
@@ -184,7 +226,8 @@ def main():
     ring = [(W / 2 + 360 * math.cos(a), H / 2 + 360 / 1.35 * math.sin(a))
             for a in (i * math.tau / 8 - math.pi / 2 for i in range(8))]
     print(render(realm_id, title, sea, low, high, elevation, land, rng))
-    print(write_def(realm_id, title, [(W / 2, H / 2)] + ring, centre + arcways))
+    inner = [(W / 2 - 170, H / 2 + 45), (W / 2 + 170, H / 2 - 45)]   # settlements beside the Varanspire
+    print(write_def(realm_id, title, [(W / 2, H / 2)] + inner + ring, centre + arcways))
 
 
 if __name__ == '__main__':

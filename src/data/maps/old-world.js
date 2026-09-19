@@ -29,7 +29,7 @@ export default {
     {
       "id": "orcs",
       "name": "Orc & Goblin Tribes",
-      "color": "#3f9e3a",
+      "color": "#7cb342",
       "home": "black-crag"
     },
     {
@@ -41,7 +41,7 @@ export default {
     {
       "id": "wood-elves",
       "name": "Wood Elf Realms",
-      "color": "#12a595",
+      "color": "#2e7d32",
       "home": "athel-loren"
     },
     {
@@ -59,13 +59,13 @@ export default {
     {
       "id": "high-elves",
       "name": "High Elves",
-      "color": "#9fa8da",
+      "color": "#b0bec5",
       "home": "marienburg"
     },
     {
       "id": "cathay",
       "name": "Grand Cathay",
-      "color": "#e91e63",
+      "color": "#ad1457",
       "home": "cathay-road"
     },
     {
@@ -79,6 +79,42 @@ export default {
       "name": "Skaven",
       "color": "#8b5a2b",
       "home": "skavenblight"
+    },
+    {
+      "id": "beastmen",
+      "name": "Beastmen Brayherds",
+      "color": "#a1887f",
+      "home": "drakwald"
+    },
+    {
+      "id": "tomb-kings",
+      "name": "Tomb Kings of Khemri",
+      "color": "#d7b97f",
+      "home": "nehekhara-road"
+    },
+    {
+      "id": "ogres",
+      "name": "Ogre Kingdoms",
+      "color": "#ff8a65",
+      "home": "mountains-of-mourn"
+    },
+    {
+      "id": "dark-elves",
+      "name": "Dark Elves",
+      "color": "#1a237e",
+      "home": "black-ark"
+    },
+    {
+      "id": "lizardmen",
+      "name": "Lizardmen",
+      "color": "#26a69a",
+      "home": "lustrian-landing"
+    },
+    {
+      "id": "daemons",
+      "name": "Daemons of Chaos",
+      "color": "#e040fb",
+      "home": "chaos-rift"
     }
   ],
   "nodes": [
@@ -494,8 +530,55 @@ export default {
       "region": "Road to Cathay",
       "x": 1950,
       "y": 1360
+    },
+    {
+      "id": "drakwald",
+      "name": "The Drakwald",
+      "region": "Middenland",
+      "x": 845,
+      "y": 860
+    },
+    {
+      "id": "nehekhara-road",
+      "name": "Road to Nehekhara",
+      "region": "Land of the Dead",
+      "x": 1480,
+      "y": 1955
+    },
+    {
+      "id": "mountains-of-mourn",
+      "name": "Mountains of Mourn",
+      "region": "Ogre Kingdoms",
+      "x": 1960,
+      "y": 1770
+    },
+    {
+      "id": "black-ark",
+      "name": "The Black Ark Harbinger",
+      "region": "The Great Ocean",
+      "x": 180,
+      "y": 1250
+    },
+    {
+      "id": "lustrian-landing",
+      "name": "Lustrian Landing",
+      "region": "The Great Ocean",
+      "x": 130,
+      "y": 1620
+    },
+    {
+      "id": "chaos-rift",
+      "name": "The Northern Chaos Gate",
+      "region": "Northern Wastes",
+      "x": 1650,
+      "y": 85
     }
   ],
-  "extraLinks": [],
+  "extraLinks": [
+    [
+      "norsca-heart",
+      "norsca-east"
+    ]
+  ],
   "blockedLinks": []
 };

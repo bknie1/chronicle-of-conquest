@@ -32,7 +32,7 @@ Territory is never stored. It is recalculated from the log of confirmed games, w
 
 Each realm is its own map, and **realmgates** join a point in one realm to a point in another. Influence crosses a gate exactly as it crosses a border, so a win at Hammerhal Aqsha is felt in Hammerhal Ghyra through the Stormrift Realmgate. **All realms** shows every realm around the Eightpoints, with a line for each set of gates, coloured when one faction holds both ends. Click a portal badge (⟁) on the map to travel through a gate.
 
-Aqshy uses Jared Blando's Great Parch map. The other realms use **generated placeholder maps** (`scripts/make-placeholder-realms.py`, which needs Python with numpy and Pillow) until real art is found; see [docs/map-sources.md](docs/map-sources.md) for candidates. Factions, homes and gates are in `src/data/mortal-realms.js`.
+Every realm uses a **generated map** (`scripts/make-placeholder-realms.py`, which needs Python with numpy and Pillow), plain on purpose so the app's own labels read clearly. **Blight City** is a hidden sub-realm the Skaven reach through **gnawholes**. See [docs/map-sources.md](docs/map-sources.md). Factions, homes and gates are in `src/data/mortal-realms.js`.
 
 ## Running it
 
@@ -96,4 +96,4 @@ Every map is a self-contained module in `src/data/maps/` listed in `src/data/map
 
 ## Credits
 
-Map art: *The Old World* colour map, the Gitzman Old World campaign map (gitzmansgallery.com), Jared Blando's *Great Parch* map, and the Horus Heresy and 40k galaxy maps. See [docs/map-sources.md](docs/map-sources.md). Some are fan works and some are official Games Workshop art: ask the artists (and GW) before any public deployment, and credit them. Warhammer and its settings are trademarks of Games Workshop. This is an unofficial fan project.
+Map art: *The Old World* colour map, the Gitzman Old World campaign map (gitzmansgallery.com), and the Horus Heresy and 40k galaxy maps. See [docs/map-sources.md](docs/map-sources.md). Some are fan works and some are official Games Workshop art: ask the artists (and GW) before any public deployment, and credit them. Warhammer and its settings are trademarks of Games Workshop. This is an unofficial fan project.
