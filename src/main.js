@@ -10,7 +10,6 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};
 
 // A static build (GitHub Pages) has no server: demos only, no accounts or campaigns.
 const STATIC = import.meta.env.VITE_STATIC === '1';
-const REPO_URL = import.meta.env.VITE_REPO_URL || '';
 // Where the app is served from: '/' locally, '/<repo>/' on GitHub Pages.
 const BASE = import.meta.env.BASE_URL;
 const asset = path => BASE + path.replace(/^\//, '');
@@ -224,8 +223,7 @@ function campaignHeader() {
     return `<div class="callout">
       <b>This is a demo.</b> The players are a made-up store. Try reporting a result, issuing a challenge or
       replaying the timeline. Nothing you do here is saved.
-      <p class="small muted">Accounts, join codes and real campaigns need the full app running on a server.
-      ${REPO_URL ? `See <a href="${esc(REPO_URL)}" target="_blank" rel="noopener">the project on GitHub</a>.` : ''}</p>
+      <p class="small muted">Accounts, join codes and real campaigns need the full app running on a server.</p>
     </div>`;
   }
   if (v.kind === 'demo') {

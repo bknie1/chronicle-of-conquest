@@ -32,7 +32,6 @@ jobs:
         env:
           VITE_STATIC: '1'
           BASE_PATH: /${{ github.event.repository.name }}/
-          VITE_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
       # Pages has no server to send deep links like /demo/warhammer-40k back to
       # the app; it serves 404.html instead, so make that the app too.
       - run: cp dist/index.html dist/404.html
