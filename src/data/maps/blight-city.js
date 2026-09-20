@@ -3,6 +3,7 @@
 export default {
   "id": "blight-city",
   "name": "Blight City",
+  "kind": "warren",
   "title": "The Hidden Sub-realm",
   "image": "/maps/realms/blight-city.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "blight-city",
       "name": "Blight City",
+      "kind": "warren",
       "region": "Blight City",
       "x": 993,
       "y": 477
@@ -20,6 +22,7 @@ export default {
     {
       "id": "skryre-forges",
       "name": "The Skryre Forges",
+      "kind": "warren",
       "region": "Blight City",
       "x": 1183,
       "y": 668
@@ -27,6 +30,7 @@ export default {
     {
       "id": "pestilens-pits",
       "name": "The Pestilens Plague-pits",
+      "kind": "warren",
       "region": "Blight City",
       "x": 135,
       "y": 554
@@ -34,6 +38,7 @@ export default {
     {
       "id": "moulder-fleshpits",
       "name": "The Moulder Fleshpits",
+      "kind": "warren",
       "region": "Blight City",
       "x": 1016,
       "y": 801
@@ -41,6 +46,7 @@ export default {
     {
       "id": "eshin-shadows",
       "name": "The Eshin Shadow-warrens",
+      "kind": "warren",
       "region": "Blight City",
       "x": 754,
       "y": 459
@@ -48,6 +54,7 @@ export default {
     {
       "id": "verminus-barracks",
       "name": "The Verminus Barracks",
+      "kind": "warren",
       "region": "Blight City",
       "x": 805,
       "y": 689

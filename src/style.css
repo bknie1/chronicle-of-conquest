@@ -123,8 +123,8 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 .world svg.territory { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* No blend mode: multiply forced the whole map layer to re-blend on every repaint. */
 .cell { transition: fill-opacity .5s, fill .5s; }
-.roads line { stroke: #3b2a17; stroke-opacity: .28; stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
-.territory.has-lit .roads line { stroke-opacity: .12; }
+.roads line { stroke: #2a1c0e; stroke-opacity: .55; stroke-width: 2.4; stroke-dasharray: 3 6; stroke-linecap: round; }
+.territory.has-lit .roads line { stroke-opacity: .22; }
 .roads line.lit { stroke: var(--gold-2); stroke-opacity: .95; stroke-width: 4; stroke-dasharray: none; filter: drop-shadow(0 0 3px #000); }
 .borders line { stroke: #1c120a; stroke-opacity: .8; stroke-width: 3.5; stroke-linecap: round; }
 .borders line.contested { stroke-dasharray: 10 8; }
@@ -161,9 +161,20 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 .viewport.far .marker:not(.home, .has-events, .selected) .label { display: none; }
 .viewport.mid .marker.minor:not(.home, .has-events, .selected) .label { display: none; }
 .viewport.no-labels .marker:not(.selected) .label { display: none; }
-/* Markers by kind: hives and cities loom, forges are square, fortresses
-   diamond, water plants small, sites and regions lighter. */
-.marker[data-kind="hive"] .pin, .marker[data-kind="city"] .pin { width: 18px; height: 18px; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
+/* Markers say what a place is: a great city looms, a stronghold is a
+   diamond, a port a square, wilds a dashed ring, a village a small dot. */
+.marker[data-kind="hive"] .pin, .marker[data-kind="city"] .pin { width: 19px; height: 19px; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
+.marker[data-kind="stronghold"] .pin, .marker[data-kind="castle"] .pin { width: 15px; height: 15px; border-radius: 2px; transform: rotate(45deg); }
+.marker[data-kind="port"] .pin { border-radius: 2px; width: 15px; height: 12px; }
+.marker[data-kind="temple"] .pin { clip-path: polygon(50% 0, 100% 78%, 0 78%); border-radius: 0; width: 16px; height: 15px; }
+.marker[data-kind="town"] .pin { width: 12px; height: 12px; border-radius: 3px; }
+.marker[data-kind="settlement"] .pin { width: 11px; height: 11px; }
+.marker[data-kind="camp"] .pin, .marker[data-kind="warren"] .pin { clip-path: polygon(50% 100%, 100% 0, 0 0); border-radius: 0; width: 14px; height: 13px; }
+.marker[data-kind="glade"] .pin { border-radius: 50% 50% 50% 0; transform: rotate(-45deg); width: 13px; height: 13px; }
+.marker[data-kind="ruin"] .pin { border-radius: 2px; opacity: .8; width: 12px; height: 9px; }
+.marker[data-kind="wilds"] .pin { background: transparent; border: 2px dashed var(--faction); box-shadow: none; width: 13px; height: 13px; }
+.marker[data-kind="wilds"]:not(.owned) .pin { border-color: #d9ccb0; }
+.marker[data-kind="wilds"] .label { font-weight: 400; font-style: italic; opacity: .9; }
 .marker[data-kind="forge"] .pin { border-radius: 2px; }
 .marker[data-kind="fortress"] .pin { border-radius: 2px; transform: rotate(45deg); width: 12px; height: 12px; }
 .marker[data-kind="plant"] .pin { width: 10px; height: 10px; }

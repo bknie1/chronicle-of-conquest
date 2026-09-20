@@ -3,6 +3,7 @@
 export default {
   "id": "eightpoints",
   "name": "The Eightpoints",
+  "kind": "settlement",
   "title": "Realm of Ruin",
   "image": "/maps/realms/eightpoints.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "varanspire",
       "name": "The Varanspire",
+      "kind": "fortress",
       "region": "The Eightpoints",
       "x": 800,
       "y": 550
@@ -20,6 +22,7 @@ export default {
     {
       "id": "carngrad",
       "name": "Carngrad",
+      "kind": "fortress",
       "region": "The Eightpoints",
       "x": 630,
       "y": 595
@@ -27,6 +30,7 @@ export default {
     {
       "id": "flayhaunt",
       "name": "Flayhaunt",
+      "kind": "fortress",
       "region": "The Eightpoints",
       "x": 970,
       "y": 505
@@ -34,6 +38,7 @@ export default {
     {
       "id": "arcway-fire",
       "name": "The Brimfire Gate",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 800,
       "y": 283
@@ -41,6 +46,7 @@ export default {
     {
       "id": "arcway-life",
       "name": "The Genesis Gate",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 1054,
       "y": 361
@@ -48,6 +54,7 @@ export default {
     {
       "id": "arcway-beasts",
       "name": "The Mawgate",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 1160,
       "y": 550
@@ -55,6 +62,7 @@ export default {
     {
       "id": "arcway-death",
       "name": "The Endgate",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 1054,
       "y": 738
@@ -62,6 +70,7 @@ export default {
     {
       "id": "arcway-metal",
       "name": "The Mercurial Gate",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 800,
       "y": 816
@@ -69,6 +78,7 @@ export default {
     {
       "id": "arcway-shadow",
       "name": "The Penumbral Gate",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 545,
       "y": 738
@@ -76,6 +86,7 @@ export default {
     {
       "id": "arcway-light",
       "name": "The Arcway of Hysh",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 440,
       "y": 550
@@ -83,6 +94,7 @@ export default {
     {
       "id": "arcway-heavens",
       "name": "The Meteoric Gate (sealed)",
+      "kind": "settlement",
       "region": "The Eightpoints",
       "x": 545,
       "y": 361
@@ -90,6 +102,7 @@ export default {
     {
       "id": "skarrgrim",
       "name": "Skarrgrim",
+      "kind": "fortress",
       "region": "The Eightpoints",
       "x": 680,
       "y": 680

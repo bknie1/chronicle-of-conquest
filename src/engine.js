@@ -11,6 +11,10 @@ export const RULES = {
   // A starting ground other than a faction's seat is very hard to take rather
   // than impossible: about six recent wins will shift it.
   startingGround: [60, 10, 3],
+  // Every seat a faction is written as holding shows as theirs before a shot
+  // is fired — a City of Sigmar reads as a City of Sigmar — but two good wins
+  // take it. Without this the map at rest shows only who happens to be there.
+  claim: [18, 3, 1],
   controlThreshold: 8, // below this, a region is unclaimed
   contestedRatio: 0.75, // runner-up within 75% of the leader = contested
   fadingDays: 21,      // players idle this long are marked as fading
@@ -157,7 +161,7 @@ export function shortestPath(adj, from, to) {
 // a strong but beatable claim there; the same ground counts once per faction.
 // `decrees` are a gamemaster's hand on the map — [{ faction, point, amount }],
 // an invasion or a correction — and do not decay: they hold until revoked.
-export function computeInfluence({ graph, nodes, factions, games, at, footholds = [], decrees = [] }) {
+export function computeInfluence({ graph, nodes, factions, games, at, footholds = [], claims = [], decrees = [] }) {
   const scores = nodes.map(() => new Map());
   const add = (i, f, v) => scores[i].set(f, (scores[i].get(f) || 0) + v);
   const homeOf = new Map();
@@ -166,6 +170,15 @@ export function computeInfluence({ graph, nodes, factions, games, at, footholds 
     const h = nodes.findIndex(n => n.id === f.home);
     homeOf.set(h, f.id);
     for (const [j, d] of graph.hops(h)) add(j, f.id, RULES.home[d]);
+  }
+
+  // The places each faction is written as holding, before anyone musters.
+  const staked = new Set();
+  for (const { faction, point } of claims) {
+    const i = nodes.findIndex(n => n.id === point);
+    if (i < 0 || homeOf.has(i) || staked.has(`${faction}@${point}`)) continue;
+    staked.add(`${faction}@${point}`);
+    for (const [j, d] of graph.hops(i)) add(j, faction, RULES.claim[d]);
   }
 
   const claimed = new Set();

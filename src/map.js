@@ -16,7 +16,7 @@ const FOCUS_ZOOM = 3.2; // relative to the fit-to-screen zoom
 // Kinds whose labels only appear once you are fairly close in. Maps that do
 // not say what a point is get a guess from its name: a range or a forest is
 // scenery, a town is a town.
-const MINOR_KINDS = new Set(['forge', 'plant', 'site', 'fortress', 'region', 'hamlet', 'mine']);
+const MINOR_KINDS = new Set(['forge', 'plant', 'site', 'region', 'hamlet', 'mine', 'wilds', 'camp', 'ruin', 'glade', 'settlement']);
 const SCENERY = /\b(Mountains?|Forest|Pass|Coast(line)?|Wastes?|Plains?|Marsh(es)?|Hills|Desert|Jungles?|Isles?|Road|Valley|Steppes?|Lands|Peaks|Ridge|Glacier|Wood|Swamps?|Bay|River|Delta|Gap|Wilds|Fjords?|Country|Reach|Straits?)\b/;
 const isMinor = n => (n.kind ? MINOR_KINDS.has(n.kind) : SCENERY.test(n.name));
 

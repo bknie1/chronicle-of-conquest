@@ -3,6 +3,7 @@
 export default {
   "id": "ulgu",
   "name": "Ulgu",
+  "kind": "settlement",
   "title": "The Realm of Shadow",
   "image": "/maps/realms/ulgu.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "hagg-nar",
       "name": "Hagg Nar",
+      "kind": "temple",
       "region": "Ulgu",
       "x": 542,
       "y": 232
@@ -20,6 +22,7 @@ export default {
     {
       "id": "barak-mhornar",
       "name": "Barak-Mhornar",
+      "kind": "port",
       "region": "Ulgu",
       "x": 613,
       "y": 641
@@ -27,6 +30,7 @@ export default {
     {
       "id": "misthavn",
       "name": "Misthåvn",
+      "kind": "port",
       "region": "Ulgu",
       "x": 1058,
       "y": 782
@@ -34,6 +38,7 @@ export default {
     {
       "id": "mirrorshade",
       "name": "Mirrorshade Isles",
+      "kind": "temple",
       "region": "Ulgu",
       "x": 501,
       "y": 427
@@ -41,6 +46,7 @@ export default {
     {
       "id": "ashen-veil",
       "name": "The Ashen Veil",
+      "kind": "temple",
       "region": "Ulgu",
       "x": 1018,
       "y": 390
@@ -48,6 +54,7 @@ export default {
     {
       "id": "dolorous-fens",
       "name": "Dolorous Fens",
+      "kind": "temple",
       "region": "Ulgu",
       "x": 694,
       "y": 355
@@ -55,6 +62,7 @@ export default {
     {
       "id": "umbral-reach",
       "name": "The Umbral Reach",
+      "kind": "temple",
       "region": "Ulgu",
       "x": 1246,
       "y": 449
@@ -62,6 +70,7 @@ export default {
     {
       "id": "ulguroth",
       "name": "Ulguroth",
+      "kind": "port",
       "region": "Ulgu",
       "x": 228,
       "y": 492
@@ -69,6 +78,7 @@ export default {
     {
       "id": "va-leth",
       "name": "Va-Leth",
+      "kind": "port",
       "region": "Ulgu",
       "x": 852,
       "y": 657
@@ -76,6 +86,7 @@ export default {
     {
       "id": "klarondu",
       "name": "Klarondu",
+      "kind": "port",
       "region": "Ulgu",
       "x": 644,
       "y": 954
@@ -83,6 +94,7 @@ export default {
     {
       "id": "caizan",
       "name": "Caizan",
+      "kind": "temple",
       "region": "Ulgu",
       "x": 870,
       "y": 297
@@ -90,6 +102,7 @@ export default {
     {
       "id": "uhl-gysh",
       "name": "Uhl-Gysh, the Hidden Gloaming",
+      "kind": "temple",
       "region": "Ulgu",
       "x": 1116,
       "y": 211
@@ -97,6 +110,7 @@ export default {
     {
       "id": "morladron",
       "name": "Morladron",
+      "kind": "port",
       "region": "Ulgu",
       "x": 1466,
       "y": 988

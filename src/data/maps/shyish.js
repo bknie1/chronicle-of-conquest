@@ -3,6 +3,7 @@
 export default {
   "id": "shyish",
   "name": "Shyish",
+  "kind": "settlement",
   "title": "The Realm of Death",
   "image": "/maps/realms/shyish.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "nagashizzar",
       "name": "Nagashizzar",
+      "kind": "castle",
       "region": "Shyish",
       "x": 905,
       "y": 464
@@ -20,6 +22,7 @@ export default {
     {
       "id": "glymmsforge",
       "name": "Glymmsforge",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 412,
       "y": 446
@@ -27,6 +30,7 @@ export default {
     {
       "id": "prime-innerlands",
       "name": "The Prime Innerlands",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 866,
       "y": 911
@@ -34,6 +38,7 @@ export default {
     {
       "id": "stygxx",
       "name": "Stygxx",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 570,
       "y": 648
@@ -41,6 +46,7 @@ export default {
     {
       "id": "carstinia",
       "name": "Carstinia",
+      "kind": "castle",
       "region": "Shyish",
       "x": 740,
       "y": 688
@@ -48,6 +54,7 @@ export default {
     {
       "id": "ossia",
       "name": "Ossia",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 1103,
       "y": 624
@@ -55,6 +62,7 @@ export default {
     {
       "id": "shyish-nadir",
       "name": "The Shyish Nadir",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 678,
       "y": 427
@@ -62,6 +70,7 @@ export default {
     {
       "id": "sadmoor",
       "name": "The Sadmoor",
+      "kind": "castle",
       "region": "Shyish",
       "x": 420,
       "y": 220
@@ -69,6 +78,7 @@ export default {
     {
       "id": "nulahmia",
       "name": "Nulahmia",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 243,
       "y": 636
@@ -76,6 +86,7 @@ export default {
     {
       "id": "sylontum",
       "name": "Sylontum",
+      "kind": "castle",
       "region": "Shyish",
       "x": 395,
       "y": 739
@@ -83,6 +94,7 @@ export default {
     {
       "id": "gothizzar",
       "name": "Gothizzar",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 1387,
       "y": 597
@@ -90,6 +102,7 @@ export default {
     {
       "id": "morgaunt",
       "name": "Morgaunt",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 910,
       "y": 673
@@ -97,6 +110,7 @@ export default {
     {
       "id": "amethyst-princedoms",
       "name": "The Amethyst Princedoms",
+      "kind": "castle",
       "region": "Shyish",
       "x": 587,
       "y": 252
@@ -104,6 +118,7 @@ export default {
     {
       "id": "hollowmourne",
       "name": "Hollowmourne",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 1150,
       "y": 850
@@ -111,6 +126,7 @@ export default {
     {
       "id": "blisterskin",
       "name": "Blisterskin",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 1050,
       "y": 300
@@ -118,6 +134,7 @@ export default {
     {
       "id": "gristlegore",
       "name": "Gristlegore",
+      "kind": "ruin",
       "region": "Shyish",
       "x": 250,
       "y": 850

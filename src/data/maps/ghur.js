@@ -3,6 +3,7 @@
 export default {
   "id": "ghur",
   "name": "Ghur",
+  "kind": "settlement",
   "title": "The Realm of Beasts",
   "image": "/maps/realms/ghur.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "excelsis",
       "name": "Excelsis",
+      "kind": "city",
       "region": "Ghur",
       "x": 1242,
       "y": 451
@@ -20,6 +22,7 @@ export default {
     {
       "id": "thondia",
       "name": "Thondia",
+      "kind": "camp",
       "region": "Ghur",
       "x": 1061,
       "y": 570
@@ -27,6 +30,7 @@ export default {
     {
       "id": "izalend",
       "name": "Izalend",
+      "kind": "camp",
       "region": "Ghur",
       "x": 946,
       "y": 924
@@ -34,6 +38,7 @@ export default {
     {
       "id": "beastgrave",
       "name": "Beastgrave",
+      "kind": "camp",
       "region": "Ghur",
       "x": 745,
       "y": 784
@@ -41,6 +46,7 @@ export default {
     {
       "id": "gallet",
       "name": "Gallet",
+      "kind": "warren",
       "region": "Ghur",
       "x": 672,
       "y": 232
@@ -48,6 +54,7 @@ export default {
     {
       "id": "andtor",
       "name": "Andtor",
+      "kind": "warren",
       "region": "Ghur",
       "x": 525,
       "y": 785
@@ -55,6 +62,7 @@ export default {
     {
       "id": "coast-of-tusks",
       "name": "Coast of Tusks",
+      "kind": "wilds",
       "region": "Ghur",
       "x": 863,
       "y": 474
@@ -62,6 +70,7 @@ export default {
     {
       "id": "maw-of-ghur",
       "name": "The Maw of Ghur",
+      "kind": "camp",
       "region": "Ghur",
       "x": 1084,
       "y": 377
@@ -69,6 +78,7 @@ export default {
     {
       "id": "great-gutfort",
       "name": "The Great Gutfort",
+      "kind": "camp",
       "region": "Ghur",
       "x": 1328,
       "y": 665
@@ -76,6 +86,7 @@ export default {
     {
       "id": "vanderhal",
       "name": "Vanderhal",
+      "kind": "warren",
       "region": "Ghur",
       "x": 188,
       "y": 352
@@ -83,6 +94,7 @@ export default {
     {
       "id": "krondskol",
       "name": "Krondskol",
+      "kind": "wilds",
       "region": "Ghur",
       "x": 353,
       "y": 179
@@ -90,6 +102,7 @@ export default {
     {
       "id": "amber-steppes",
       "name": "The Amber Steppes",
+      "kind": "camp",
       "region": "Ghur",
       "x": 496,
       "y": 468
@@ -97,6 +110,7 @@ export default {
     {
       "id": "crawling-city",
       "name": "The Crawling City",
+      "kind": "camp",
       "region": "Ghur",
       "x": 625,
       "y": 609
@@ -104,6 +118,7 @@ export default {
     {
       "id": "rondhol",
       "name": "Rondhol",
+      "kind": "camp",
       "region": "Ghur",
       "x": 1379,
       "y": 942
@@ -111,6 +126,7 @@ export default {
     {
       "id": "anvil-of-hashut",
       "name": "The Anvil of Hashut",
+      "kind": "forge",
       "region": "Ghur",
       "x": 994,
       "y": 743
@@ -118,6 +134,7 @@ export default {
     {
       "id": "frostmaw-reach",
       "name": "Frostmaw Reach",
+      "kind": "camp",
       "region": "Ghur",
       "x": 1350,
       "y": 250
@@ -125,6 +142,7 @@ export default {
     {
       "id": "stonejaw-flats",
       "name": "Stonejaw Flats",
+      "kind": "camp",
       "region": "Ghur",
       "x": 750,
       "y": 950
@@ -132,6 +150,7 @@ export default {
     {
       "id": "gruesome-heights",
       "name": "The Gruesome Heights",
+      "kind": "wilds",
       "region": "Ghur",
       "x": 200,
       "y": 250
@@ -139,6 +158,7 @@ export default {
     {
       "id": "colossus-shoal",
       "name": "The Colossus Shoal",
+      "kind": "wilds",
       "region": "Ghur",
       "x": 1450,
       "y": 550

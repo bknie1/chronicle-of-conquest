@@ -3,6 +3,7 @@
 export default {
   "id": "ghyran",
   "name": "Ghyran",
+  "kind": "settlement",
   "title": "The Realm of Life",
   "image": "/maps/realms/ghyran.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "hammerhal-ghyra",
       "name": "Hammerhal Ghyra",
+      "kind": "settlement",
       "region": "Ghyran",
       "x": 1219,
       "y": 564
@@ -20,6 +22,7 @@ export default {
     {
       "id": "athelwyrd",
       "name": "The Athelwyrd",
+      "kind": "glade",
       "region": "Ghyran",
       "x": 410,
       "y": 553
@@ -27,6 +30,7 @@ export default {
     {
       "id": "verdia",
       "name": "Verdia",
+      "kind": "glade",
       "region": "Ghyran",
       "x": 1053,
       "y": 429
@@ -34,6 +38,7 @@ export default {
     {
       "id": "thyria",
       "name": "Thyria",
+      "kind": "glade",
       "region": "Ghyran",
       "x": 748,
       "y": 297
@@ -41,6 +46,7 @@ export default {
     {
       "id": "jadewound",
       "name": "The Jadewound",
+      "kind": "glade",
       "region": "Ghyran",
       "x": 564,
       "y": 865
@@ -48,6 +54,7 @@ export default {
     {
       "id": "everdusk",
       "name": "Everdusk",
+      "kind": "glade",
       "region": "Ghyran",
       "x": 744,
       "y": 586
@@ -55,6 +62,7 @@ export default {
     {
       "id": "living-city",
       "name": "The Living City",
+      "kind": "city",
       "region": "Ghyran",
       "x": 883,
       "y": 762
@@ -62,6 +70,7 @@ export default {
     {
       "id": "gnarlwood",
       "name": "Gnarlwood",
+      "kind": "glade",
       "region": "Ghyran",
       "x": 1375,
       "y": 480
@@ -69,6 +78,7 @@ export default {
     {
       "id": "phoenicium",
       "name": "Phoenicium",
+      "kind": "ruin",
       "region": "Ghyran",
       "x": 1049,
       "y": 839
@@ -76,6 +86,7 @@ export default {
     {
       "id": "greywater-fastness",
       "name": "Greywater Fastness",
+      "kind": "city",
       "region": "Ghyran",
       "x": 187,
       "y": 366
@@ -83,6 +94,7 @@ export default {
     {
       "id": "rotwater-blight",
       "name": "The Rotwater Blight",
+      "kind": "ruin",
       "region": "Ghyran",
       "x": 573,
       "y": 496
@@ -90,6 +102,7 @@ export default {
     {
       "id": "quogmia",
       "name": "Quogmia",
+      "kind": "ruin",
       "region": "Ghyran",
       "x": 1215,
       "y": 377

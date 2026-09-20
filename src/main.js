@@ -73,6 +73,9 @@ function mustered(p) {
   return n ? ` · mustered at ${esc(n.name)}` : '';
 }
 
+// Every seat the setting writes a faction as holding, mustered or not.
+const claims = () => C().setting.starts.map(s => ({ faction: armyOf(s.of ?? s.id), point: s.point }));
+
 // The grounds armies mustered from, other than their faction's own seat.
 const footholds = () => activeArmies().map(p => ({
   faction: armyOf(p.faction),
@@ -115,7 +118,7 @@ function recompute() {
   }));
   const influence = computeInfluence({
     graph: C().graph, nodes: NODES(), factions: factionsFor(C().setting, 'codex'),
-    games, at: state.at, footholds: footholds(),
+    games, at: state.at, footholds: footholds(), claims: claims(),
     decrees: (V().decrees ?? []).map(d => ({ faction: armyOf(d.faction), point: d.node, amount: d.amount })),
   });
   // Allegiance is the same influence with each army counted towards its side.

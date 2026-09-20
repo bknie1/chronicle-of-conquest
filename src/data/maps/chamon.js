@@ -3,6 +3,7 @@
 export default {
   "id": "chamon",
   "name": "Chamon",
+  "kind": "settlement",
   "title": "The Realm of Metal",
   "image": "/maps/realms/chamon.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "barak-nar",
       "name": "Barak-Nar",
+      "kind": "port",
       "region": "Chamon",
       "x": 606,
       "y": 853
@@ -20,6 +22,7 @@ export default {
     {
       "id": "barak-zon",
       "name": "Barak-Zon",
+      "kind": "port",
       "region": "Chamon",
       "x": 663,
       "y": 354
@@ -27,6 +30,7 @@ export default {
     {
       "id": "barak-thryng",
       "name": "Barak-Thryng",
+      "kind": "port",
       "region": "Chamon",
       "x": 374,
       "y": 607
@@ -34,6 +38,7 @@ export default {
     {
       "id": "spiral-crux",
       "name": "The Spiral Crux",
+      "kind": "temple",
       "region": "Chamon",
       "x": 935,
       "y": 531
@@ -41,6 +46,7 @@ export default {
     {
       "id": "elixia",
       "name": "Elixia",
+      "kind": "settlement",
       "region": "Chamon",
       "x": 1136,
       "y": 439
@@ -48,6 +54,7 @@ export default {
     {
       "id": "argentine",
       "name": "Argentine",
+      "kind": "settlement",
       "region": "Chamon",
       "x": 497,
       "y": 452
@@ -55,6 +62,7 @@ export default {
     {
       "id": "molten-vale",
       "name": "The Molten Vale",
+      "kind": "temple",
       "region": "Chamon",
       "x": 326,
       "y": 256
@@ -62,6 +70,7 @@ export default {
     {
       "id": "prosperis",
       "name": "Prosperis",
+      "kind": "temple",
       "region": "Chamon",
       "x": 833,
       "y": 280
@@ -69,6 +78,7 @@ export default {
     {
       "id": "anvrok",
       "name": "The Hanging Valleys of Anvrok",
+      "kind": "settlement",
       "region": "Chamon",
       "x": 1344,
       "y": 709
@@ -76,6 +86,7 @@ export default {
     {
       "id": "golgeth",
       "name": "Golgeth",
+      "kind": "settlement",
       "region": "Chamon",
       "x": 960,
       "y": 760
@@ -83,6 +94,7 @@ export default {
     {
       "id": "ayadah",
       "name": "Ayadah",
+      "kind": "settlement",
       "region": "Chamon",
       "x": 1114,
       "y": 866
@@ -90,6 +102,7 @@ export default {
     {
       "id": "eldritch-fortress",
       "name": "The Eldritch Fortress",
+      "kind": "stronghold",
       "region": "Chamon",
       "x": 603,
       "y": 660
@@ -97,6 +110,7 @@ export default {
     {
       "id": "barak-zilfin",
       "name": "Barak-Zilfin",
+      "kind": "port",
       "region": "Chamon",
       "x": 1250,
       "y": 300
@@ -104,6 +118,7 @@ export default {
     {
       "id": "barak-urbaz",
       "name": "Barak-Urbaz",
+      "kind": "port",
       "region": "Chamon",
       "x": 200,
       "y": 700

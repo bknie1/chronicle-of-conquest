@@ -3,6 +3,7 @@
 export default {
   "id": "hysh",
   "name": "Hysh",
+  "kind": "settlement",
   "title": "The Realm of Light",
   "image": "/maps/realms/hysh.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "xintil",
       "name": "Xintil",
+      "kind": "city",
       "region": "Hysh",
       "x": 1221,
       "y": 732
@@ -20,6 +22,7 @@ export default {
     {
       "id": "ymetrica",
       "name": "Ymetrica",
+      "kind": "city",
       "region": "Hysh",
       "x": 888,
       "y": 840
@@ -27,6 +30,7 @@ export default {
     {
       "id": "iliatha",
       "name": "Iliatha",
+      "kind": "city",
       "region": "Hysh",
       "x": 790,
       "y": 494
@@ -34,6 +38,7 @@ export default {
     {
       "id": "syar",
       "name": "Syar",
+      "kind": "city",
       "region": "Hysh",
       "x": 1039,
       "y": 419
@@ -41,6 +46,7 @@ export default {
     {
       "id": "zaitrec",
       "name": "Zaitrec",
+      "kind": "city",
       "region": "Hysh",
       "x": 1274,
       "y": 503
@@ -48,6 +54,7 @@ export default {
     {
       "id": "alumnia",
       "name": "Alumnia",
+      "kind": "city",
       "region": "Hysh",
       "x": 918,
       "y": 646
@@ -55,6 +62,7 @@ export default {
     {
       "id": "mirrorlight-peaks",
       "name": "Mirrorlight Peaks",
+      "kind": "wilds",
       "region": "Hysh",
       "x": 572,
       "y": 698
@@ -62,6 +70,7 @@ export default {
     {
       "id": "haixiah",
       "name": "Haixiah",
+      "kind": "settlement",
       "region": "Hysh",
       "x": 823,
       "y": 260
@@ -69,6 +78,7 @@ export default {
     {
       "id": "helon",
       "name": "Helon",
+      "kind": "city",
       "region": "Hysh",
       "x": 544,
       "y": 496

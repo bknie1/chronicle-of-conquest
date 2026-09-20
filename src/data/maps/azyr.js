@@ -3,6 +3,7 @@
 export default {
   "id": "azyr",
   "name": "Azyr",
+  "kind": "settlement",
   "title": "The Celestial Realm",
   "image": "/maps/realms/azyr.jpg",
   "width": 1600,
@@ -13,6 +14,7 @@ export default {
     {
       "id": "azyrheim",
       "name": "Azyrheim",
+      "kind": "fortress",
       "region": "Azyr",
       "x": 975,
       "y": 619
@@ -20,6 +22,7 @@ export default {
     {
       "id": "sigmaron",
       "name": "Sigmaron",
+      "kind": "fortress",
       "region": "Azyr",
       "x": 216,
       "y": 637
@@ -27,6 +30,7 @@ export default {
     {
       "id": "gates-of-azyr",
       "name": "The Gates of Azyr",
+      "kind": "temple",
       "region": "Azyr",
       "x": 805,
       "y": 922
@@ -34,6 +38,7 @@ export default {
     {
       "id": "celestial-forges",
       "name": "The Celestial Forges",
+      "kind": "fortress",
       "region": "Azyr",
       "x": 1224,
       "y": 588
@@ -41,6 +46,7 @@ export default {
     {
       "id": "azyrite-watch",
       "name": "The Azyrite Watch",
+      "kind": "temple",
       "region": "Azyr",
       "x": 474,
       "y": 644
@@ -48,6 +54,7 @@ export default {
     {
       "id": "sigmarabulum",
       "name": "The Sigmarabulum",
+      "kind": "fortress",
       "region": "Azyr",
       "x": 678,
       "y": 532
@@ -55,6 +62,7 @@ export default {
     {
       "id": "highheim",
       "name": "Highheim",
+      "kind": "fortress",
       "region": "Azyr",
       "x": 778,
       "y": 292
@@ -62,6 +70,7 @@ export default {
     {
       "id": "gladitorium",
       "name": "The Gladitorium",
+      "kind": "temple",
       "region": "Azyr",
       "x": 1078,
       "y": 403
@@ -69,6 +78,7 @@ export default {
     {
       "id": "starhold",
       "name": "Starhold",
+      "kind": "fortress",
       "region": "Azyr",
       "x": 730,
       "y": 723
@@ -76,6 +86,7 @@ export default {
     {
       "id": "skydock",
       "name": "The Skydock",
+      "kind": "temple",
       "region": "Azyr",
       "x": 1011,
       "y": 923
