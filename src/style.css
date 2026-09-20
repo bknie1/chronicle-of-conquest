@@ -55,10 +55,16 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 .brand h1 { font-size: 21px; color: var(--gold-2); }
 .campaign { color: var(--muted); font-size: 15px; }
 .badge { font: 700 11px var(--heading); color: #1a1208; background: var(--gold); border-radius: 3px; padding: 1px 6px; margin-left: 4px; }
-.settings { display: flex; gap: 4px; margin-left: auto; }
-.settings button { background: transparent; border-color: transparent; font-family: var(--heading); font-size: 13px; }
-.settings button.active { border-color: var(--gold); color: var(--gold-2); }
-.settings small { font-family: var(--body); font-size: 11px; color: var(--muted); }
+.settings { margin-left: auto; display: flex; align-items: center; }
+.settings select {
+  font: 700 14px var(--heading); letter-spacing: .02em;
+  color: var(--gold-2); background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer;
+}
+.settings select:hover:not(:disabled) { border-color: var(--gold); }
+.settings select:disabled { opacity: .7; cursor: default; }
+.settings option { background: var(--panel); color: var(--text); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .actions { display: flex; gap: 8px; }
 
 /* --- layout --- */
@@ -272,8 +278,8 @@ dialog .row { justify-content: flex-end; }
   .topbar { gap: 6px 10px; padding: 8px 12px; }
   .sigil { font-size: 22px; }
   .brand h1 { font-size: 16px; }
-  .settings { margin-left: 0; order: 3; width: 100%; overflow-x: auto; white-space: nowrap; }
-  .settings button { padding: 3px 8px; font-size: 12px; }
+  .settings { margin-left: auto; order: 2; }
+  .settings select { font-size: 13px; padding: 4px 8px; max-width: 46vw; }
   .actions { flex-wrap: wrap; gap: 6px; }
   .actions button { padding: 4px 9px; font-size: 14px; }
 }

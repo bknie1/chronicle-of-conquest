@@ -78,3 +78,12 @@ test('a pair in both extraLinks and blockedLinks stays blocked', () => {
   });
   assert.ok(!g.adj[0].includes(2));
 });
+
+test('a starting ground is hard to take, unlike a safe home', () => {
+  const games = Array.from({ length: 8 }, (_, k) => win(k * 2, 'altdorf', 'bretonnia', 'empire'));
+  const at = 16;
+  const safe = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games, at });
+  const contestable = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games, at, homeRule: 'contestable' });
+  assert.equal(safe[idx('altdorf')].owner, 'empire', 'a safe home never falls');
+  assert.equal(contestable[idx('altdorf')].owner, 'bretonnia', 'a starting ground falls to a sustained campaign');
+});

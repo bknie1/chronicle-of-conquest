@@ -83,28 +83,54 @@ export const DEMOS = {
       { id: 'e5', day: 129, node: 'calth', players: ['dylan', 'danil'] },
     ],
   },
+  'legions-imperialis': {
+    name: 'Beta-Garmon Campaign',
+    seed: 3131,
+    players: [
+      { id: 'brandon', name: 'Brandon', army: 'Justaerin Terminator Cadre', faction: 'li-sons-of-horus', skill: 0.62, active: [0, 123], surge: 85 },
+      { id: 'ari', name: 'Ari', army: 'Red Sand Assault Company', faction: 'li-world-eaters', skill: 0.6, active: [0, 123] },
+      { id: 'sean', name: 'Sean', army: 'The Reaping', faction: 'li-death-guard', skill: 0.57, active: [0, 123] },
+      { id: 'xander', name: 'Xander', army: 'Palatine Blades Demi-Company', faction: 'li-emperors-children', skill: 0.59, active: [0, 123] },
+      { id: 'david', name: 'David', army: 'Ultramar Expeditionary Force', faction: 'li-ultramarines', skill: 0.6, active: [0, 123] },
+      { id: 'danil', name: 'Danil', army: 'Pyre Guard Company', faction: 'li-salamanders', skill: 0.56, active: [0, 123] },
+      { id: 'dylan', name: 'Dylan', army: 'Death Stalkers Maniple', faction: 'li-legio-mortis', skill: 0.58, active: [0, 123] },
+      { id: 'taylor', name: 'Taylor', army: 'Warp Runners Maniple', faction: 'li-legio-astorum', skill: 0.57, active: [10, 123] },
+      { id: 'jowi', name: 'Jowi', army: 'Tempestus Battlegroup', faction: 'li-legio-tempestus', skill: 0.56, active: [0, 123] },
+      { id: 'conrad', name: 'Conrad', army: 'House Malinax Lance', faction: 'li-house-malinax', skill: 0.55, active: [0, 123] },
+      { id: 'charles', name: 'Charles', army: 'Taghmata Omnissiah', faction: 'li-mechanicum', skill: 0.57, active: [0, 123] },
+      { id: 'michael', name: 'Michael', army: '12th Solar Cohort', faction: 'li-auxilia', skill: 0.55, active: [20, 123] },
+    ],
+    // The war for Beta-Garmon, the Throneworld's gate.
+    events: [
+      { id: 'e1', day: 123, node: 'beta-garmon', players: ['brandon', 'david'], note: 'The Gate of Terra' },
+      { id: 'e2', day: 123, node: 'beta-garmon', players: ['dylan', 'jowi'], note: 'God-engines walk' },
+      { id: 'e3', day: 123, node: 'mars', players: ['charles', 'conrad'], note: 'The forges must hold' },
+      { id: 'e4', day: 126, node: 'tallarn', players: ['ari', 'michael'] },
+      { id: 'e5', day: 129, node: 'nocturne', players: ['sean', 'danil'] },
+    ],
+  },
   'warhammer-40k': {
     name: 'Indomitus Crusade League',
     seed: 4040,
     players: [
-      { id: 'taylor', name: 'Taylor', army: 'Hive Fleet Leviathan', faction: 'tyranids', skill: 0.61, active: [0, 123], surge: 70 },
-      { id: 'anthony-b', name: 'Anthony B.', army: 'Hive Fleet Kraken', faction: 'tyranids', skill: 0.55, active: [25, 123] },
-      { id: 'conrad', name: 'Conrad', army: 'House Terryn', faction: 'imperial-knights', skill: 0.57, active: [0, 123] },
-      { id: 'brett', name: 'Brett', army: 'House Lucaris', faction: 'chaos-knights', skill: 0.62, active: [0, 123] },
+      { id: 'taylor', name: 'Taylor', army: 'Hive Fleet Leviathan', faction: 'hive-fleet-leviathan', skill: 0.61, active: [0, 123], surge: 70 },
+      { id: 'anthony-b', name: 'Anthony B.', army: 'Hive Fleet Kraken', faction: 'kraken', skill: 0.55, active: [25, 123] },
+      { id: 'conrad', name: 'Conrad', army: 'House Terryn', faction: 'house-terryn', skill: 0.57, active: [0, 123] },
+      { id: 'brett', name: 'Brett', army: 'House Lucaris', faction: 'house-lucaris', skill: 0.62, active: [0, 123] },
       { id: 'sean', name: 'Sean', army: 'The Inexorable', faction: 'death-guard', skill: 0.58, active: [0, 123] },
       { id: 'ari', name: 'Ari', army: "Angron's Butchers", faction: 'world-eaters', skill: 0.6, active: [0, 123] },
       { id: 'charles', name: 'Charles', army: 'Skullsworn of Khorne', faction: 'world-eaters', skill: 0.55, active: [0, 123] },
-      { id: 'dee', name: 'Dee', army: 'Black Legion Warband', faction: 'chaos-space-marines', skill: 0.58, active: [0, 123] },
-      { id: 'dylan', name: 'Dylan', army: 'Night Lords Claw', faction: 'chaos-space-marines', skill: 0.56, active: [0, 123] },
+      { id: 'dee', name: 'Dee', army: 'Black Legion Warband', faction: 'black-legion', skill: 0.58, active: [0, 123] },
+      { id: 'dylan', name: 'Dylan', army: 'Night Lords Claw', faction: 'night-lords', skill: 0.56, active: [0, 123] },
       { id: 'brandon', name: 'Brandon', army: 'Cult of Duplicity', faction: 'thousand-sons', skill: 0.6, active: [0, 123] },
-      { id: 'xander', name: 'Xander', army: 'Deathwing Strike Force', faction: 'dark-angels', skill: 0.6, active: [0, 123] },
-      { id: 'david', name: 'David', army: "Wolf Lord's Great Company", faction: 'space-wolves', skill: 0.59, active: [0, 123] },
-      { id: 'danil', name: 'Danil', army: 'Salamanders 3rd Company', faction: 'space-marines', skill: 0.56, active: [0, 123] },
-      { id: 'jean', name: 'Jean', army: 'Order of Our Martyred Lady', faction: 'sororitas', skill: 0.58, active: [0, 123] },
-      { id: 'jowi', name: 'Jowi', army: 'Ryza Cohort', faction: 'mechanicus', skill: 0.55, active: [0, 123] },
-      { id: 'jordan', name: 'Jordan', army: 'Goff Warband', faction: 'orks', skill: 0.55, active: [0, 123] },
-      { id: 'andrew', name: 'Andrew', army: 'Evil Sunz Speed Mob', faction: 'orks', skill: 0.52, active: [0, 60] },
-      { id: 'ryan', name: 'Ryan', army: 'Kabal of the Black Heart', faction: 'drukhari', skill: 0.57, active: [0, 123] },
+      { id: 'xander', name: 'Xander', army: 'Deathwing Strike Force', faction: 'deathwing', skill: 0.6, active: [0, 123] },
+      { id: 'david', name: 'David', army: "Wolf Lord's Great Company", faction: 'company-of-grimnar', skill: 0.59, active: [0, 123] },
+      { id: 'danil', name: 'Danil', army: 'Salamanders 3rd Company', faction: 'salamanders', skill: 0.56, active: [0, 123] },
+      { id: 'jean', name: 'Jean', army: 'Order of Our Martyred Lady', faction: 'our-martyred-lady', skill: 0.58, active: [0, 123] },
+      { id: 'jowi', name: 'Jowi', army: 'Ryza Cohort', faction: 'forge-world-ryza', skill: 0.55, active: [0, 123] },
+      { id: 'jordan', name: 'Jordan', army: 'Goff Warband', faction: 'goffs', skill: 0.55, active: [0, 123] },
+      { id: 'andrew', name: 'Andrew', army: 'Evil Sunz Speed Mob', faction: 'evil-sunz', skill: 0.52, active: [0, 60] },
+      { id: 'ryan', name: 'Ryan', army: 'Kabal of the Black Heart', faction: 'black-heart', skill: 0.57, active: [0, 123] },
     ],
     // The Great Devourer reaches Ichar IV tonight.
     events: [
@@ -135,7 +161,9 @@ export function generateHistory(graph, setting, demo) {
     for (const x of items) { r -= weight(x); if (r <= 0) return x; }
     return items[items.length - 1];
   };
-  const homeIndex = f => graph.index.get(setting.factions.find(x => x.id === f).home);
+  // A demo army's faction may be an army book or a sub-faction; both have homes.
+  const homes = new Map([...setting.levels.codex, ...setting.levels.detailed].map(f => [f.id, f.home]));
+  const homeIndex = f => graph.index.get(homes.get(f));
   const activity = (p, day) => (day < p.active[0] || day > p.active[1] ? 0 : p.surge && day >= p.surge ? 2.2 : 1);
   const skill = (p, day) => p.skill + (p.surge && day >= p.surge ? 0.12 : 0);
 

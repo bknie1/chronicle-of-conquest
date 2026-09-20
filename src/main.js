@@ -93,7 +93,12 @@ function recompute() {
     winnerFaction: factionOfArmy(playerById(g.winner).faction),
     loserFaction: factionOfArmy(playerById(g.loser).faction),
   }));
-  state.influence = computeInfluence({ graph: C().graph, nodes: NODES(), factions: factionList(), games, at: state.at });
+  state.influence = computeInfluence({
+    graph: C().graph, nodes: NODES(), factions: factionList(), games, at: state.at,
+    // Sub-faction play has a home for nearly every point, so those are starting
+    // grounds rather than untouchable ones.
+    homeRule: state.level === 'detailed' ? 'contestable' : 'safe',
+  });
 }
 
 function eventsByNode() {
@@ -625,12 +630,12 @@ function renderTopbar() {
   $('#campaign-select').innerHTML = `${options.map(([val, label]) =>
     `<option value="${esc(val)}" ${val === currentValue ? 'selected' : ''}>${esc(label)}</option>`).join('')}
     ${STATIC ? '' : '<option value="__join">Join with a code…</option><option value="__create">＋ Start a new campaign…</option>'}`;
-  // Demos can switch setting; a real campaign is played in one setting.
-  document.querySelectorAll('.settings [data-setting]').forEach(b => {
-    const available = !!SETTINGS[b.dataset.setting];
-    b.classList.toggle('active', b.dataset.setting === v.setting);
-    b.disabled = !available || (v.kind === 'campaign' && b.dataset.setting !== v.setting);
-  });
+  // Demos can switch setting; a real campaign is played in the one it was made for.
+  const picker = $('#setting-select');
+  picker.innerHTML = Object.values(SETTINGS).map(st =>
+    `<option value="${esc(st.id)}" ${st.id === v.setting ? 'selected' : ''}>${esc(st.name)}</option>`).join('');
+  picker.disabled = v.kind === 'campaign';
+  picker.title = v.kind === 'campaign' ? 'A campaign is played in one setting' : 'Choose a setting';
   document.title = v.kind === 'demo' ? 'Chronicle of Conquest' : `${v.name} · Chronicle of Conquest`;
 }
 
@@ -1077,10 +1082,9 @@ $('#campaign-select').addEventListener('change', e => {
   if (v === '__create') return openCreate();
   navigate(v === 'demo' ? (V().setting === 'old-world' ? '/' : `/demo/${V().setting}`) : `/c/${v}`);
 });
-document.querySelector('.settings').addEventListener('click', e => {
-  const b = e.target.closest('[data-setting]');
-  if (!b || b.disabled || V().kind !== 'demo') return;
-  navigate(b.dataset.setting === 'old-world' ? '/' : `/demo/${b.dataset.setting}`);
+$('#setting-select').addEventListener('change', e => {
+  if (V().kind !== 'demo') return renderTopbar();
+  navigate(e.target.value === 'old-world' ? '/' : `/demo/${e.target.value}`);
 });
 window.addEventListener('popstate', route);
 window.addEventListener('resize', () => { if (state.overview) renderOverview(); });

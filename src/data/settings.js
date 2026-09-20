@@ -15,6 +15,7 @@ import { MAPS } from './maps/index.js';
 import { OLD_WORLD } from './old-world.js';
 import { MORTAL_REALMS } from './mortal-realms.js';
 import { HORUS_HERESY } from './horus-heresy.js';
+import { LEGIONS_IMPERIALIS } from './legions-imperialis.js';
 import { WARHAMMER_40K } from './warhammer-40k.js';
 
 export const LEVELS = ['alliance', 'codex', 'detailed'];
@@ -92,6 +93,7 @@ export const SETTINGS = {
   'old-world': defineSetting(OLD_WORLD),
   'mortal-realms': defineSetting(MORTAL_REALMS),
   'horus-heresy': defineSetting(HORUS_HERESY),
+  'legions-imperialis': defineSetting(LEGIONS_IMPERIALIS),
   'warhammer-40k': defineSetting(WARHAMMER_40K),
 };
 

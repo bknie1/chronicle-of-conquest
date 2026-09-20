@@ -667,6 +667,409 @@ export default {
       "region": "Ultima Segmentum",
       "x": 1600,
       "y": 833
+    },
+
+    // --- Added for the detailed (sub-faction) level. Most names below are
+    // real 40k locations (Calth, Phalanx, Deliverance, Chogoris, Medusa,
+    // Cretacia, Medrengard, Nostramo, Nemesis Tessera, Meros, Kasr Kraf,
+    // Graia, Metalica, Lucius, Stygies VIII, the real Craftworld and Sept
+    // names, the real Kabal/Household/League names). Where lore doesn't fix
+    // a distinct homeworld (Space Wolves' Great Companies, Ork klans, most
+    // Sororitas Orders' motherhouses, the Drukhari kabals' webway ports, the
+    // Knight households' home fiefs, the Votann holds, and the Tyranid hive
+    // fleets' entry points), the point is an invented stand-in world so each
+    // sub-faction still gets its own distinct, plausible home.
+    {
+      "id": "calth",
+      "name": "Calth",
+      "region": "Ultima Segmentum",
+      "x": 1182,
+      "y": 1045
+    },
+    {
+      "id": "phalanx",
+      "name": "The Phalanx",
+      "region": "Segmentum Solar",
+      "x": 589,
+      "y": 343
+    },
+    {
+      "id": "deliverance",
+      "name": "Deliverance",
+      "region": "Segmentum Obscurus",
+      "x": 433,
+      "y": 168
+    },
+    {
+      "id": "chogoris",
+      "name": "Chogoris",
+      "region": "Segmentum Obscurus",
+      "x": 837,
+      "y": 332
+    },
+    {
+      "id": "medusa",
+      "name": "Medusa",
+      "region": "Segmentum Solar",
+      "x": 607,
+      "y": 476
+    },
+    {
+      "id": "cretacia",
+      "name": "Cretacia",
+      "region": "Imperium Nihilus",
+      "x": 1268,
+      "y": 506
+    },
+    {
+      "id": "great-company-grimnar",
+      "name": "Hold of Logan Grimnar",
+      "region": "Segmentum Obscurus",
+      "x": 843,
+      "y": 416
+    },
+    {
+      "id": "great-company-blackmane",
+      "name": "Hold of Ragnar Blackmane",
+      "region": "Segmentum Obscurus",
+      "x": 537,
+      "y": 509
+    },
+    {
+      "id": "great-company-redmaw",
+      "name": "Hold of Bran Redmaw",
+      "region": "Segmentum Obscurus",
+      "x": 659,
+      "y": 220
+    },
+    {
+      "id": "nemesis-tessera",
+      "name": "Nemesis Tessera",
+      "region": "Segmentum Obscurus",
+      "x": 593,
+      "y": 61
+    },
+    {
+      "id": "sicarus",
+      "name": "Sicarus",
+      "region": "Segmentum Obscurus",
+      "x": 377,
+      "y": 140
+    },
+    {
+      "id": "medrengard",
+      "name": "Medrengard",
+      "region": "Segmentum Obscurus",
+      "x": 705,
+      "y": 74
+    },
+    {
+      "id": "nostramo",
+      "name": "Nostramo",
+      "region": "Segmentum Pacificus",
+      "x": 476,
+      "y": 469
+    },
+    {
+      "id": "eskrador",
+      "name": "Eskrador",
+      "region": "Segmentum Pacificus",
+      "x": 284,
+      "y": 379
+    },
+    {
+      "id": "vesalius-reach",
+      "name": "Vesalius Reach",
+      "region": "Segmentum Obscurus",
+      "x": 336,
+      "y": 94
+    },
+    {
+      "id": "gorkogrod",
+      "name": "Gorkogrod",
+      "region": "Ultima Segmentum",
+      "x": 1488,
+      "y": 1150
+    },
+    {
+      "id": "redscar",
+      "name": "Redscar",
+      "region": "Ultima Segmentum",
+      "x": 1272,
+      "y": 1181
+    },
+    {
+      "id": "glitzgold",
+      "name": "Glitzgold",
+      "region": "Ultima Segmentum",
+      "x": 1131,
+      "y": 1122
+    },
+    {
+      "id": "bonegrinder",
+      "name": "Bonegrinder",
+      "region": "Ultima Segmentum",
+      "x": 1176,
+      "y": 956
+    },
+    {
+      "id": "krumpton",
+      "name": "Krumpton",
+      "region": "Segmentum Tempestus",
+      "x": 965,
+      "y": 1037
+    },
+    {
+      "id": "scrapdrift",
+      "name": "Scrapdrift",
+      "region": "Segmentum Tempestus",
+      "x": 1057,
+      "y": 834
+    },
+    {
+      "id": "ophidian-gulf",
+      "name": "The Ophidian Gulf",
+      "region": "Ultima Segmentum",
+      "x": 1633,
+      "y": 1209
+    },
+    {
+      "id": "tendrils-end",
+      "name": "Tendril's End",
+      "region": "The Eastern Fringe",
+      "x": 2154,
+      "y": 818
+    },
+    {
+      "id": "gorgons-reach",
+      "name": "Gorgon's Reach",
+      "region": "Ultima Segmentum",
+      "x": 1688,
+      "y": 1197
+    },
+    {
+      "id": "craftworld-ulthwe",
+      "name": "Craftworld Ulthwé",
+      "region": "Segmentum Obscurus",
+      "x": 581,
+      "y": 412
+    },
+    {
+      "id": "craftworld-biel-tan",
+      "name": "Craftworld Biel-Tan",
+      "region": "Ultima Segmentum",
+      "x": 1858,
+      "y": 591
+    },
+    {
+      "id": "craftworld-saim-hann",
+      "name": "Craftworld Saim-Hann",
+      "region": "Ultima Segmentum",
+      "x": 1808,
+      "y": 258
+    },
+    {
+      "id": "meros",
+      "name": "Meros",
+      "region": "Ultima Segmentum",
+      "x": 1813,
+      "y": 836
+    },
+    {
+      "id": "craftworld-alaitoc",
+      "name": "Craftworld Alaitoc",
+      "region": "Segmentum Pacificus",
+      "x": 148,
+      "y": 611
+    },
+    {
+      "id": "black-heart-enclave",
+      "name": "Black Heart Enclave",
+      "region": "Segmentum Pacificus",
+      "x": 340,
+      "y": 701
+    },
+    {
+      "id": "poisoned-tongue-enclave",
+      "name": "Poisoned Tongue Enclave",
+      "region": "Segmentum Pacificus",
+      "x": 80,
+      "y": 701
+    },
+    {
+      "id": "flayed-skull-enclave",
+      "name": "Flayed Skull Enclave",
+      "region": "Segmentum Pacificus",
+      "x": 210,
+      "y": 476
+    },
+    {
+      "id": "tau-homeworld",
+      "name": "T'au",
+      "region": "Ultima Segmentum",
+      "x": 1738,
+      "y": 971
+    },
+    {
+      "id": "viorla",
+      "name": "Vior'la",
+      "region": "Ultima Segmentum",
+      "x": 1597,
+      "y": 1070
+    },
+    {
+      "id": "sacea",
+      "name": "Sa'cea",
+      "region": "Ultima Segmentum",
+      "x": 1343,
+      "y": 1012
+    },
+    {
+      "id": "borkan",
+      "name": "Bork'an",
+      "region": "Ultima Segmentum",
+      "x": 1501,
+      "y": 805
+    },
+    {
+      "id": "kasr-kraf",
+      "name": "Kasr Kraf",
+      "region": "Segmentum Obscurus",
+      "x": 533,
+      "y": 355
+    },
+    {
+      "id": "olympus-mons",
+      "name": "Olympus Mons",
+      "region": "Segmentum Solar",
+      "x": 664,
+      "y": 658
+    },
+    {
+      "id": "graia",
+      "name": "Graia",
+      "region": "Segmentum Solar",
+      "x": 895,
+      "y": 724
+    },
+    {
+      "id": "metalica-40k",
+      "name": "Metalica",
+      "region": "Segmentum Tempestus",
+      "x": 769,
+      "y": 901
+    },
+    {
+      "id": "lucius-40k",
+      "name": "Lucius",
+      "region": "Segmentum Solar",
+      "x": 804,
+      "y": 637
+    },
+    {
+      "id": "stygies-viii",
+      "name": "Stygies VIII",
+      "region": "Segmentum Solar",
+      "x": 496,
+      "y": 601
+    },
+    {
+      "id": "sacred-martyrium",
+      "name": "The Sacred Martyrium",
+      "region": "Segmentum Tempestus",
+      "x": 726,
+      "y": 957
+    },
+    {
+      "id": "castellum-valorum",
+      "name": "Castellum Valorum",
+      "region": "Segmentum Tempestus",
+      "x": 547,
+      "y": 1042
+    },
+    {
+      "id": "rose-fortress",
+      "name": "The Rose Fortress",
+      "region": "Segmentum Tempestus",
+      "x": 406,
+      "y": 943
+    },
+    {
+      "id": "shrouded-reach",
+      "name": "The Shrouded Reach",
+      "region": "Segmentum Tempestus",
+      "x": 451,
+      "y": 777
+    },
+    {
+      "id": "ebon-sanctum",
+      "name": "Ebon Sanctum",
+      "region": "Segmentum Tempestus",
+      "x": 622,
+      "y": 762
+    },
+    {
+      "id": "terryn-prime",
+      "name": "Terryn Prime",
+      "region": "Segmentum Pacificus",
+      "x": 454,
+      "y": 915
+    },
+    {
+      "id": "griffiths-landing",
+      "name": "Griffith's Landing",
+      "region": "Segmentum Pacificus",
+      "x": 249,
+      "y": 998
+    },
+    {
+      "id": "ravens-roost",
+      "name": "Raven's Roost",
+      "region": "Segmentum Pacificus",
+      "x": 134,
+      "y": 799
+    },
+    {
+      "id": "cadmus-primus",
+      "name": "Cadmus Primus",
+      "region": "Segmentum Pacificus",
+      "x": 408,
+      "y": 737
+    },
+    {
+      "id": "khymere-fane",
+      "name": "The Khymere Fane",
+      "region": "Ultima Segmentum",
+      "x": 1885,
+      "y": 288
+    },
+    {
+      "id": "lucaris-hold",
+      "name": "Lucaris Hold",
+      "region": "Ultima Segmentum",
+      "x": 1490,
+      "y": 247
+    },
+    {
+      "id": "thurian-hold",
+      "name": "The Thurian Hold",
+      "region": "The Galactic Core",
+      "x": 1191,
+      "y": 651
+    },
+    {
+      "id": "hyperian-hold",
+      "name": "The Hyperian Hold",
+      "region": "The Galactic Core",
+      "x": 901,
+      "y": 616
+    },
+    {
+      "id": "ymyr-hold",
+      "name": "The Ymyr Hold",
+      "region": "The Galactic Core",
+      "x": 1031,
+      "y": 492
     }
   ],
   "extraLinks": [],

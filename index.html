@@ -17,12 +17,10 @@
         <select id="campaign-select" class="campaign-select" aria-label="Campaign"></select>
       </div>
     </div>
-    <nav class="settings" aria-label="Setting">
-      <button data-setting="old-world">The Old World</button>
-      <button data-setting="mortal-realms">Age of Sigmar</button>
-      <button data-setting="horus-heresy">Horus Heresy</button>
-      <button data-setting="warhammer-40k">Warhammer 40,000</button>
-    </nav>
+    <label class="settings">
+      <span class="visually-hidden">Setting</span>
+      <select id="setting-select"></select>
+    </label>
     <div class="actions">
       <button id="btn-challenge">⚔ Issue challenge</button>
       <button id="btn-report" class="primary">Report a result</button>

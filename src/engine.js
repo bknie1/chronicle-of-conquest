@@ -8,6 +8,9 @@ export const RULES = {
   win: [10, 4, 1],     // influence gained by the winner at the site, 1 hop, 2 hops away
   loss: [-6, -2, 0],   // influence the loser gives up
   home: [100, 12, 4],  // permanent influence around a faction's home
+  // With sub-factions there are far more homes, so a starting ground is very
+  // hard to take rather than impossible: about six recent wins will do it.
+  startingGround: [60, 10, 3],
   controlThreshold: 8, // below this, a region is unclaimed
   contestedRatio: 0.75, // runner-up within 75% of the leader = contested
   fadingDays: 21,      // players idle this long are marked as fading
@@ -124,15 +127,18 @@ export function shortestPath(adj, from, to) {
 }
 
 // Influence of every faction at every node as of day `at`.
-export function computeInfluence({ graph, nodes, factions, games, at }) {
+// homeRule: 'safe' makes a home untouchable (one per faction at the campaign's
+// level); 'contestable' gives a strong but beatable starting ground.
+export function computeInfluence({ graph, nodes, factions, games, at, homeRule = 'safe' }) {
   const scores = nodes.map(() => new Map());
   const add = (i, f, v) => scores[i].set(f, (scores[i].get(f) || 0) + v);
   const homeOf = new Map();
 
+  const homeWeights = homeRule === 'contestable' ? RULES.startingGround : RULES.home;
   for (const f of factions) {
     const h = nodes.findIndex(n => n.id === f.home);
     homeOf.set(h, f.id);
-    for (const [j, d] of graph.hops(h)) add(j, f.id, RULES.home[d]);
+    for (const [j, d] of graph.hops(h)) add(j, f.id, homeWeights[d]);
   }
 
   for (const g of games) {
@@ -153,7 +159,7 @@ export function computeInfluence({ graph, nodes, factions, games, at }) {
     let owner = top && top.value >= RULES.controlThreshold ? top.faction : null;
     let contested = !!(owner && second && second.value >= RULES.controlThreshold
       && second.value >= top.value * RULES.contestedRatio);
-    if (home) { owner = home; contested = false; }
+    if (home && homeRule === 'safe') { owner = home; contested = false; }
     return {
       ranked,
       owner,
