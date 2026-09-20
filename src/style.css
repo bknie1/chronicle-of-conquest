@@ -63,6 +63,8 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 
 /* --- layout --- */
 .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; min-height: 0; }
+.sheet { display: flex; flex-direction: column; min-height: 0; }
+.sheet-handle { display: none; }
 .panel { overflow-y: auto; padding: 16px 18px 24px; background: var(--panel); border-left: 1px solid var(--line); }
 .panel h2 { font-size: 20px; color: var(--gold-2); }
 .panel h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); margin: 20px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
@@ -240,10 +242,33 @@ dialog .row { justify-content: flex-end; }
 
 /* --- small screens --- */
 @media (max-width: 900px) {
-  body { overflow: auto; grid-template-rows: auto auto auto; }
+  /* The map keeps the screen; the panel becomes a sheet that slides up over it. */
   .layout { grid-template-columns: minmax(0, 1fr); }
-  .viewport { height: 62vh; }
-  .panel { border-left: 0; border-top: 1px solid var(--line); }
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: var(--timeline-h, 46px);
+    height: min(78vh, 620px); z-index: 6;
+    background: var(--panel);
+    border: 1px solid var(--line); border-bottom: 0; border-radius: 14px 14px 0 0;
+    box-shadow: 0 -10px 30px #000b;
+    transform: translateY(var(--sheet-y, calc(100% - 46px)));
+    transition: transform .28s cubic-bezier(.3, .7, .2, 1);
+  }
+  .sheet.dragging { transition: none; }
+  .sheet-handle {
+    display: flex; align-items: center; gap: 10px;
+    height: 46px; flex: 0 0 46px; width: 100%;
+    background: transparent; border: 0; border-radius: 14px 14px 0 0;
+    padding: 0 14px; color: var(--gold-2); font: 700 15px var(--heading);
+    touch-action: none;
+  }
+  .sheet-handle .grip { width: 34px; height: 4px; border-radius: 2px; background: var(--line); }
+  .sheet-handle b { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sheet-handle .chev { color: var(--muted); font-size: 12px; transition: transform .28s; }
+  .sheet.open .sheet-handle .chev { transform: rotate(180deg); }
+  .panel { flex: 1; min-height: 0; border-left: 0; border-top: 1px solid var(--line); padding: 10px 16px 24px; }
+  .peek { bottom: 58px; }
+  body.sheet-open .peek { display: none; }
+  .timeline { position: relative; z-index: 7; }
   .topbar { gap: 6px 10px; padding: 8px 12px; }
   .sigil { font-size: 22px; }
   .brand h1 { font-size: 16px; }
@@ -358,3 +383,8 @@ dialog h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); marg
 .peek li .when { font: 700 11px var(--heading); color: var(--gold); margin-right: 4px; }
 .peek li.live .when { color: #ff8a5c; }
 .peek .row { margin-top: 8px; }
+
+/* --- faction detail level --- */
+.levels { display: flex; gap: 4px; margin: 10px 0; flex-wrap: wrap; }
+.levels button { font-size: 13px; padding: 3px 9px; }
+.levels button.active { border-color: var(--gold); color: var(--gold-2); }

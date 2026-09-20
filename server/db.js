@@ -15,7 +15,13 @@ CREATE TABLE IF NOT EXISTS campaigns (
   name TEXT NOT NULL,
   setting TEXT NOT NULL,
   owner_id INTEGER NOT NULL REFERENCES users(id),
-  created_at INTEGER NOT NULL
+  created_at INTEGER NOT NULL,
+  -- How much faction detail this campaign plays at: alliance | codex | detailed.
+  level TEXT NOT NULL DEFAULT 'codex',
+  -- The current season. Games before this are history, not territory.
+  season_started_at INTEGER,
+  -- Optional automatic new season every N days.
+  reset_days INTEGER
 );
 CREATE TABLE IF NOT EXISTS members (
   campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
@@ -64,11 +70,22 @@ CREATE INDEX IF NOT EXISTS events_campaign ON events(campaign_id, scheduled_for)
 CREATE INDEX IF NOT EXISTS armies_campaign ON armies(campaign_id);
 `;
 
+// Columns added after the first release; SQLite has no "add column if missing".
+const LATER_COLUMNS = [
+  ['campaigns', 'level', "TEXT NOT NULL DEFAULT 'codex'"],
+  ['campaigns', 'season_started_at', 'INTEGER'],
+  ['campaigns', 'reset_days', 'INTEGER'],
+];
+
 export function openDb(file) {
   const db = new Database(file);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   db.exec(SCHEMA);
+  for (const [table, column, type] of LATER_COLUMNS) {
+    const has = db.prepare(`SELECT 1 FROM pragma_table_info(?) WHERE name = ?`).get(table, column);
+    if (!has) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
+  }
   return db;
 }
 

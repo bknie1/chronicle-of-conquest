@@ -2,15 +2,18 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildGraph, computeInfluence, RULES } from '../src/engine.js';
 import MAP from '../src/data/maps/old-world.js';
+import { OLD_WORLD } from '../src/data/old-world.js';
+
+const FACTIONS = OLD_WORLD.factions;
 
 const graph = buildGraph(MAP.nodes, MAP.width, MAP.height, MAP.maxEdge, { extraLinks: MAP.extraLinks, blockedLinks: MAP.blockedLinks });
 const idx = id => MAP.nodes.findIndex(n => n.id === id);
 const win = (day, node, winnerFaction, loserFaction) => ({ day, nodeIndex: idx(node), winnerFaction, loserFaction });
-const influence = (games, at) => computeInfluence({ graph, nodes: MAP.nodes, factions: MAP.factions, games, at });
+const influence = (games, at) => computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games, at });
 
 test('every faction holds its home with no games played', () => {
   const inf = influence([], 0);
-  for (const f of MAP.factions) assert.equal(inf[idx(f.home)].owner, f.id);
+  for (const f of FACTIONS) assert.equal(inf[idx(f.home)].owner, f.id);
 });
 
 test('homes never fall, however badly a faction loses there', () => {

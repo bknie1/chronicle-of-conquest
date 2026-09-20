@@ -10,6 +10,7 @@ export function demoView(setting, graph) {
   return {
     kind: 'demo',
     setting: setting.id,
+    level: 'codex',
     code: null,
     name: demo.name,
     start: DEMO_START,
@@ -23,7 +24,8 @@ export function demoView(setting, graph) {
 }
 
 export function campaignView(payload) {
-  const start = midnight(payload.campaign.createdAt);
+  // The timeline covers the current season, not all of history.
+  const start = midnight(payload.campaign.seasonStartedAt ?? payload.campaign.createdAt);
   const dayOf = ms => (ms - start.getTime()) / DAY;
   const me = payload.me && {
     ...payload.me,
@@ -32,6 +34,9 @@ export function campaignView(payload) {
   return {
     kind: 'campaign',
     setting: payload.campaign.setting,
+    level: payload.campaign.level ?? 'codex',
+    resetDays: payload.campaign.resetDays ?? 0,
+    seasonStartedAt: payload.campaign.seasonStartedAt,
     code: payload.campaign.code,
     name: payload.campaign.name,
     start,

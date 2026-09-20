@@ -95,6 +95,13 @@ export class MapView {
     return out.toDataURL('image/png');
   }
 
+  // The campaign's level of faction detail changed: new colours, new names.
+  setFactions(factions) {
+    this.factionById = new Map(factions.map(f => [f.id, f]));
+    this.patterns.clear();
+    this.defs.querySelectorAll('pattern').forEach(p => p.remove());
+  }
+
   stripes(a, b) {
     const id = `stripe-${a}-${b}`;
     if (!this.patterns.has(id)) {

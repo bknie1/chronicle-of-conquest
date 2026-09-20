@@ -1,7 +1,7 @@
 import './style.css';
 import { buildSettingGraph, computeInfluence, RULES } from './engine.js';
 import { MapView } from './map.js';
-import { SETTINGS } from './data/settings.js';
+import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
 
@@ -32,7 +32,7 @@ function contextFor(id) {
       graph,
       nodes: setting.nodes,
       nodeIndex: graph.index,
-      factionById: new Map(setting.factions.map(f => [f.id, f])),
+      factionById: new Map(setting.factions.map(f => [f.id, f])), // army books, whatever the level
       mapById: new Map(setting.maps.map(m => [m.id, m])),
     });
   }
@@ -45,6 +45,7 @@ const state = {
   ctx: null,        // contextFor(view.setting)
   mapId: null,      // which of the setting's maps is showing
   overview: false,  // showing every realm at once
+  level: 'codex',   // alliance | codex | detailed (see src/data/settings.js)
   at: 0,            // the day being shown; < view.today while replaying
   selected: null,   // setting-wide point index
   influence: null,
@@ -56,7 +57,15 @@ const V = () => state.view;
 const C = () => state.ctx;
 const NODES = () => C().nodes;
 const idx = id => C().nodeIndex.get(id);
-const faction = id => C().factionById.get(id);
+const factionList = () => factionsFor(C().setting, state.level);
+const faction = id => state.factionById?.get(id)
+  ?? C().factionById.get(id)
+  ?? { id, name: 'Unknown faction', color: '#8a8a8a' };
+// An army always records its most detailed faction; at a coarser level it counts as its parent.
+const factionOfArmy = armyFaction => C().setting.resolve(armyFaction, state.level);
+function rebuildFactions() {
+  state.factionById = new Map(factionList().map(f => [f.id, f]));
+}
 const current = () => C().graph.maps.get(state.mapId);
 const multiMap = () => C().setting.maps.length > 1;
 const toGlobal = local => local + current().offset;
@@ -81,10 +90,10 @@ function recompute() {
   const games = gamesSoFar().map(g => ({
     day: g.day,
     nodeIndex: idx(g.node),
-    winnerFaction: playerById(g.winner).faction,
-    loserFaction: playerById(g.loser).faction,
+    winnerFaction: factionOfArmy(playerById(g.winner).faction),
+    loserFaction: factionOfArmy(playerById(g.loser).faction),
   }));
-  state.influence = computeInfluence({ graph: C().graph, nodes: NODES(), factions: C().setting.factions, games, at: state.at });
+  state.influence = computeInfluence({ graph: C().graph, nodes: NODES(), factions: factionList(), games, at: state.at });
 }
 
 function eventsByNode() {
@@ -110,13 +119,13 @@ function playerStats() {
 }
 
 function factionStats() {
-  const factions = C().setting.factions;
+  const factions = factionList();
   const held = new Map(factions.map(f => [f.id, 0]));
   state.influence.forEach(s => s.owner && held.set(s.owner, held.get(s.owner) + 1));
   const recent = new Map(factions.map(f => [f.id, 0]));
   for (const g of gamesSoFar()) if (state.at - g.day <= 14) {
-    const f = playerById(g.winner).faction;
-    recent.set(f, recent.get(f) + 1);
+    const f = factionOfArmy(playerById(g.winner).faction);
+    if (recent.has(f)) recent.set(f, recent.get(f) + 1);
   }
   return factions.map(f => ({ ...f, held: held.get(f.id), recent: recent.get(f.id) }))
     .sort((a, b) => b.held - a.held || b.recent - a.recent);
@@ -135,7 +144,7 @@ const swatch = f => `<span class="swatch" style="--c:${f.color}"></span>`;
 const army = id => {
   const p = playerById(id);
   if (!p) return '<span class="muted">an unknown army</span>';
-  return `<span class="army" style="--c:${faction(p.faction).color}">${esc(p.army)}</span>`;
+  return `<span class="army" style="--c:${faction(factionOfArmy(p.faction)).color}">${esc(p.army)}</span>`;
 };
 // A link to a point; names the realm too when it isn't the one on screen.
 const place = i => {
@@ -227,6 +236,19 @@ function campaignHeader() {
       <button class="small" data-copy="${esc(link)}">Copy invite link</button></div>${cta}`;
 }
 
+// How much faction detail is on screen. Demos can switch freely; a campaign
+// plays at the level its organizer set.
+function detailControl() {
+  const v = V();
+  if (v.kind === 'demo') {
+    return `<div class="levels">${LEVELS.map(l => `<button class="${l === state.level ? 'active' : ''}"
+      data-level="${l}" title="${esc(LEVEL_HINTS[l])}">${esc(LEVEL_NAMES[l])}</button>`).join('')}</div>`;
+  }
+  const season = v.seasonStartedAt ? new Date(v.seasonStartedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : null;
+  return `<p class="muted small">Factions: <b>${esc(LEVEL_NAMES[state.level])}</b>${season ? ` · season began ${esc(season)}` : ''}${v.resetDays ? ` · new season every ${v.resetDays} days` : ''}
+    ${isOrganizer() ? ' · <button class="link" data-act="settings">Settings</button>' : ''}</p>`;
+}
+
 function attention() {
   const v = V();
   if (v.kind !== 'campaign' || !v.me?.role) return '';
@@ -260,6 +282,7 @@ function yourArmies() {
 
 function renderPanel() {
   const panel = $('#panel');
+  $('#sheet-title').textContent = state.selected != null ? NODES()[state.selected].name : V().name;
   if (state.selected != null) return renderRegion(panel, state.selected);
 
   const v = V();
@@ -273,6 +296,7 @@ function renderPanel() {
     <h2>${esc(v.name)}</h2>
     <p class="muted">${esc(C().setting.name)} · ${fmtDate(Math.floor(state.at))}${isToday() ? '' : ' · <b class="replay">Replaying history</b>'}</p>
     ${campaignHeader()}
+    ${detailControl()}
     ${attention()}
     ${yourArmies()}
 
@@ -467,7 +491,7 @@ function loadMap(mapId) {
     return out;
   });
   state.gateTargets = gates.map(g => g.to);
-  mapView.load(cur.map, cur.graph, C().setting.factions, gates);
+  mapView.load(cur.map, cur.graph, factionList(), gates);
 }
 
 function showMap(mapId) {
@@ -483,6 +507,53 @@ function showOverview() {
 }
 
 // --- drawing ---------------------------------------------------------------
+
+// On a phone the panel is a sheet over the map with three positions: just the
+// handle, half open, or nearly full. Drag it or tap the handle.
+const SHEET_STOPS = { peek: 'calc(100% - 46px)', half: '45%', full: '0px' };
+function setSheet(stop) {
+  const sheet = $('#sheet');
+  state.sheet = stop;
+  sheet.style.setProperty('--sheet-y', SHEET_STOPS[stop]);
+  sheet.classList.toggle('open', stop !== 'peek');
+  document.body.classList.toggle('sheet-open', stop !== 'peek');
+  if (stop !== 'peek') $('#peek').hidden = true;
+}
+
+function bindSheet() {
+  const sheet = $('#sheet');
+  const handle = $('#sheet-handle');
+  let drag = null;
+  const height = () => sheet.getBoundingClientRect().height;
+  handle.addEventListener('pointerdown', e => {
+    try { handle.setPointerCapture(e.pointerId); } catch { /* not a real pointer */ }
+    const offsets = { peek: height() - 46, half: height() * 0.45, full: 0 };
+    drag = { y: e.clientY, from: offsets[state.sheet] ?? offsets.peek, moved: false };
+    sheet.classList.add('dragging');
+  });
+  handle.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dy = e.clientY - drag.y;
+    if (!drag.moved && Math.abs(dy) < 5) return;
+    drag.moved = true;
+    sheet.style.setProperty('--sheet-y', `${Math.max(0, Math.min(height() - 46, drag.from + dy))}px`);
+  });
+  const end = () => {
+    if (!drag) return;
+    sheet.classList.remove('dragging');
+    if (!drag.moved) {
+      setSheet(state.sheet === 'peek' ? 'half' : state.sheet === 'half' ? 'full' : 'peek');
+    } else {
+      const y = parseFloat(getComputedStyle(sheet).getPropertyValue('--sheet-y'));
+      const stops = [['full', 0], ['half', height() * 0.45], ['peek', height() - 46]];
+      setSheet(stops.sort((a, b) => Math.abs(a[1] - y) - Math.abs(b[1] - y))[0][0]);
+    }
+    drag = null;
+  };
+  handle.addEventListener('pointerup', end);
+  handle.addEventListener('pointercancel', end);
+  setSheet('peek');
+}
 
 // Phones have no hover, so a tapped region's quick stats and battles show here.
 const narrow = () => matchMedia('(max-width: 900px)').matches;
@@ -588,18 +659,34 @@ async function refreshSession() {
   state.session = { user: s.user ?? null, campaigns: Array.isArray(s.campaigns) ? s.campaigns : [] };
 }
 
+// Demos let you flip between levels of detail to see what each looks like.
+function setLevel(level) {
+  if (!LEVELS.includes(level) || level === state.level) return;
+  state.level = level;
+  if (V().kind === 'demo') V().level = level;
+  rebuildFactions();
+  mapView.setFactions(factionList());
+  draw();
+}
+
 function setView(view, { keepDay = false } = {}) {
   const wasToday = !state.view || isToday();
   const settingChanged = state.view?.setting !== view.setting;
   state.view = view;
+  const levelChanged = state.level !== (view.level ?? 'codex');
+  state.level = view.level ?? 'codex';
+  if (settingChanged || levelChanged) {
+    if (settingChanged) state.ctx = contextFor(view.setting);
+    rebuildFactions();
+  }
   if (settingChanged) {
-    state.ctx = contextFor(view.setting);
     state.mapId = null;
     loadMap(C().setting.maps[0].id);
     state.overview = multiMap(); // a multi-realm setting opens on the overview
   }
   if (!keepDay || wasToday) state.at = view.today;
   else state.at = Math.min(state.at, view.today);
+  if (levelChanged && !settingChanged && state.mapId) mapView.setFactions(factionList());
   renderTopbar();
   draw();
 }
@@ -681,8 +768,20 @@ function openModal(html, onSubmit) {
 
 const cancelRow = label => `<div class="row"><button value="cancel" formnovalidate>Cancel</button><button class="primary">${label}</button></div>`;
 
+// Every faction someone can muster as, grouped by army book when a setting has sub-factions.
+function armyOptionsByBook() {
+  const books = new Map(C().setting.factions.map(f => [f.id, []]));
+  for (const f of armyFactionsFor(C().setting)) books.get(C().setting.resolve(f.id, 'codex'))?.push(f);
+  return [...books].map(([bookId, list]) => {
+    const book = C().factionById.get(bookId);
+    if (list.length === 1 && list[0].id === bookId) return `<option value="${esc(bookId)}">${esc(book.name)}</option>`;
+    return `<optgroup label="${esc(book.name)}">${list.map(f =>
+      `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('')}</optgroup>`;
+  }).join('');
+}
+
 const armyOptions = (list, selected) => C().setting.factions.map(f => {
-  const group = list.filter(p => p.faction === f.id);
+  const group = list.filter(p => C().setting.resolve(p.faction, 'codex') === f.id);
   return group.length ? `<optgroup label="${esc(f.name)}">${group.map(p =>
     `<option value="${p.id}" ${p.id === selected ? 'selected' : ''}>${esc(p.army)} (${esc(p.name)})</option>`).join('')}</optgroup>` : '';
 }).join('');
@@ -801,11 +900,31 @@ async function joinThis() {
   } catch (e) { toast(esc(e.message)); }
 }
 
+function openSettings() {
+  const v = V();
+  openModal(`
+    <h2>Campaign settings</h2>
+    <label>Campaign name<input name="name" required minlength="3" maxlength="60" value="${esc(v.name)}"></label>
+    <label>Faction detail<select name="level">${LEVELS.map(l =>
+      `<option value="${l}" ${l === state.level ? 'selected' : ''}>${esc(LEVEL_NAMES[l])} — ${esc(LEVEL_HINTS[l])}</option>`).join('')}</select></label>
+    <label>New season every<select name="resetDays">${[0, 30, 60, 90, 180, 365].map(d =>
+      `<option value="${d}" ${d === (v.resetDays ?? 0) ? 'selected' : ''}>${d ? `${d} days` : 'Never, I reset it myself'}</option>`).join('')}</select></label>
+    <p class="muted small">A new season clears the map and everyone starts from their homelands again. The chronicle keeps every game.</p>
+    <div class="row"><button type="button" class="ghost" data-act="reset">Start a new season now</button></div>
+    ${cancelRow('Save settings')}`,
+  async data => {
+    await campaignCall('POST', '/settings', {
+      name: data.get('name'), level: data.get('level'), resetDays: Number(data.get('resetDays')),
+    });
+    toast('Campaign settings saved.');
+  });
+}
+
 function openMuster() {
   openModal(`
     <h2>Muster an army</h2>
     <p class="muted">Each army fights for one faction. Play more than one army? Muster each separately.</p>
-    <label>Faction<select name="faction" required>${C().setting.factions.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></label>
+    <label>Faction<select name="faction" required>${armyOptionsByBook()}</select></label>
     <label>Army name<input name="name" required minlength="2" maxlength="40" placeholder="Give your army a name"></label>
     ${cancelRow('Muster')}`,
   async data => {
@@ -858,7 +977,7 @@ function openDemoReport({ node, players }) {
     ${cancelRow('Submit result')}`,
   async (data, form) => {
     const winner = data.get('winner'), loser = data.get('loser'), i = Number(data.get('node'));
-    if (playerById(winner).faction === playerById(loser).faction) return 'Pick armies from two different factions.';
+    if (factionOfArmy(playerById(winner).faction) === factionOfArmy(playerById(loser).faction)) return 'Pick armies from two different factions.';
     const btn = form.querySelector('button.primary');
     const wait = ms => new Promise(r => setTimeout(r, ms));
     btn.textContent = `Waiting for ${playerById(loser).name} to confirm…`;
@@ -881,13 +1000,14 @@ function openChallenge({ node = defaultNode() } = {}) {
   const demo = V().kind === 'demo';
   const mine = demo ? activeArmies() : myArmies();
   const foes = demo ? activeArmies() : activeArmies().filter(p => !V().me.armyIds.has(p.id));
+  const sameSide = (x, y) => factionOfArmy(x.faction) === factionOfArmy(y.faction);
   if (!foes.length) return toast('No one to fight yet. Share the join code and wait for a rival to muster.');
   const first = mine[0];
   const days = [0, 1, 2, 3, 4, 5, 6, 7, 10, 14];
   openModal(`
     <h2>Issue a challenge</h2>
     <label>${demo ? 'Challenger' : 'Your army'}<select name="a">${armyOptions(mine, first.id)}</select></label>
-    <label>Opponent<select name="b" required>${armyOptions(foes, foes.find(p => p.faction !== first.faction)?.id)}</select></label>
+    <label>Opponent<select name="b" required>${armyOptions(foes, foes.find(p => !sameSide(p, first))?.id)}</select></label>
     <label>Battlefield<select name="node">${nodeOptions(node)}</select></label>
     <label>When<select name="when">${days.map(d => `<option value="${d}">${d === 0 ? 'Tonight' : d === 1 ? 'Tomorrow' : `In ${d} days`} · ${fmtDate(Math.floor(V().today) + d)}</option>`).join('')}</select></label>
     <label>Stakes (optional)<input name="note" maxlength="80" placeholder="What's at stake?"></label>
@@ -896,7 +1016,7 @@ function openChallenge({ node = defaultNode() } = {}) {
     const a = demo ? data.get('a') : Number(data.get('a'));
     const b = demo ? data.get('b') : Number(data.get('b'));
     if (!b) return 'Pick an opponent.';
-    if (playerById(a).faction === playerById(b).faction) return 'Pick armies from two different factions.';
+    if (factionOfArmy(playerById(a).faction) === factionOfArmy(playerById(b).faction)) return 'Pick armies from two different factions.';
     const n = NODES()[Number(data.get('node'))];
     const day = Math.floor(V().today) + Number(data.get('when'));
     const note = String(data.get('note')).trim();
@@ -971,12 +1091,13 @@ const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-level],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
   if ('peekClose' in d) return select(null);
-  if ('peekDetails' in d) return $('#panel').scrollIntoView({ behavior: 'smooth' });
+  if (d.level) return setLevel(d.level);
+  if ('peekDetails' in d) return narrow() ? setSheet('full') : $('#panel').scrollIntoView({ behavior: 'smooth' });
   if (d.realm) {
     if (d.realm === '__all') return showOverview();
     if (state.selected != null) select(null);
@@ -1004,6 +1125,9 @@ document.addEventListener('click', e => {
   if (d.act === 'join-this') return joinThis();
   if (d.act === 'muster') return openMuster();
   if (d.act === 'auth') return openAuth();
+  if (d.act === 'settings') return openSettings();
+  if (d.act === 'reset') return confirmAct('Start a new season? The map clears and every faction falls back to its homeland. Games stay in the chronicle.',
+    () => act(async () => { $('#modal').close(); await campaignCall('POST', '/reset'); toast('A new season begins.'); }));
 });
 
 // Keep a campaign live: pick up other players' results and challenges.
@@ -1012,4 +1136,7 @@ setInterval(() => {
   loadCampaign(V().code, { keepDay: true }).catch(() => {});
 }, 60e3);
 
+bindSheet();
+// Measure the timeline once so the sheet sits above it.
+document.documentElement.style.setProperty('--timeline-h', `${Math.round($('.timeline').getBoundingClientRect().height)}px`);
 refreshSession().then(route);

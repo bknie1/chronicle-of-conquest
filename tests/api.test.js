@@ -146,7 +146,10 @@ test('pending results auto-confirm after the window', async () => {
   const armyB = (await b.post(`/campaigns/${code}/armies`, { faction: 'chaos', name: 'Unbound' })).body.armies.at(-1).id;
   const g = (await a.post(`/campaigns/${code}/games`, { winner: armyA, loser: armyB, node: 'praag' })).body.games[0];
   assert.equal(g.status, 'pending');
-  db.prepare('UPDATE games SET played_at = ? WHERE id = ?').run(Date.now() - AUTO_CONFIRM_MS - 1000, g.id);
+  // Backdate the game past the window, and the season with it (a game can't predate its campaign).
+  const long_ago = Date.now() - AUTO_CONFIRM_MS - 1000;
+  db.prepare('UPDATE games SET played_at = ? WHERE id = ?').run(long_ago, g.id);
+  db.prepare('UPDATE campaigns SET season_started_at = ? WHERE code = ?').run(long_ago - 1000, code);
   const later = await client().get(`/campaigns/${code}`);
   assert.equal(later.body.games[0].status, 'confirmed');
 });
@@ -181,4 +184,57 @@ test('Age of Sigmar campaigns accept realm factions and battlefields in any real
   const r = await a.post(`/campaigns/${code}/games`, { winner: ironjawz, loser: freeguild, node: 'hammerhal-ghyra' });
   assert.equal(r.status, 201);
   assert.equal(r.body.campaign.setting, 'mortal-realms');
+});
+
+test('campaigns pick a faction detail level, and organizers can reset the season', async () => {
+  const org = await signup('season_org');
+  const rival = await signup('season_rival');
+  assert.equal((await org.post('/campaigns', { name: 'Detail Test', level: 'nonsense' })).status, 400);
+  const created = await org.post('/campaigns', { name: 'Detail Test', level: 'alliance' });
+  const { code } = created.body;
+  await rival.post(`/campaigns/${code}/join`);
+  let r = await org.get(`/campaigns/${code}`);
+  assert.equal(r.body.campaign.level, 'alliance');
+  assert.ok(r.body.campaign.seasonStartedAt > 0);
+
+  const mine = (await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Reiksguard' })).body.armies.at(-1).id;
+  const theirs = (await rival.post(`/campaigns/${code}/armies`, { faction: 'orcs', name: 'Waaagh' })).body.armies.at(-1).id;
+  const g = (await org.post(`/campaigns/${code}/games`, { winner: mine, loser: theirs, node: 'altdorf' })).body.games[0];
+  await rival.post(`/campaigns/${code}/games/${g.id}/confirm`);
+  assert.equal((await org.get(`/campaigns/${code}`)).body.games.length, 1);
+
+  // Only organizers may change settings or reset.
+  assert.equal((await rival.post(`/campaigns/${code}/settings`, { level: 'codex' })).status, 403);
+  assert.equal((await rival.post(`/campaigns/${code}/reset`)).status, 403);
+
+  r = await org.post(`/campaigns/${code}/settings`, { name: 'Detail Test', level: 'detailed', resetDays: 30 });
+  assert.equal(r.body.campaign.level, 'detailed');
+  assert.equal(r.body.campaign.resetDays, 30);
+  assert.equal((await org.post(`/campaigns/${code}/settings`, { resetDays: 900 })).status, 400);
+
+  // A new season clears the map; the games stay in the database.
+  r = await org.post(`/campaigns/${code}/reset`);
+  assert.equal(r.body.games.length, 0, 'games before the season no longer count');
+  assert.equal(r.body.armies.length, 2, 'armies survive a reset');
+  assert.ok(r.body.campaign.seasonStartedAt >= g.playedAt);
+});
+
+test('an automatic season rolls over once its interval passes', async () => {
+  const org = await signup('auto_season');
+  const foe = await signup('auto_foe');
+  const { code } = (await org.post('/campaigns', { name: 'Auto Season' })).body;
+  await foe.post(`/campaigns/${code}/join`);
+  const a = (await org.post(`/campaigns/${code}/armies`, { faction: 'dwarfs', name: 'Throng' })).body.armies.at(-1).id;
+  const b = (await foe.post(`/campaigns/${code}/armies`, { faction: 'orcs', name: 'Gitz' })).body.armies.at(-1).id;
+  const game = (await org.post(`/campaigns/${code}/games`, { winner: a, loser: b, node: 'badlands' })).body.games[0];
+  await foe.post(`/campaigns/${code}/games/${game.id}/confirm`);
+  await org.post(`/campaigns/${code}/settings`, { resetDays: 30 });
+  // Backdate the season and the game by 31 days: the season should roll over.
+  const id = db.prepare('SELECT id FROM campaigns WHERE code = ?').get(code).id;
+  const old = Date.now() - 31 * 86400e3;
+  db.prepare('UPDATE campaigns SET season_started_at = ? WHERE id = ?').run(old, id);
+  db.prepare('UPDATE games SET played_at = ? WHERE campaign_id = ?').run(old + 3600e3, id);
+  const after = await org.get(`/campaigns/${code}`);
+  assert.equal(after.body.games.length, 0, 'the old season ended');
+  assert.ok(after.body.campaign.seasonStartedAt > old, 'the season moved forward');
 });

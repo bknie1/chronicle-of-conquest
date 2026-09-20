@@ -1,9 +1,10 @@
 import crypto from 'node:crypto';
 import express from 'express';
-import { SETTINGS } from '../src/data/settings.js';
+import { SETTINGS, LEVELS, armyFactionsFor } from '../src/data/settings.js';
 import { HttpError, id, requireUser, text } from './util.js';
 
 export const AUTO_CONFIRM_MS = 48 * 3600e3;
+const DAY_MS = 86400e3;
 const MAX_ACTIVE_ARMIES = 5;
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O or 1/I
 
@@ -22,8 +23,11 @@ export function campaignRoutes(db) {
   const router = express.Router();
   const q = {
     campaignByCode: db.prepare('SELECT * FROM campaigns WHERE code = ?'),
-    insertCampaign: db.prepare('INSERT INTO campaigns (code, name, setting, owner_id, created_at) VALUES (?, ?, ?, ?, ?)'),
-    myCampaigns: db.prepare(`SELECT c.code, c.name, c.setting, m.role FROM members m JOIN campaigns c ON c.id = m.campaign_id
+    insertCampaign: db.prepare(`INSERT INTO campaigns (code, name, setting, owner_id, created_at, level, season_started_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`),
+    setSeason: db.prepare('UPDATE campaigns SET season_started_at = ? WHERE id = ?'),
+    setOptions: db.prepare('UPDATE campaigns SET name = ?, level = ?, reset_days = ? WHERE id = ?'),
+    myCampaigns: db.prepare(`SELECT c.code, c.name, c.setting, c.level, m.role FROM members m JOIN campaigns c ON c.id = m.campaign_id
       WHERE m.user_id = ? ORDER BY m.joined_at DESC`),
     member: db.prepare('SELECT role FROM members WHERE campaign_id = ? AND user_id = ?'),
     insertMember: db.prepare('INSERT OR IGNORE INTO members (campaign_id, user_id, role, joined_at) VALUES (?, ?, ?, ?)'),
@@ -86,22 +90,42 @@ export function campaignRoutes(db) {
     return g.reported_by === winner.user_id ? loser.user_id : winner.user_id;
   };
 
+  // Seasons. A campaign can reset by hand or on an interval; older games stay
+  // in the database but no longer count.
+  function season(c) {
+    let start = c.season_started_at ?? c.created_at;
+    if (c.reset_days > 0) {
+      const span = c.reset_days * DAY_MS;
+      const missed = Math.floor((Date.now() - start) / span);
+      if (missed > 0) {
+        start += missed * span;
+        q.setSeason.run(start, c.id);
+        c.season_started_at = start;
+      }
+    }
+    return start;
+  }
+
   function payload(c, user) {
     const now = Date.now();
+    const seasonStart = season(c);
     q.autoConfirm.run(now, c.id, now - AUTO_CONFIRM_MS);
     return {
-      campaign: { code: c.code, name: c.name, setting: c.setting, createdAt: c.created_at },
+      campaign: {
+        code: c.code, name: c.name, setting: c.setting, createdAt: c.created_at,
+        level: c.level ?? 'codex', seasonStartedAt: seasonStart, resetDays: c.reset_days ?? 0,
+      },
       me: user ? { userId: user.id, displayName: user.displayName, role: roleOf(c, user) } : null,
       members: q.members.all(c.id).map(m => ({ userId: m.user_id, displayName: m.display_name, role: m.role, joinedAt: m.joined_at })),
       armies: q.armies.all(c.id).map(a => ({
         id: a.id, userId: a.user_id, playerName: a.display_name, faction: a.faction, name: a.name,
         createdAt: a.created_at, retiredAt: a.retired_at,
       })),
-      games: q.games.all(c.id).map(g => ({
+      games: q.games.all(c.id).filter(g => g.played_at >= seasonStart).map(g => ({
         id: g.id, node: g.node, winner: g.winner_army, loser: g.loser_army, playedAt: g.played_at,
         status: g.status, reportedBy: g.reported_by, confirmer: g.status === 'confirmed' ? null : confirmerOf(g),
       })),
-      events: q.events.all(c.id, now - 36 * 3600e3).map(e => ({
+      events: q.events.all(c.id, Math.max(seasonStart, now - 36 * 3600e3)).map(e => ({
         id: e.id, node: e.node, armies: [e.army_a, e.army_b], scheduledFor: e.scheduled_for, note: e.note, createdBy: e.created_by,
       })),
       autoConfirmHours: AUTO_CONFIRM_MS / 3600e3,
@@ -119,10 +143,13 @@ export function campaignRoutes(db) {
     const name = text(req.body.name, 'Campaign name', { min: 3, max: 60 });
     const setting = req.body.setting || 'old-world';
     if (!SETTINGS[setting]) throw new HttpError(400, 'That setting is not available yet.');
+    const level = req.body.level || 'codex';
+    if (!LEVELS.includes(level)) throw new HttpError(400, 'Pick how much faction detail to play with.');
     let code;
     do code = newCode(); while (q.campaignByCode.get(code));
+    const now = Date.now();
     db.transaction(() => {
-      const { lastInsertRowid } = q.insertCampaign.run(code, name, setting, user.id, Date.now());
+      const { lastInsertRowid } = q.insertCampaign.run(code, name, setting, user.id, now, level, now);
       q.insertMember.run(lastInsertRowid, user.id, 'organizer', Date.now());
     })();
     res.status(201).json({ code });
@@ -139,11 +166,39 @@ export function campaignRoutes(db) {
     res.json(payload(c, user));
   });
 
+  const requireOrganizer = (c, user) => {
+    if (requireMember(c, user) !== 'organizer') throw new HttpError(403, 'Only an organizer can do that.');
+  };
+
+  router.post('/campaigns/:code/settings', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    const name = text(req.body.name ?? c.name, 'Campaign name', { min: 3, max: 60 });
+    const level = req.body.level ?? c.level ?? 'codex';
+    if (!LEVELS.includes(level)) throw new HttpError(400, 'Pick how much faction detail to play with.');
+    const resetDays = Number(req.body.resetDays ?? c.reset_days ?? 0);
+    if (!Number.isInteger(resetDays) || resetDays < 0 || resetDays > 365) {
+      throw new HttpError(400, 'A season can run from 1 to 365 days, or 0 for no automatic reset.');
+    }
+    q.setOptions.run(name, level, resetDays || null, c.id);
+    res.json(payload(q.campaignByCode.get(c.code), user));
+  });
+
+  // A new season: the map starts fresh, the chronicle keeps everything.
+  router.post('/campaigns/:code/reset', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    q.setSeason.run(Date.now(), c.id);
+    res.json(payload(q.campaignByCode.get(c.code), user));
+  });
+
   router.post('/campaigns/:code/armies', (req, res) => {
     const user = requireUser(req);
     const c = load(req);
     requireMember(c, user);
-    const faction = SETTINGS[c.setting].factions.find(f => f.id === req.body.faction);
+    const faction = armyFactionsFor(SETTINGS[c.setting]).find(f => f.id === req.body.faction);
     if (!faction) throw new HttpError(400, 'Pick a faction.');
     const name = text(req.body.name, 'Army name', { min: 2, max: 40 });
     if (q.activeArmyCount.get(c.id, user.id).n >= MAX_ACTIVE_ARMIES) {
