@@ -3,3 +3,8 @@ dist/
 /data/
 .claude/worktrees/
 .mapref/
+
+# Agent scratch space and preview renders
+.scratch/
+.scratch2/
+.pv-*.jpg

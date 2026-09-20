@@ -178,8 +178,12 @@ test('Age of Sigmar campaigns accept realm factions and battlefields in any real
   const { code } = (await a.post('/campaigns', { name: 'Realmgate Wars', setting: 'mortal-realms' })).body;
   await b.post(`/campaigns/${code}/join`);
   assert.equal((await a.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Wrong setting' })).status, 400);
-  const ironjawz = (await a.post(`/campaigns/${code}/armies`, { faction: 'warclan-ironsunz', name: 'Ironjawz' })).body.armies.at(-1).id;
-  const freeguild = (await b.post(`/campaigns/${code}/armies`, { faction: 'city-hammerhal', name: 'Freeguild' })).body.armies.at(-1).id;
+  // An army fights for an army book, from one of that book's starting grounds.
+  assert.equal((await a.post(`/campaigns/${code}/armies`, { faction: 'orruk-ironjawz', name: 'Not a book' })).status, 400);
+  const mustered = await a.post(`/campaigns/${code}/armies`, { faction: 'orruks', start: 'orruk-ironjawz', name: 'Ironjawz' });
+  assert.equal(mustered.body.armies.at(-1).start, 'orruk-ironjawz');
+  const ironjawz = mustered.body.armies.at(-1).id;
+  const freeguild = (await b.post(`/campaigns/${code}/armies`, { faction: 'cities', start: 'city-hammerhal', name: 'Freeguild' })).body.armies.at(-1).id;
   assert.equal((await a.post(`/campaigns/${code}/games`, { winner: ironjawz, loser: freeguild, node: 'altdorf' })).status, 400);
   const r = await a.post(`/campaigns/${code}/games`, { winner: ironjawz, loser: freeguild, node: 'hammerhal-ghyra' });
   assert.equal(r.status, 201);
@@ -207,8 +211,8 @@ test('campaigns pick a faction detail level, and organizers can reset the season
   assert.equal((await rival.post(`/campaigns/${code}/settings`, { level: 'codex' })).status, 403);
   assert.equal((await rival.post(`/campaigns/${code}/reset`)).status, 403);
 
-  r = await org.post(`/campaigns/${code}/settings`, { name: 'Detail Test', level: 'detailed', resetDays: 30 });
-  assert.equal(r.body.campaign.level, 'detailed');
+  r = await org.post(`/campaigns/${code}/settings`, { name: 'Detail Test', level: 'codex', resetDays: 30 });
+  assert.equal(r.body.campaign.level, 'codex');
   assert.equal(r.body.campaign.resetDays, 30);
   assert.equal((await org.post(`/campaigns/${code}/settings`, { resetDays: 900 })).status, 400);
 

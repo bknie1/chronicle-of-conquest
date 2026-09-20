@@ -1,7 +1,7 @@
 import './style.css';
 import { buildSettingGraph, computeInfluence, RULES } from './engine.js';
 import { MapView } from './map.js';
-import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor } from './data/settings.js';
+import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
 
@@ -45,7 +45,7 @@ const state = {
   ctx: null,        // contextFor(view.setting)
   mapId: null,      // which of the setting's maps is showing
   overview: false,  // showing every realm at once
-  level: 'codex',   // alliance | codex | detailed (see src/data/settings.js)
+  level: 'codex',   // alliance | codex (see src/data/settings.js)
   at: 0,            // the day being shown; < view.today while replaying
   selected: null,   // setting-wide point index
   influence: null,
@@ -61,8 +61,13 @@ const factionList = () => factionsFor(C().setting, state.level);
 const faction = id => state.factionById?.get(id)
   ?? C().factionById.get(id)
   ?? { id, name: 'Unknown faction', color: '#8a8a8a' };
-// An army always records its most detailed faction; at a coarser level it counts as its parent.
+// An army records its army book; at the alliance level it counts as its side.
 const factionOfArmy = armyFaction => C().setting.resolve(armyFaction, state.level);
+// The grounds armies mustered from, other than their faction's own seat.
+const footholds = () => activeArmies().map(p => ({
+  faction: factionOfArmy(p.faction),
+  point: p.start ? startPoint(C().setting, p.start) : null,
+})).filter(f => f.point);
 function rebuildFactions() {
   state.factionById = new Map(factionList().map(f => [f.id, f]));
 }
@@ -95,9 +100,7 @@ function recompute() {
   }));
   state.influence = computeInfluence({
     graph: C().graph, nodes: NODES(), factions: factionList(), games, at: state.at,
-    // Sub-faction play has a home for nearly every point, so those are starting
-    // grounds rather than untouchable ones.
-    homeRule: state.level === 'detailed' ? 'contestable' : 'safe',
+    footholds: footholds(),
   });
 }
 
@@ -773,16 +776,16 @@ function openModal(html, onSubmit) {
 
 const cancelRow = label => `<div class="row"><button value="cancel" formnovalidate>Cancel</button><button class="primary">${label}</button></div>`;
 
-// Every faction someone can muster as, grouped by army book when a setting has sub-factions.
-function armyOptionsByBook() {
-  const books = new Map(C().setting.factions.map(f => [f.id, []]));
-  for (const f of armyFactionsFor(C().setting)) books.get(C().setting.resolve(f.id, 'codex'))?.push(f);
-  return [...books].map(([bookId, list]) => {
-    const book = C().factionById.get(bookId);
-    if (list.length === 1 && list[0].id === bookId) return `<option value="${esc(bookId)}">${esc(book.name)}</option>`;
-    // The book itself is a choice too, for anyone who doesn't pick a sub-faction.
-    return `<optgroup label="${esc(book.name)}"><option value="${esc(bookId)}">${esc(book.name)} (no sub-faction)</option>${list.map(f =>
-      `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('')}</optgroup>`;
+// Every faction someone can muster as: one entry per army book.
+const factionOptions = () => armyFactionsFor(C().setting)
+  .map(f => `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('');
+
+// Where that faction can begin. Its own seat first, then its sub-factions' grounds.
+function startOptions(factionId) {
+  return startsFor(C().setting, factionId).map(s => {
+    const where = NODES()[idx(s.point)]?.name ?? s.point;
+    const label = s.seat ? `${s.name} — ${where} (home)` : `${s.name} — ${where}`;
+    return `<option value="${esc(s.id)}">${esc(label)}</option>`;
   }).join('');
 }
 
@@ -927,18 +930,23 @@ function openSettings() {
 }
 
 function openMuster() {
-  openModal(`
+  const first = armyFactionsFor(C().setting)[0].id;
+  const form = openModal(`
     <h2>Muster an army</h2>
     <p class="muted">Each army fights for one faction. Play more than one army? Muster each separately.</p>
-    <label>Faction<select name="faction" required>${armyOptionsByBook()}</select></label>
+    <label>Faction<select name="faction" required>${factionOptions()}</select></label>
+    <label>Starting ground<select name="start" required>${startOptions(first)}</select>
+      <span class="hint">Every win counts for your faction. Only its home is safe ground.</span></label>
     <label>Army name<input name="name" required minlength="2" maxlength="40" placeholder="Give your army a name"></label>
     ${cancelRow('Muster')}`,
   async data => {
-    await campaignCall('POST', '/armies', { faction: data.get('faction'), name: data.get('name') });
-    const f = faction(data.get('faction'));
-    const home = NODES()[idx(f.home)];
-    toast(`<b>${esc(data.get('name'))}</b> takes the field from ${esc(home.name)}.`);
+    await campaignCall('POST', '/armies', {
+      faction: data.get('faction'), start: data.get('start'), name: data.get('name'),
+    });
+    const where = NODES()[idx(startPoint(C().setting, data.get('start')))];
+    toast(`<b>${esc(data.get('name'))}</b> takes the field from ${esc(where.name)}.`);
   });
+  form.faction.addEventListener('change', () => { form.start.innerHTML = startOptions(form.faction.value); });
 }
 
 function goToToday() {

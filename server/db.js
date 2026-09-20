@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS campaigns (
   setting TEXT NOT NULL,
   owner_id INTEGER NOT NULL REFERENCES users(id),
   created_at INTEGER NOT NULL,
-  -- How much faction detail this campaign plays at: alliance | codex | detailed.
+  -- How much faction detail this campaign plays at: alliance | codex.
   level TEXT NOT NULL DEFAULT 'codex',
   -- The current season. Games before this are history, not territory.
   season_started_at INTEGER,
@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS armies (
   campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
   user_id INTEGER NOT NULL REFERENCES users(id),
   faction TEXT NOT NULL,
+  -- Which of that faction's grounds this army mustered from.
+  start TEXT,
   name TEXT NOT NULL,
   created_at INTEGER NOT NULL,
   retired_at INTEGER
@@ -75,6 +77,7 @@ const LATER_COLUMNS = [
   ['campaigns', 'level', "TEXT NOT NULL DEFAULT 'codex'"],
   ['campaigns', 'season_started_at', 'INTEGER'],
   ['campaigns', 'reset_days', 'INTEGER'],
+  ['armies', 'start', 'TEXT'],
 ];
 
 export function openDb(file) {

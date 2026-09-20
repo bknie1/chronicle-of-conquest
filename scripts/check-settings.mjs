@@ -24,11 +24,16 @@ for (const setting of Object.values(SETTINGS)) {
     if (homes.size !== list.length) fail(`${level}: ${list.length - homes.size} faction(s) share a home`);
   }
 
-  // Every faction should be reachable from the coarsest level down.
-  for (const f of setting.levels.detailed) {
-    if (setting.resolve(f.id, 'codex') === undefined) fail(`${f.name} has no army book`);
-    if (setting.resolve(f.id, 'alliance') === undefined) fail(`${f.name} has no grand alliance`);
+  // Every start must sit on a real point, and belong to a real faction.
+  const books = new Set(setting.factions.map(f => f.id));
+  const usedStartIds = new Set();
+  for (const start of setting.starts) {
+    if (usedStartIds.has(start.id)) fail(`start id "${start.id}" is used twice`);
+    usedStartIds.add(start.id);
+    if (!points.has(start.point)) fail(`${start.name}'s starting ground "${start.point}" is not a point`);
+    if (!books.has(setting.factionOfStart.get(start.id))) fail(`${start.name} belongs to no army book`);
   }
+  console.log(`  ${setting.starts.length} starting grounds across ${setting.factions.length} army books`);
 
   // Each map must be one connected piece, and the whole setting joined by gates.
   for (const map of setting.maps) {

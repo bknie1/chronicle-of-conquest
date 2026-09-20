@@ -10,12 +10,20 @@ export function demoView(setting, graph) {
   return {
     kind: 'demo',
     setting: setting.id,
-    level: 'codex',
+    level: setting.defaultLevel,
     code: null,
     name: demo.name,
     start: DEMO_START,
     today: DEMO_TODAY,
-    players: demo.players.map(p => ({ ...p, joinedDay: p.active[0], retired: false })),
+    // A demo player's `faction` names the ground they muster from — an army
+    // book's own seat, or one of its sub-factions'. Both resolve to the book.
+    players: demo.players.map(p => ({
+      ...p,
+      faction: setting.factionOfStart.get(p.faction) ?? p.faction,
+      start: p.faction,
+      joinedDay: p.active[0],
+      retired: false,
+    })),
     games: generateHistory(graph, setting, demo).map(g => ({ ...g, status: 'confirmed' })),
     events: demo.events.map(e => ({ ...e })),
     me: null,

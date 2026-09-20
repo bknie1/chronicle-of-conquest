@@ -79,11 +79,26 @@ test('a pair in both extraLinks and blockedLinks stays blocked', () => {
   assert.ok(!g.adj[0].includes(2));
 });
 
-test('a starting ground is hard to take, unlike a safe home', () => {
-  const games = Array.from({ length: 8 }, (_, k) => win(k * 2, 'altdorf', 'bretonnia', 'empire'));
+test('a foothold is hard to take, unlike a safe home', () => {
+  // Nuln is nobody's home, so an army that mustered there holds it outright.
+  const footholds = [{ faction: 'empire', point: 'nuln' }];
+  const quiet = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games: [], at: 0, footholds });
+  assert.equal(quiet[idx('nuln')].owner, 'empire', 'a foothold claims its ground');
+
+  const games = Array.from({ length: 8 }, (_, k) => win(k * 2, 'nuln', 'bretonnia', 'empire'));
   const at = 16;
-  const safe = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games, at });
-  const contestable = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games, at, homeRule: 'contestable' });
+  const pressed = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games, at, footholds });
+  assert.equal(pressed[idx('nuln')].owner, 'bretonnia', 'a foothold falls to a sustained campaign');
+
+  const home = Array.from({ length: 8 }, (_, k) => win(k * 2, 'altdorf', 'bretonnia', 'empire'));
+  const safe = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games: home, at });
   assert.equal(safe[idx('altdorf')].owner, 'empire', 'a safe home never falls');
-  assert.equal(contestable[idx('altdorf')].owner, 'bretonnia', 'a starting ground falls to a sustained campaign');
+});
+
+test('the same ground counts once however many armies muster there', () => {
+  const one = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games: [], at: 0,
+    footholds: [{ faction: 'empire', point: 'nuln' }] });
+  const three = computeInfluence({ graph, nodes: MAP.nodes, factions: FACTIONS, games: [], at: 0,
+    footholds: Array.from({ length: 3 }, () => ({ faction: 'empire', point: 'nuln' })) });
+  assert.equal(three[idx('nuln')].strength, one[idx('nuln')].strength);
 });

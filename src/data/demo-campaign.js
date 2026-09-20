@@ -33,6 +33,32 @@ export const DEMOS = {
       { id: 'e6', day: 130, node: 'bastonne', players: ['michael', 'jordan'] },
     ],
   },
+  'warhammer-fantasy': {
+    name: 'The World That Was',
+    seed: 8500,
+    players: [
+      { id: 'michael', name: 'Michael', army: 'Knights of Bastonne', faction: 'wf-bastonne-dukedom', skill: 0.6, active: [0, 123] },
+      { id: 'brett', name: 'Brett', army: 'The Bloodhost of Kharnath', faction: 'wf-chaos-warriors', skill: 0.63, active: [0, 123], surge: 82 },
+      { id: 'sean', name: 'Sean', army: 'Tallybearers of Nurgle', faction: 'wf-daemons', skill: 0.56, active: [0, 123] },
+      { id: 'ryan', name: 'Ryan', army: 'Sea Guard of Eataine', faction: 'wf-eataine', skill: 0.6, active: [0, 123] },
+      { id: 'conrad', name: 'Conrad', army: 'The Jade Caravan', faction: 'wf-cathay-west', skill: 0.56, active: [0, 90] },
+      { id: 'anthony', name: 'Anthony', army: 'Infernal Guard of Zharr', faction: 'wf-chaos-dwarfs', skill: 0.6, active: [0, 123] },
+      { id: 'jordan', name: 'Jordan', army: 'Waaagh! Jordgut', faction: 'wf-orcs', skill: 0.55, active: [0, 123] },
+      { id: 'rattmatt', name: 'Ratt Matt', army: 'Clan Mors Stormvermin', faction: 'wf-clan-mors', skill: 0.58, active: [0, 123] },
+      { id: 'dee', name: 'Dee', army: 'Reiksguard of Altdorf', faction: 'wf-reikland', skill: 0.57, active: [0, 123] },
+      { id: 'jowi', name: 'Jowi', army: 'The Drakenhof Retinue', faction: 'wf-von-carstein', skill: 0.59, active: [10, 123] },
+      { id: 'dylan', name: 'Dylan', army: 'Sunblood of Hexoatl', faction: 'wf-hexoatl-city', skill: 0.58, active: [0, 123] },
+      { id: 'danil', name: 'Danil', army: 'Ungol Horse of Kislev', faction: 'wf-kislev', skill: 0.55, active: [25, 123] },
+    ],
+    events: [
+      { id: 'e1', day: 123, node: 'fw-eight-peaks', players: ['rattmatt', 'jordan'], note: 'Who rules the Eight Peaks tonight' },
+      { id: 'e2', day: 123, node: 'fw-eight-peaks', players: ['dee', 'brett'], note: 'The Reiksguard ride out' },
+      { id: 'e3', day: 123, node: 'fw-drakwald', players: ['jowi', 'michael'] },
+      { id: 'e4', day: 125, node: 'fw-kislev-city', players: ['danil', 'sean'], note: 'Hold the gates of Kislev' },
+      { id: 'e5', day: 128, node: 'fw-lothern', players: ['ryan', 'dylan'] },
+      { id: 'e6', day: 130, node: 'fw-zharr-naggrund', players: ['anthony', 'conrad'], note: 'A debt of gold and iron' },
+    ],
+  },
   'mortal-realms': {
     name: 'Realmgate Wars League',
     seed: 4141,
@@ -99,6 +125,8 @@ export const DEMOS = {
       { id: 'conrad', name: 'Conrad', army: 'House Malinax Lance', faction: 'li-house-malinax', skill: 0.55, active: [0, 123] },
       { id: 'charles', name: 'Charles', army: 'Taghmata Omnissiah', faction: 'li-mechanicum', skill: 0.57, active: [0, 123] },
       { id: 'michael', name: 'Michael', army: '12th Solar Cohort', faction: 'li-auxilia', skill: 0.55, active: [20, 123] },
+      { id: 'brett', name: 'Brett', army: 'Third Phalanx Warder Cadre', faction: 'li-imperial-fists', skill: 0.6, active: [0, 123] },
+      { id: 'jordan', name: 'Jordan', army: 'Shadowmasters of Deliverance', faction: 'li-raven-guard', skill: 0.56, active: [0, 123] },
     ],
     // The war for Beta-Garmon, the Throneworld's gate.
     events: [
@@ -161,8 +189,9 @@ export function generateHistory(graph, setting, demo) {
     for (const x of items) { r -= weight(x); if (r <= 0) return x; }
     return items[items.length - 1];
   };
-  // A demo army's faction may be an army book or a sub-faction; both have homes.
-  const homes = new Map([...setting.levels.codex, ...setting.levels.detailed].map(f => [f.id, f.home]));
+  // A demo army's `faction` is the ground it musters from: a book's seat or a
+  // sub-faction's. Games start out near there.
+  const homes = new Map(setting.starts.map(s => [s.id, s.point]));
   const homeIndex = f => graph.index.get(homes.get(f));
   const activity = (p, day) => (day < p.active[0] || day > p.active[1] ? 0 : p.surge && day >= p.surge ? 2.2 : 1);
   const skill = (p, day) => p.skill + (p.surge && day >= p.surge ? 0.12 : 0);

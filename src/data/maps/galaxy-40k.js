@@ -14,662 +14,662 @@ export default {
       "id": "terra-40k",
       "name": "Holy Terra",
       "region": "Segmentum Solar",
-      "x": 649,
-      "y": 1005
+      "x": 558,
+      "y": 1026
     },
     {
       "id": "eye-of-terror",
       "name": "The Eye of Terror",
       "region": "Segmentum Obscurus",
-      "x": 486,
-      "y": 577
+      "x": 396,
+      "y": 540
     },
     {
       "id": "cadia",
       "name": "Cadia",
       "region": "Segmentum Obscurus",
-      "x": 511,
-      "y": 673
+      "x": 434,
+      "y": 634
     },
     {
       "id": "belis-corona",
       "name": "Belis Corona",
       "region": "Segmentum Obscurus",
-      "x": 619,
-      "y": 698
+      "x": 596,
+      "y": 634
     },
     {
       "id": "agripinaa",
       "name": "Agripinaa",
       "region": "Segmentum Obscurus",
-      "x": 441,
-      "y": 727
+      "x": 420,
+      "y": 694
     },
     {
       "id": "hydraphur",
       "name": "Hydraphur",
       "region": "Segmentum Obscurus",
-      "x": 358,
-      "y": 856
+      "x": 342,
+      "y": 806
     },
     {
       "id": "fenris-40k",
       "name": "Fenris",
       "region": "Segmentum Obscurus",
-      "x": 689,
-      "y": 796
+      "x": 706,
+      "y": 686
     },
     {
       "id": "armageddon",
       "name": "Armageddon",
       "region": "Segmentum Obscurus",
-      "x": 637,
-      "y": 870
+      "x": 616,
+      "y": 784
     },
     {
       "id": "the-rock",
       "name": "The Rock",
       "region": "Segmentum Solar",
-      "x": 727,
-      "y": 966
+      "x": 786,
+      "y": 836
     },
     {
       "id": "prospero-40k",
       "name": "Planet of the Sorcerers",
       "region": "Segmentum Solar",
-      "x": 764,
-      "y": 1072
+      "x": 786,
+      "y": 924
     },
     {
       "id": "vordrast",
       "name": "Vordrast",
       "region": "Segmentum Pacificus",
-      "x": 249,
-      "y": 993
+      "x": 246,
+      "y": 986
     },
     {
       "id": "macharia",
       "name": "Macharia",
       "region": "Segmentum Pacificus",
-      "x": 157,
-      "y": 1334
+      "x": 288,
+      "y": 1236
     },
     {
       "id": "chiros",
       "name": "Chiros",
       "region": "Segmentum Pacificus",
-      "x": 166,
-      "y": 1413
+      "x": 226,
+      "y": 1378
     },
     {
       "id": "krieg",
       "name": "Krieg",
       "region": "Segmentum Solar",
-      "x": 347,
-      "y": 1387
+      "x": 408,
+      "y": 1296
     },
     {
       "id": "gathalamor",
       "name": "Gathalamor",
       "region": "Segmentum Solar",
-      "x": 498,
-      "y": 1203
+      "x": 670,
+      "y": 1160
     },
     {
       "id": "necromunda-40k",
       "name": "Necromunda",
       "region": "Segmentum Solar",
-      "x": 509,
-      "y": 1284
+      "x": 634,
+      "y": 1224
     },
     {
       "id": "ophelia",
       "name": "Ophelia VII",
       "region": "Segmentum Tempestus",
-      "x": 506,
-      "y": 1476
+      "x": 578,
+      "y": 1386
     },
     {
       "id": "tallarn-40k",
       "name": "Tallarn",
       "region": "Segmentum Solar",
-      "x": 696,
-      "y": 1482
+      "x": 802,
+      "y": 1336
     },
     {
       "id": "catachan",
       "name": "Catachan",
       "region": "Segmentum Solar",
-      "x": 759,
-      "y": 1272
+      "x": 948,
+      "y": 1094
     },
     {
       "id": "golgotha",
       "name": "Golgotha",
       "region": "Imperium Nihilus",
-      "x": 864,
-      "y": 1272
+      "x": 1080,
+      "y": 972
     },
     {
       "id": "lastrati-40k",
       "name": "Lastrati",
       "region": "Imperium Nihilus",
-      "x": 1023,
-      "y": 1157
+      "x": 1198,
+      "y": 930
     },
     {
       "id": "maelstrom",
       "name": "The Maelstrom",
       "region": "Imperium Nihilus",
-      "x": 858,
-      "y": 1400
+      "x": 1162,
+      "y": 1066
     },
     {
       "id": "badab",
       "name": "Badab",
       "region": "Imperium Nihilus",
-      "x": 935,
-      "y": 1505
+      "x": 1128,
+      "y": 1236
     },
     {
       "id": "nocturne-40k",
       "name": "Nocturne",
       "region": "Segmentum Tempestus",
-      "x": 906,
-      "y": 1599
+      "x": 1078,
+      "y": 1397
     },
     {
       "id": "sirens-storm",
       "name": "Siren's Storm",
       "region": "Segmentum Tempestus",
-      "x": 788,
-      "y": 1644
+      "x": 948,
+      "y": 1447
     },
     {
       "id": "aleusis",
       "name": "Aleusis",
       "region": "Segmentum Tempestus",
-      "x": 675,
-      "y": 1653
+      "x": 792,
+      "y": 1506
     },
     {
       "id": "solstice",
       "name": "Solstice",
       "region": "Segmentum Tempestus",
-      "x": 490,
-      "y": 1756
+      "x": 536,
+      "y": 1560
     },
     {
       "id": "gryphonne-iv",
       "name": "Gryphonne IV",
       "region": "Segmentum Tempestus",
-      "x": 598,
-      "y": 1832
+      "x": 768,
+      "y": 1754
     },
     {
       "id": "bakka",
       "name": "Bakka",
       "region": "Segmentum Tempestus",
-      "x": 729,
-      "y": 1870
+      "x": 910,
+      "y": 1720
     },
     {
       "id": "rynns-world",
       "name": "Rynn's World",
       "region": "Segmentum Tempestus",
-      "x": 974,
-      "y": 1766
+      "x": 1040,
+      "y": 1565
     },
     {
       "id": "antagonis",
       "name": "Antagonis",
       "region": "Segmentum Tempestus",
-      "x": 995,
-      "y": 1828
+      "x": 1168,
+      "y": 1728
     },
     {
       "id": "agrax",
       "name": "Agrax",
       "region": "Segmentum Tempestus",
-      "x": 1130,
-      "y": 1790
+      "x": 1296,
+      "y": 1662
     },
     {
       "id": "banes-landing",
       "name": "Bane's Landing",
       "region": "Segmentum Tempestus",
-      "x": 1188,
-      "y": 1713
+      "x": 1442,
+      "y": 1540
     },
     {
       "id": "san-leor",
       "name": "San Leor",
       "region": "Segmentum Tempestus",
-      "x": 1209,
-      "y": 1851
+      "x": 1340,
+      "y": 1768
     },
     {
       "id": "balor",
       "name": "Balor",
       "region": "Segmentum Tempestus",
-      "x": 1049,
-      "y": 1581
+      "x": 1310,
+      "y": 1406
     },
     {
       "id": "cirillo-prime",
       "name": "Cirillo Prime",
       "region": "Ultima Segmentum",
-      "x": 1349,
-      "y": 1044
+      "x": 1614,
+      "y": 1126
     },
     {
       "id": "schindelgheist",
       "name": "Schindelgheist",
       "region": "Ultima Segmentum",
-      "x": 1496,
-      "y": 1337
+      "x": 1711,
+      "y": 1294
     },
     {
       "id": "charadon",
       "name": "Charadon",
       "region": "Ultima Segmentum",
-      "x": 1410,
-      "y": 1727
+      "x": 1634,
+      "y": 1527
     },
     {
       "id": "ichar-iv",
       "name": "Ichar IV",
       "region": "Ultima Segmentum",
-      "x": 1584,
-      "y": 1679
+      "x": 1766,
+      "y": 1486
     },
     {
       "id": "macragge-40k",
       "name": "Macragge",
       "region": "Ultima Segmentum",
-      "x": 1602,
-      "y": 1812
+      "x": 1740,
+      "y": 1556
     },
     {
       "id": "black-reach",
       "name": "Black Reach",
       "region": "Ultima Segmentum",
-      "x": 1730,
-      "y": 1875
+      "x": 1822,
+      "y": 1622
     },
     {
       "id": "salem",
       "name": "Salem",
       "region": "Ultima Segmentum",
-      "x": 1776,
-      "y": 1865
+      "x": 1858,
+      "y": 1832
     },
     {
       "id": "leviathan",
       "name": "Leviathan's Wake",
       "region": "Ultima Segmentum",
-      "x": 2170,
-      "y": 1875
+      "x": 2082,
+      "y": 1640
     },
     {
       "id": "commorragh",
       "name": "Commorragh (Webway)",
       "region": "Segmentum Pacificus",
-      "x": 90,
-      "y": 1125
+      "x": 140,
+      "y": 1096
     },
     {
       "id": "cypra-mundi",
       "name": "Cypra Mundi",
       "region": "Segmentum Obscurus",
-      "x": 683,
-      "y": 535
+      "x": 630,
+      "y": 470
     },
     {
       "id": "valhalla",
       "name": "Valhalla",
       "region": "Imperium Nihilus",
-      "x": 1161,
-      "y": 714
+      "x": 1162,
+      "y": 516
     },
     {
       "id": "baal-40k",
       "name": "Baal",
       "region": "Imperium Nihilus",
-      "x": 1328,
-      "y": 835
+      "x": 1408,
+      "y": 566
     },
     {
       "id": "mephrit",
       "name": "Mephrit Dynasty",
       "region": "Imperium Nihilus",
-      "x": 1293,
-      "y": 902
+      "x": 1441,
+      "y": 755
     },
     {
       "id": "dimmamar",
       "name": "Dimmamar",
       "region": "Imperium Nihilus",
-      "x": 1044,
-      "y": 435
+      "x": 1008,
+      "y": 264
     },
     {
       "id": "naogeddon",
       "name": "Naogeddon",
       "region": "Imperium Nihilus",
-      "x": 1225,
-      "y": 471
+      "x": 1180,
+      "y": 228
     },
     {
       "id": "new-drekport",
       "name": "New Drekport",
       "region": "Ultima Segmentum",
-      "x": 2036,
-      "y": 574
+      "x": 1704,
+      "y": 66
     },
     {
       "id": "quisto-rol",
       "name": "Quisto'rol",
       "region": "Ultima Segmentum",
-      "x": 1857,
-      "y": 735
+      "x": 1554,
+      "y": 260
     },
     {
       "id": "nexus-iii",
       "name": "Nexus III",
       "region": "Ultima Segmentum",
-      "x": 1807,
-      "y": 1008
+      "x": 1694,
+      "y": 577
     },
     {
       "id": "angelis",
       "name": "Angelis",
       "region": "Ultima Segmentum",
-      "x": 2004,
-      "y": 867
+      "x": 1780,
+      "y": 396
     },
     {
       "id": "somnium-stars",
       "name": "Somnium Stars",
       "region": "Ultima Segmentum",
-      "x": 2260,
-      "y": 1436
+      "x": 2100,
+      "y": 642
     },
     {
       "id": "formund",
       "name": "Formund",
       "region": "Ultima Segmentum",
-      "x": 2275,
-      "y": 1597
+      "x": 2074,
+      "y": 776
     },
     {
       "id": "desperation-40k",
       "name": "Desperation",
       "region": "Ultima Segmentum",
-      "x": 2290,
-      "y": 1049
+      "x": 2242,
+      "y": 448
     },
     {
       "id": "hexos",
       "name": "Hexos",
       "region": "Ultima Segmentum",
-      "x": 1636,
-      "y": 1064
+      "x": 1764,
+      "y": 820
     },
     {
       "id": "kar-duniash",
       "name": "Kar Duniash",
       "region": "Ultima Segmentum",
-      "x": 1779,
-      "y": 1197
+      "x": 1868,
+      "y": 920
     },
     {
       "id": "corinthe",
       "name": "Corinthe",
       "region": "Ultima Segmentum",
-      "x": 1631,
-      "y": 1134
+      "x": 1768,
+      "y": 1036
     },
     {
       "id": "vengeance",
       "name": "Vengeance",
       "region": "Ultima Segmentum",
-      "x": 2141,
-      "y": 1596
+      "x": 2074,
+      "y": 1142
     },
     {
       "id": "attila",
       "name": "Attila",
       "region": "Ultima Segmentum",
-      "x": 1936,
-      "y": 1429
+      "x": 1898,
+      "y": 1092
     },
     {
       "id": "tau-empire",
       "name": "T'au Empire",
       "region": "Ultima Segmentum",
-      "x": 1821,
-      "y": 1544
+      "x": 1938,
+      "y": 1372
     },
     {
       "id": "mars-40k",
       "name": "Mars",
       "region": "Segmentum Solar",
-      "x": 597,
-      "y": 1067
+      "x": 536,
+      "y": 1098
     },
     {
       "id": "titan",
       "name": "Titan",
       "region": "Segmentum Solar",
-      "x": 543,
-      "y": 1147
+      "x": 595,
+      "y": 1130
     },
     {
       "id": "the-eternal-crusader",
       "name": "The Eternal Crusader",
       "region": "Segmentum Obscurus",
-      "x": 795,
-      "y": 815
+      "x": 828,
+      "y": 669
     },
     {
       "id": "watch-fortress-erioch",
       "name": "Watch Fortress Erioch",
       "region": "The Eastern Fringe",
-      "x": 2358,
-      "y": 1500
+      "x": 2244,
+      "y": 600
     },
     {
       "id": "storm-of-the-emperors-wrath",
       "name": "Storm of the Emperor's Wrath",
       "region": "Imperium Nihilus",
-      "x": 1236,
-      "y": 667
+      "x": 1160,
+      "y": 328
     },
     {
       "id": "malfactus",
       "name": "Malfactus",
       "region": "Ultima Segmentum",
-      "x": 1881,
-      "y": 618
+      "x": 1848,
+      "y": 126
     },
     {
       "id": "craftworld-iyanden",
       "name": "Craftworld Iyanden",
       "region": "Ultima Segmentum",
-      "x": 1933,
-      "y": 1343
+      "x": 1930,
+      "y": 870
     },
     {
       "id": "kin-holds",
       "name": "The Kin-holds",
       "region": "The Galactic Core",
-      "x": 1143,
-      "y": 1117
+      "x": 1369,
+      "y": 1034
     },
     {
       "id": "mordian",
       "name": "Mordian",
       "region": "Segmentum Obscurus",
-      "x": 741,
-      "y": 641
+      "x": 730,
+      "y": 520
     },
     {
       "id": "piscina",
       "name": "Piscina",
       "region": "Segmentum Obscurus",
-      "x": 687,
-      "y": 709
+      "x": 718,
+      "y": 616
     },
     {
       "id": "chinchare",
       "name": "Chinchare",
       "region": "Segmentum Obscurus",
-      "x": 354,
-      "y": 726
+      "x": 288,
+      "y": 654
     },
     {
       "id": "alaric",
       "name": "Alaric",
       "region": "Imperium Nihilus",
-      "x": 1087,
-      "y": 824
+      "x": 1152,
+      "y": 620
     },
     {
       "id": "molov",
       "name": "Molov",
       "region": "Imperium Nihilus",
-      "x": 1057,
-      "y": 888
+      "x": 1152,
+      "y": 696
     },
     {
       "id": "elysia",
       "name": "Elysia",
       "region": "Segmentum Solar",
-      "x": 777,
-      "y": 916
+      "x": 820,
+      "y": 772
     },
     {
       "id": "ryza",
       "name": "Ryza",
       "region": "Segmentum Solar",
-      "x": 770,
-      "y": 1202
+      "x": 900,
+      "y": 1014
     },
     {
       "id": "luther-mcintyre",
       "name": "Luther McIntyre",
       "region": "Segmentum Solar",
-      "x": 616,
-      "y": 1457
+      "x": 700,
+      "y": 1320
     },
     {
       "id": "vrun",
       "name": "V'run",
       "region": "Segmentum Tempestus",
-      "x": 606,
-      "y": 1555
+      "x": 694,
+      "y": 1436
     },
     {
       "id": "illustris",
       "name": "Illustris",
       "region": "Segmentum Tempestus",
-      "x": 445,
-      "y": 1833
+      "x": 542,
+      "y": 1812
     },
     {
       "id": "perdus",
       "name": "Perdus",
       "region": "Ultima Segmentum",
-      "x": 1430,
-      "y": 1810
+      "x": 1548,
+      "y": 1706
     },
     {
       "id": "false-hope",
       "name": "False Hope",
       "region": "Ultima Segmentum",
-      "x": 1613,
-      "y": 1861
+      "x": 1710,
+      "y": 1808
     },
     {
       "id": "coelia",
       "name": "Coelia",
       "region": "Ultima Segmentum",
-      "x": 2014,
-      "y": 1004
+      "x": 1834,
+      "y": 480
     },
     {
       "id": "asylus",
       "name": "Asylus",
       "region": "Ultima Segmentum",
-      "x": 2166,
-      "y": 1274
+      "x": 1930,
+      "y": 630
     },
     {
       "id": "sable",
       "name": "Sable",
       "region": "Ultima Segmentum",
-      "x": 1488,
-      "y": 926
+      "x": 1561,
+      "y": 648
     },
     {
       "id": "sistec-prime",
       "name": "Sistec Prime",
       "region": "Ultima Segmentum",
-      "x": 1928,
-      "y": 671
+      "x": 1612,
+      "y": 152
     },
     {
       "id": "lunaphage",
       "name": "Lunaphage",
       "region": "Ultima Segmentum",
-      "x": 2027,
-      "y": 734
+      "x": 1700,
+      "y": 240
     },
     {
       "id": "ultima-macharia",
       "name": "Ultima Macharia",
       "region": "Segmentum Pacificus",
-      "x": 90,
-      "y": 1335
+      "x": 168,
+      "y": 1302
     },
     {
       "id": "hadex-anomaly",
       "name": "The Hadex Anomaly",
       "region": "Ultima Segmentum",
-      "x": 2075,
-      "y": 1788
+      "x": 2074,
+      "y": 1435
     },
     {
       "id": "scourge-stars",
       "name": "The Scourge Stars",
       "region": "Ultima Segmentum",
-      "x": 1906,
-      "y": 1775
+      "x": 1962,
+      "y": 1478
     },
     {
       "id": "necron-sautekh",
       "name": "Necron Sautekh Dynasty",
       "region": "Ultima Segmentum",
-      "x": 1619,
-      "y": 1603
+      "x": 1752,
+      "y": 1416
     },
     {
       "id": "necron-nihilakh",
       "name": "Necron Nihilakh Dynasty",
       "region": "Ultima Segmentum",
-      "x": 1481,
-      "y": 1858
+      "x": 1596,
+      "y": 1794
     },
     {
       "id": "ymga-monolith",
       "name": "The Ymga Monolith",
       "region": "Ultima Segmentum",
-      "x": 1827,
-      "y": 1432
+      "x": 2040,
+      "y": 882
     },
 
-    // --- Added for the detailed (sub-faction) level. Most names below are
+    // --- Added as sub-faction starting grounds. Most names below are
     // real 40k locations (Calth, Phalanx, Deliverance, Chogoris, Medusa,
     // Cretacia, Medrengard, Nostramo, Nemesis Tessera, Meros, Kasr Kraf,
     // Graia, Metalica, Lucius, Stygies VIII, the real Craftworld and Sept
@@ -683,393 +683,393 @@ export default {
       "id": "calth",
       "name": "Calth",
       "region": "Ultima Segmentum",
-      "x": 1298,
-      "y": 1691
+      "x": 1560,
+      "y": 1519
     },
     {
       "id": "phalanx",
       "name": "The Phalanx",
       "region": "Segmentum Solar",
-      "x": 571,
-      "y": 774
+      "x": 544,
+      "y": 717
     },
     {
       "id": "deliverance",
       "name": "Deliverance",
       "region": "Segmentum Obscurus",
-      "x": 380,
-      "y": 545
+      "x": 270,
+      "y": 500
     },
     {
       "id": "chogoris",
       "name": "Chogoris",
       "region": "Segmentum Obscurus",
-      "x": 883,
-      "y": 768
+      "x": 910,
+      "y": 600
     },
     {
       "id": "medusa",
       "name": "Medusa",
       "region": "Segmentum Solar",
-      "x": 591,
-      "y": 945
+      "x": 515,
+      "y": 946
     },
     {
       "id": "cretacia",
       "name": "Cretacia",
       "region": "Imperium Nihilus",
-      "x": 1419,
-      "y": 1004
+      "x": 1615,
+      "y": 957
     },
     {
       "id": "great-company-grimnar",
       "name": "Hold of Logan Grimnar",
       "region": "Segmentum Obscurus",
-      "x": 888,
-      "y": 875
+      "x": 938,
+      "y": 695
     },
     {
       "id": "great-company-blackmane",
       "name": "Hold of Ragnar Blackmane",
       "region": "Segmentum Obscurus",
-      "x": 502,
-      "y": 985
+      "x": 455,
+      "y": 1003
     },
     {
       "id": "great-company-redmaw",
       "name": "Hold of Bran Redmaw",
       "region": "Segmentum Obscurus",
-      "x": 662,
-      "y": 619
+      "x": 631,
+      "y": 544
     },
     {
       "id": "nemesis-tessera",
       "name": "Nemesis Tessera",
       "region": "Segmentum Obscurus",
-      "x": 583,
-      "y": 413
+      "x": 493,
+      "y": 380
     },
     {
       "id": "sicarus",
       "name": "Sicarus",
       "region": "Segmentum Obscurus",
-      "x": 311,
-      "y": 508
+      "x": 182,
+      "y": 462
     },
     {
       "id": "medrengard",
       "name": "Medrengard",
       "region": "Segmentum Obscurus",
-      "x": 723,
-      "y": 433
+      "x": 660,
+      "y": 367
     },
     {
       "id": "nostramo",
       "name": "Nostramo",
       "region": "Segmentum Pacificus",
-      "x": 427,
-      "y": 932
+      "x": 409,
+      "y": 919
     },
     {
       "id": "eskrador",
       "name": "Eskrador",
       "region": "Segmentum Pacificus",
-      "x": 188,
-      "y": 811
+      "x": 115,
+      "y": 765
     },
     {
       "id": "vesalius-reach",
       "name": "Vesalius Reach",
       "region": "Segmentum Obscurus",
-      "x": 260,
-      "y": 447
+      "x": 117,
+      "y": 411
     },
     {
       "id": "gorkogrod",
       "name": "Gorkogrod",
       "region": "Ultima Segmentum",
-      "x": 1679,
-      "y": 1835
+      "x": 1799,
+      "y": 1551
     },
     {
       "id": "redscar",
       "name": "Redscar",
       "region": "Ultima Segmentum",
-      "x": 1407,
-      "y": 1868
+      "x": 1570,
+      "y": 1628
     },
     {
       "id": "glitzgold",
       "name": "Glitzgold",
       "region": "Ultima Segmentum",
-      "x": 1232,
-      "y": 1788
+      "x": 1448,
+      "y": 1586
     },
     {
       "id": "bonegrinder",
       "name": "Bonegrinder",
       "region": "Ultima Segmentum",
-      "x": 1293,
-      "y": 1577
+      "x": 1582,
+      "y": 1452
     },
     {
       "id": "krumpton",
       "name": "Krumpton",
       "region": "Segmentum Tempestus",
-      "x": 1026,
-      "y": 1674
+      "x": 1195,
+      "y": 1492
     },
     {
       "id": "scrapdrift",
       "name": "Scrapdrift",
       "region": "Segmentum Tempestus",
-      "x": 1146,
-      "y": 1417
+      "x": 1445,
+      "y": 1269
     },
     {
       "id": "ophidian-gulf",
       "name": "The Ophidian Gulf",
       "region": "Ultima Segmentum",
-      "x": 1859,
-      "y": 1822
+      "x": 1919,
+      "y": 1779
     },
     {
       "id": "tendrils-end",
       "name": "Tendril's End",
       "region": "The Eastern Fringe",
-      "x": 2330,
-      "y": 1410
+      "x": 2161,
+      "y": 580
     },
     {
       "id": "gorgons-reach",
       "name": "Gorgon's Reach",
       "region": "Ultima Segmentum",
-      "x": 1955,
-      "y": 1830
+      "x": 1969,
+      "y": 1713
     },
     {
       "id": "craftworld-ulthwe",
       "name": "Craftworld Ulthwé",
       "region": "Segmentum Obscurus",
-      "x": 560,
-      "y": 862
+      "x": 520,
+      "y": 820
     },
     {
       "id": "craftworld-biel-tan",
       "name": "Craftworld Biel-Tan",
       "region": "Ultima Segmentum",
-      "x": 2156,
-      "y": 1130
+      "x": 1938,
+      "y": 513
     },
     {
       "id": "craftworld-saim-hann",
       "name": "Craftworld Saim-Hann",
       "region": "Ultima Segmentum",
-      "x": 2101,
-      "y": 703
+      "x": 1757,
+      "y": 204
     },
     {
       "id": "meros",
       "name": "Meros",
       "region": "Ultima Segmentum",
-      "x": 2094,
-      "y": 1443
+      "x": 1980,
+      "y": 970
     },
     {
       "id": "craftworld-alaitoc",
       "name": "Craftworld Alaitoc",
       "region": "Segmentum Pacificus",
-      "x": 150,
+      "x": 60,
       "y": 1080
     },
     {
       "id": "black-heart-enclave",
       "name": "Black Heart Enclave",
       "region": "Segmentum Pacificus",
-      "x": 251,
-      "y": 1225
+      "x": 374,
+      "y": 1130
     },
     {
       "id": "poisoned-tongue-enclave",
       "name": "Poisoned Tongue Enclave",
       "region": "Segmentum Pacificus",
-      "x": 42,
-      "y": 1217
+      "x": 55,
+      "y": 1280
     },
     {
       "id": "flayed-skull-enclave",
       "name": "Flayed Skull Enclave",
       "region": "Segmentum Pacificus",
-      "x": 93,
-      "y": 933
+      "x": 52,
+      "y": 924
     },
     {
       "id": "tau-homeworld",
       "name": "T'au",
       "region": "Ultima Segmentum",
-      "x": 1997,
-      "y": 1613
+      "x": 1992,
+      "y": 1340
     },
     {
       "id": "viorla",
       "name": "Vior'la",
       "region": "Ultima Segmentum",
-      "x": 1817,
-      "y": 1736
+      "x": 1899,
+      "y": 1504
     },
     {
       "id": "sacea",
       "name": "Sa'cea",
       "region": "Ultima Segmentum",
-      "x": 1500,
-      "y": 1654
+      "x": 1710,
+      "y": 1476
     },
     {
       "id": "borkan",
       "name": "Bork'an",
       "region": "Ultima Segmentum",
-      "x": 1703,
-      "y": 1393
+      "x": 1938,
+      "y": 1021
     },
     {
       "id": "kasr-kraf",
       "name": "Kasr Kraf",
       "region": "Segmentum Obscurus",
-      "x": 501,
-      "y": 788
+      "x": 478,
+      "y": 751
     },
     {
       "id": "olympus-mons",
       "name": "Olympus Mons",
       "region": "Segmentum Solar",
-      "x": 658,
-      "y": 1180
+      "x": 720,
+      "y": 1115
     },
     {
       "id": "graia",
       "name": "Graia",
       "region": "Segmentum Solar",
-      "x": 946,
-      "y": 1271
+      "x": 1150,
+      "y": 995
     },
     {
       "id": "metalica-40k",
       "name": "Metalica",
       "region": "Segmentum Tempestus",
-      "x": 784,
-      "y": 1494
+      "x": 967,
+      "y": 1272
     },
     {
       "id": "lucius-40k",
       "name": "Lucius",
       "region": "Segmentum Solar",
-      "x": 834,
-      "y": 1157
+      "x": 944,
+      "y": 922
     },
     {
       "id": "stygies-viii",
       "name": "Stygies VIII",
       "region": "Segmentum Solar",
-      "x": 449,
-      "y": 1101
+      "x": 470,
+      "y": 1060
     },
     {
       "id": "sacred-martyrium",
       "name": "The Sacred Martyrium",
       "region": "Segmentum Tempestus",
-      "x": 728,
-      "y": 1564
+      "x": 860,
+      "y": 1400
     },
     {
       "id": "castellum-valorum",
       "name": "Castellum Valorum",
       "region": "Segmentum Tempestus",
-      "x": 502,
-      "y": 1668
+      "x": 548,
+      "y": 1507
     },
     {
       "id": "rose-fortress",
       "name": "The Rose Fortress",
       "region": "Segmentum Tempestus",
-      "x": 328,
-      "y": 1537
+      "x": 342,
+      "y": 1459
     },
     {
       "id": "shrouded-reach",
       "name": "The Shrouded Reach",
       "region": "Segmentum Tempestus",
-      "x": 388,
-      "y": 1325
+      "x": 484,
+      "y": 1240
     },
     {
       "id": "ebon-sanctum",
       "name": "Ebon Sanctum",
       "region": "Segmentum Tempestus",
-      "x": 603,
-      "y": 1311
+      "x": 727,
+      "y": 1224
     },
     {
       "id": "terryn-prime",
       "name": "Terryn Prime",
       "region": "Segmentum Pacificus",
-      "x": 389,
-      "y": 1502
+      "x": 423,
+      "y": 1416
     },
     {
       "id": "griffiths-landing",
       "name": "Griffith's Landing",
       "region": "Segmentum Pacificus",
-      "x": 130,
-      "y": 1602
+      "x": 112,
+      "y": 1619
     },
     {
       "id": "ravens-roost",
       "name": "Raven's Roost",
       "region": "Segmentum Pacificus",
-      "x": 60,
-      "y": 1380
+      "x": 65,
+      "y": 1400
     },
     {
       "id": "cadmus-primus",
       "name": "Cadmus Primus",
       "region": "Segmentum Pacificus",
-      "x": 335,
-      "y": 1273
+      "x": 449,
+      "y": 1180
     },
     {
       "id": "khymere-fane",
       "name": "The Khymere Fane",
       "region": "Ultima Segmentum",
-      "x": 2197,
-      "y": 743
+      "x": 1876,
+      "y": 243
     },
     {
       "id": "lucaris-hold",
       "name": "Lucaris Hold",
       "region": "Ultima Segmentum",
-      "x": 1703,
-      "y": 679
+      "x": 1665,
+      "y": 205
     },
     {
       "id": "thurian-hold",
       "name": "The Thurian Hold",
       "region": "The Galactic Core",
-      "x": 1319,
-      "y": 1187
+      "x": 1606,
+      "y": 1272
     },
     {
       "id": "hyperian-hold",
       "name": "The Hyperian Hold",
       "region": "The Galactic Core",
-      "x": 956,
-      "y": 1133
+      "x": 1095,
+      "y": 880
     },
     {
       "id": "ymyr-hold",
       "name": "The Ymyr Hold",
       "region": "The Galactic Core",
-      "x": 1122,
-      "y": 978
+      "x": 1283,
+      "y": 847
     }
   ],
   "extraLinks": [],

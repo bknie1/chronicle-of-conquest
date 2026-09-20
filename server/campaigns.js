@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import express from 'express';
-import { SETTINGS, LEVELS, armyFactionsFor } from '../src/data/settings.js';
+import { SETTINGS, LEVELS, armyFactionsFor, startsFor } from '../src/data/settings.js';
 import { HttpError, id, requireUser, text } from './util.js';
 
 export const AUTO_CONFIRM_MS = 48 * 3600e3;
@@ -36,7 +36,7 @@ export function campaignRoutes(db) {
     armies: db.prepare(`SELECT a.*, u.display_name FROM armies a JOIN users u ON u.id = a.user_id WHERE a.campaign_id = ? ORDER BY a.created_at`),
     army: db.prepare('SELECT * FROM armies WHERE id = ? AND campaign_id = ?'),
     activeArmyCount: db.prepare('SELECT COUNT(*) n FROM armies WHERE campaign_id = ? AND user_id = ? AND retired_at IS NULL'),
-    insertArmy: db.prepare('INSERT INTO armies (campaign_id, user_id, faction, name, created_at) VALUES (?, ?, ?, ?, ?)'),
+    insertArmy: db.prepare('INSERT INTO armies (campaign_id, user_id, faction, start, name, created_at) VALUES (?, ?, ?, ?, ?, ?)'),
     retireArmy: db.prepare('UPDATE armies SET retired_at = ? WHERE id = ?'),
     games: db.prepare('SELECT * FROM games WHERE campaign_id = ? ORDER BY played_at, id'),
     game: db.prepare('SELECT * FROM games WHERE id = ? AND campaign_id = ?'),
@@ -118,7 +118,7 @@ export function campaignRoutes(db) {
       me: user ? { userId: user.id, displayName: user.displayName, role: roleOf(c, user) } : null,
       members: q.members.all(c.id).map(m => ({ userId: m.user_id, displayName: m.display_name, role: m.role, joinedAt: m.joined_at })),
       armies: q.armies.all(c.id).map(a => ({
-        id: a.id, userId: a.user_id, playerName: a.display_name, faction: a.faction, name: a.name,
+        id: a.id, userId: a.user_id, playerName: a.display_name, faction: a.faction, start: a.start, name: a.name,
         createdAt: a.created_at, retiredAt: a.retired_at,
       })),
       games: q.games.all(c.id).filter(g => g.played_at >= seasonStart).map(g => ({
@@ -143,7 +143,7 @@ export function campaignRoutes(db) {
     const name = text(req.body.name, 'Campaign name', { min: 3, max: 60 });
     const setting = req.body.setting || 'old-world';
     if (!SETTINGS[setting]) throw new HttpError(400, 'That setting is not available yet.');
-    const level = req.body.level || 'codex';
+    const level = req.body.level || SETTINGS[setting].defaultLevel;
     if (!LEVELS.includes(level)) throw new HttpError(400, 'Pick how much faction detail to play with.');
     let code;
     do code = newCode(); while (q.campaignByCode.get(code));
@@ -198,15 +198,18 @@ export function campaignRoutes(db) {
     const user = requireUser(req);
     const c = load(req);
     requireMember(c, user);
-    // Muster as a sub-faction, or as the army book itself.
+    // An army fights for one army book, from one of that book's starting grounds.
     const setting = SETTINGS[c.setting];
-    const faction = [...armyFactionsFor(setting), ...setting.factions].find(f => f.id === req.body.faction);
+    const faction = armyFactionsFor(setting).find(f => f.id === req.body.faction);
     if (!faction) throw new HttpError(400, 'Pick a faction.');
+    const starts = startsFor(setting, faction.id);
+    const start = starts.find(s => s.id === req.body.start) ?? starts[0];
+    if (!start) throw new HttpError(400, 'Pick where that army begins.');
     const name = text(req.body.name, 'Army name', { min: 2, max: 40 });
     if (q.activeArmyCount.get(c.id, user.id).n >= MAX_ACTIVE_ARMIES) {
       throw new HttpError(400, `You can field at most ${MAX_ACTIVE_ARMIES} armies at once. Retire one first.`);
     }
-    q.insertArmy.run(c.id, user.id, faction.id, name, Date.now());
+    q.insertArmy.run(c.id, user.id, faction.id, start.id, name, Date.now());
     res.status(201).json(payload(c, user));
   });
 

@@ -206,13 +206,12 @@ export const MORTAL_REALMS = {
     // Destruction
     {
       id: 'orruks', name: 'Orruk Warclans', color: '#9acd32', home: 'thondia', alliance: 'aos-destruction',
+      // The army book's own divisions, not individual warclans.
       subfactions: [
-        { id: 'warclan-ironsunz', name: 'Ironsunz', home: 'thondia' },
-        { id: 'warclan-bloodtoofs', name: 'Bloodtoofs', home: 'beastgrave' },
-        { id: 'warclan-grinnin-blades', name: "Grinnin' Blades", home: 'great-gutfort' },
-        { id: 'warclan-big-yellers', name: 'Big Yellers', home: 'crawling-city' },
-        { id: 'warclan-bonegrinz', name: 'Bonegrinz', home: 'coast-of-tusks' },
-        { id: 'warclan-drakkfoot', name: 'Drakkfoot', home: 'amber-steppes' },
+        { id: 'orruk-ironjawz', name: 'Ironjawz', color: '#c2a03a', home: 'thondia' },
+        { id: 'orruk-kruleboyz', name: 'Kruleboyz', color: '#6b8f3a', home: 'beastgrave' },
+        { id: 'orruk-bonesplitterz', name: 'Bonesplitterz', color: '#b5c46a', home: 'amber-steppes' },
+        { id: 'orruk-big-waaagh', name: 'Big Waaagh!', color: '#8bbf2a', home: 'crawling-city' },
       ],
     },
     {
