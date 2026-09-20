@@ -78,10 +78,18 @@ function defineSetting({ id, name, maps, alliances = [], factions, gates = [] })
     }
   }
 
+  // An army book with sub-factions still counts as one at the detailed level:
+  // whoever musters plain "Stormcast Eternals" fights as its first Stormhost.
+  const standIn = new Map();
+  for (const f of factions) {
+    const first = f.subfactions?.[0];
+    if (first) standIn.set(f.id, first.id);
+  }
+
   // At a coarser level, an army's faction is its parent.
   const resolve = (factionId, level) => {
     const cx = parentOf.get(factionId) ?? factionId;
-    if (level === 'detailed') return parentOf.has(factionId) ? factionId : cx;
+    if (level === 'detailed') return parentOf.has(factionId) ? factionId : standIn.get(factionId) ?? cx;
     if (level === 'codex') return cx;
     return allianceOf.get(cx) ?? cx;
   };

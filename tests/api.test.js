@@ -178,8 +178,8 @@ test('Age of Sigmar campaigns accept realm factions and battlefields in any real
   const { code } = (await a.post('/campaigns', { name: 'Realmgate Wars', setting: 'mortal-realms' })).body;
   await b.post(`/campaigns/${code}/join`);
   assert.equal((await a.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Wrong setting' })).status, 400);
-  const ironjawz = (await a.post(`/campaigns/${code}/armies`, { faction: 'orruks', name: 'Ironjawz' })).body.armies.at(-1).id;
-  const freeguild = (await b.post(`/campaigns/${code}/armies`, { faction: 'cities', name: 'Freeguild' })).body.armies.at(-1).id;
+  const ironjawz = (await a.post(`/campaigns/${code}/armies`, { faction: 'warclan-ironsunz', name: 'Ironjawz' })).body.armies.at(-1).id;
+  const freeguild = (await b.post(`/campaigns/${code}/armies`, { faction: 'city-hammerhal', name: 'Freeguild' })).body.armies.at(-1).id;
   assert.equal((await a.post(`/campaigns/${code}/games`, { winner: ironjawz, loser: freeguild, node: 'altdorf' })).status, 400);
   const r = await a.post(`/campaigns/${code}/games`, { winner: ironjawz, loser: freeguild, node: 'hammerhal-ghyra' });
   assert.equal(r.status, 201);

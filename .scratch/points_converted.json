@@ -1,0 +1,870 @@
+[
+  [
+    "fw-altdorf",
+    "Altdorf",
+    "Reikland",
+    995,
+    542
+  ],
+  [
+    "fw-nuln",
+    "Nuln",
+    "Wissenland",
+    1042,
+    625
+  ],
+  [
+    "fw-marienburg",
+    "Marienburg",
+    "The Wasteland",
+    844,
+    417
+  ],
+  [
+    "fw-middenheim",
+    "Middenheim",
+    "Middenland",
+    1031,
+    448
+  ],
+  [
+    "fw-nordland",
+    "Nordland",
+    "The Empire",
+    1005,
+    354
+  ],
+  [
+    "fw-ostland",
+    "Ostland",
+    "The Empire",
+    1125,
+    359
+  ],
+  [
+    "fw-hochland",
+    "Hochland",
+    "The Empire",
+    1099,
+    417
+  ],
+  [
+    "fw-talabheim",
+    "Talabheim",
+    "Talabecland",
+    1156,
+    474
+  ],
+  [
+    "fw-ostermark",
+    "Ostermark",
+    "The Empire",
+    1250,
+    489
+  ],
+  [
+    "fw-wurtbad",
+    "Wurtbad",
+    "Stirland",
+    1125,
+    568
+  ],
+  [
+    "fw-averland",
+    "Averland",
+    "The Empire",
+    1166,
+    604
+  ],
+  [
+    "fw-solland",
+    "Solland",
+    "The Empire",
+    1146,
+    656
+  ],
+  [
+    "fw-drakenhof",
+    "Drakenhof",
+    "Sylvania",
+    1250,
+    583
+  ],
+  [
+    "fw-drakwald",
+    "The Drakwald",
+    "Middenland",
+    937,
+    417
+  ],
+  [
+    "fw-athel-loren",
+    "Athel Loren",
+    "The Forest of Loren",
+    917,
+    625
+  ],
+  [
+    "fw-couronne",
+    "Couronne",
+    "Bretonnia",
+    875,
+    469
+  ],
+  [
+    "fw-bastonne",
+    "Bastonne",
+    "Bretonnia",
+    859,
+    594
+  ],
+  [
+    "fw-carcassonne",
+    "Carcassonne",
+    "Bretonnia",
+    901,
+    729
+  ],
+  [
+    "fw-lyonesse",
+    "Lyonesse",
+    "Bretonnia",
+    823,
+    521
+  ],
+  [
+    "fw-quenelles",
+    "Quenelles",
+    "Bretonnia",
+    937,
+    677
+  ],
+  [
+    "fw-bordeleaux",
+    "Bordeleaux",
+    "Bretonnia",
+    792,
+    646
+  ],
+  [
+    "fw-kislev-city",
+    "Kislev",
+    "Kislev",
+    1208,
+    333
+  ],
+  [
+    "fw-erengrad",
+    "Erengrad",
+    "Kislev",
+    1052,
+    292
+  ],
+  [
+    "fw-praag",
+    "Praag",
+    "Kislev",
+    1312,
+    240
+  ],
+  [
+    "fw-norsca-heart",
+    "Norscan Heartland",
+    "Norsca",
+    1042,
+    156
+  ],
+  [
+    "fw-norsca-west",
+    "Bjornling Coast",
+    "Norsca",
+    885,
+    115
+  ],
+  [
+    "fw-norsca-east",
+    "Norscan Frontier",
+    "Norsca",
+    1198,
+    104
+  ],
+  [
+    "fw-chaos-wastes-north",
+    "The Chaos Wastes",
+    "Northern Wastes",
+    1354,
+    62
+  ],
+  [
+    "fw-border-princes",
+    "Border Princes",
+    "Border Princes",
+    1229,
+    729
+  ],
+  [
+    "fw-tilea",
+    "Tilea",
+    "Tilea",
+    989,
+    854
+  ],
+  [
+    "fw-miragliano",
+    "Miragliano",
+    "Tilea",
+    1021,
+    916
+  ],
+  [
+    "fw-sartosa",
+    "Sartosa",
+    "Tilea",
+    906,
+    937
+  ],
+  [
+    "fw-estalia",
+    "Estalia",
+    "Estalia",
+    864,
+    896
+  ],
+  [
+    "fw-magritta",
+    "Magritta",
+    "Estalia",
+    812,
+    958
+  ],
+  [
+    "fw-badlands",
+    "The Badlands",
+    "Badlands",
+    1198,
+    885
+  ],
+  [
+    "fw-black-crag",
+    "Black Crag",
+    "Badlands",
+    1302,
+    937
+  ],
+  [
+    "fw-karaz-a-karak",
+    "Karaz-a-Karak",
+    "World's Edge Mountains",
+    1344,
+    562
+  ],
+  [
+    "fw-karak-kadrin",
+    "Karak Kadrin",
+    "World's Edge Mountains",
+    1375,
+    677
+  ],
+  [
+    "fw-eight-peaks",
+    "Karak Eight Peaks",
+    "World's Edge Mountains",
+    1302,
+    833
+  ],
+  [
+    "fw-zhufbar",
+    "Zhufbar",
+    "World's Edge Mountains",
+    1406,
+    729
+  ],
+  [
+    "fw-black-fire-pass",
+    "Black Fire Pass",
+    "World's Edge Mountains",
+    1354,
+    625
+  ],
+  [
+    "fw-skavenblight",
+    "Skavenblight",
+    "The Blighted Marshes",
+    896,
+    802
+  ],
+  [
+    "fw-albion",
+    "Albion",
+    "The Great Ocean",
+    771,
+    375
+  ],
+  [
+    "fw-great-ocean-isle",
+    "The Isles",
+    "The Great Ocean",
+    656,
+    479
+  ],
+  [
+    "fw-lothern",
+    "Lothern",
+    "Eataine",
+    675,
+    754
+  ],
+  [
+    "fw-eataine",
+    "Eataine",
+    "Ulthuan",
+    562,
+    824
+  ],
+  [
+    "fw-caledor",
+    "Caledor",
+    "Ulthuan",
+    506,
+    796
+  ],
+  [
+    "fw-saphery",
+    "Saphery",
+    "Ulthuan",
+    675,
+    684
+  ],
+  [
+    "fw-tor-yvresse",
+    "Tor Yvresse",
+    "Ulthuan",
+    710,
+    641
+  ],
+  [
+    "fw-chrace",
+    "Chrace",
+    "Ulthuan",
+    591,
+    599
+  ],
+  [
+    "fw-avelorn",
+    "Avelorn",
+    "Ulthuan",
+    534,
+    627
+  ],
+  [
+    "fw-ellyrion",
+    "Ellyrion",
+    "Ulthuan",
+    464,
+    698
+  ],
+  [
+    "fw-cothique",
+    "Cothique",
+    "Ulthuan",
+    647,
+    627
+  ],
+  [
+    "fw-tiranoc",
+    "Tiranoc",
+    "Ulthuan",
+    450,
+    782
+  ],
+  [
+    "fw-nagarythe",
+    "Nagarythe",
+    "Ulthuan",
+    478,
+    613
+  ],
+  [
+    "fw-armheim",
+    "Armheim",
+    "Nagarythe",
+    450,
+    585
+  ],
+  [
+    "fw-gaen-vale",
+    "Gaen Vale",
+    "Avelorn",
+    633,
+    536
+  ],
+  [
+    "fw-blighted-isle",
+    "The Blighted Isle",
+    "Ulthuan",
+    499,
+    445
+  ],
+  [
+    "fw-naggarond",
+    "Naggarond",
+    "Naggaroth",
+    500,
+    312
+  ],
+  [
+    "fw-clar-karond",
+    "Clar Karond",
+    "Naggaroth",
+    417,
+    521
+  ],
+  [
+    "fw-hag-graef",
+    "Hag Graef",
+    "Naggaroth",
+    573,
+    365
+  ],
+  [
+    "fw-karond-kar",
+    "Karond Kar",
+    "Naggaroth",
+    365,
+    573
+  ],
+  [
+    "fw-ghrond",
+    "Ghrond",
+    "Naggaroth",
+    521,
+    125
+  ],
+  [
+    "fw-har-ganeth",
+    "Har Ganeth",
+    "Naggaroth",
+    437,
+    458
+  ],
+  [
+    "fw-itza",
+    "Itza",
+    "Lustria",
+    437,
+    885
+  ],
+  [
+    "fw-hexoatl",
+    "Hexoatl",
+    "Lustria",
+    417,
+    989
+  ],
+  [
+    "fw-tlaxtlan",
+    "Tlaxtlan",
+    "Lustria",
+    396,
+    1094
+  ],
+  [
+    "fw-chaqua",
+    "Chaqua",
+    "Lustria",
+    521,
+    937
+  ],
+  [
+    "fw-vampire-coast",
+    "The Vampire Coast",
+    "Lustria",
+    625,
+    1073
+  ],
+  [
+    "fw-skeggi",
+    "Skeggi",
+    "Lustria",
+    385,
+    708
+  ],
+  [
+    "fw-khemri",
+    "Khemri",
+    "Nehekhara",
+    1146,
+    1125
+  ],
+  [
+    "fw-zandri",
+    "Zandri",
+    "Nehekhara",
+    1094,
+    1041
+  ],
+  [
+    "fw-lahmia",
+    "Lahmia",
+    "Nehekhara",
+    1198,
+    1041
+  ],
+  [
+    "fw-lybaras",
+    "Lybaras",
+    "Nehekhara",
+    1166,
+    1198
+  ],
+  [
+    "fw-land-of-the-dead",
+    "The Land of the Dead",
+    "Nehekhara",
+    1219,
+    1125
+  ],
+  [
+    "fw-great-mortis-delta",
+    "Great Mortis Delta",
+    "Nehekhara",
+    1104,
+    1166
+  ],
+  [
+    "fw-shifting-sands",
+    "Shifting Sands",
+    "Nehekhara",
+    1229,
+    1229
+  ],
+  [
+    "fw-devils-backbone",
+    "Devil's Backbone",
+    "The Southlands",
+    1281,
+    1062
+  ],
+  [
+    "fw-serpent-coast",
+    "Serpent Coast",
+    "The Southlands",
+    1229,
+    1458
+  ],
+  [
+    "fw-oyxl",
+    "Oyxl",
+    "Lustria",
+    479,
+    1125
+  ],
+  [
+    "fw-al-haikk",
+    "Al-Haikk",
+    "Araby",
+    969,
+    1052
+  ],
+  [
+    "fw-lashiek",
+    "Lashiek",
+    "Araby",
+    885,
+    1041
+  ],
+  [
+    "fw-martek",
+    "Martek",
+    "Araby",
+    989,
+    1094
+  ],
+  [
+    "fw-copher",
+    "Copher",
+    "Araby",
+    1042,
+    1041
+  ],
+  [
+    "fw-zharr-naggrund",
+    "Zharr-Naggrund",
+    "The Dark Lands",
+    1625,
+    583
+  ],
+  [
+    "fw-plain-of-zharrduk",
+    "The Plain of Zharrduk",
+    "The Dark Lands",
+    1562,
+    625
+  ],
+  [
+    "fw-mount-grimfang",
+    "Mount Grimfang",
+    "The Dark Lands",
+    1510,
+    521
+  ],
+  [
+    "fw-mountains-of-mourn",
+    "Mountains of Mourn",
+    "Ogre Kingdoms",
+    1719,
+    656
+  ],
+  [
+    "fw-great-bastion",
+    "The Great Bastion",
+    "Grand Cathay",
+    1979,
+    479
+  ],
+  [
+    "fw-celestial-lake",
+    "The Celestial Lake",
+    "Grand Cathay",
+    2052,
+    708
+  ],
+  [
+    "fw-wei-jin",
+    "Wei-Jin",
+    "Grand Cathay",
+    1979,
+    573
+  ],
+  [
+    "fw-nan-gau",
+    "Nan-Gau",
+    "Grand Cathay",
+    1948,
+    427
+  ],
+  [
+    "fw-shang-yang",
+    "Shang-Yang",
+    "Grand Cathay",
+    1906,
+    635
+  ],
+  [
+    "fw-qiang",
+    "Qiang",
+    "Grand Cathay",
+    1843,
+    687
+  ],
+  [
+    "fw-hanyu-port",
+    "Hanyu Port",
+    "Grand Cathay",
+    2146,
+    562
+  ],
+  [
+    "fw-xing-po",
+    "Xing Po",
+    "Grand Cathay",
+    2083,
+    646
+  ],
+  [
+    "fw-jinshen",
+    "The Wastelands of Jinshen",
+    "Grand Cathay",
+    1864,
+    745
+  ],
+  [
+    "fw-broken-lands-tian-li",
+    "The Broken Lands of Tian Li",
+    "Grand Cathay",
+    1937,
+    864
+  ],
+  [
+    "fw-mount-li",
+    "Mount Li",
+    "Grand Cathay",
+    2135,
+    833
+  ],
+  [
+    "fw-ind",
+    "Ind",
+    "Ind",
+    1614,
+    989
+  ],
+  [
+    "fw-nippon",
+    "Nippon",
+    "Nippon",
+    2166,
+    937
+  ],
+  [
+    "fw-chaos-wastes-south",
+    "The Southern Chaos Wastes",
+    "Southern Wastes",
+    1094,
+    1541
+  ],
+  [
+    "fw-vanaheim-mountains",
+    "Vanaheim Mountains",
+    "Norsca",
+    906,
+    255
+  ],
+  [
+    "fw-troll-country",
+    "Troll Country",
+    "Kislev",
+    1203,
+    286
+  ],
+  [
+    "fw-mountains-of-naglfar",
+    "Mountains of Naglfar",
+    "Northern Wastes",
+    1000,
+    187
+  ],
+  [
+    "fw-gash-kadrak",
+    "Gash Kadrak",
+    "The Dark Lands",
+    1604,
+    463
+  ],
+  [
+    "fw-chimera-plateau",
+    "Chimera Plateau",
+    "The Dark Lands",
+    1760,
+    312
+  ],
+  [
+    "fw-the-skull-road",
+    "The Skull Road",
+    "The Dark Lands",
+    1510,
+    250
+  ],
+  [
+    "fw-ancient-giant-lands",
+    "Ancient Giant Lands",
+    "The Dark Lands",
+    1698,
+    510
+  ],
+  [
+    "fw-bone-road",
+    "Bone Road",
+    "The Dark Lands",
+    1776,
+    588
+  ],
+  [
+    "fw-rib-peaks",
+    "Rib Peaks",
+    "World's Edge Mountains",
+    1406,
+    614
+  ],
+  [
+    "fw-black-water",
+    "Black Water",
+    "World's Edge Mountains",
+    1312,
+    583
+  ],
+  [
+    "fw-peak-pass",
+    "Peak Pass",
+    "World's Edge Mountains",
+    1323,
+    516
+  ],
+  [
+    "fw-deadrock-gap",
+    "Deadrock Gap",
+    "World's Edge Mountains",
+    1385,
+    812
+  ],
+  [
+    "fw-the-wolf-lands",
+    "The Wolf Lands",
+    "World's Edge Mountains",
+    1458,
+    885
+  ],
+  [
+    "fw-death-pass",
+    "Death Pass",
+    "Border Princes",
+    1187,
+    958
+  ],
+  [
+    "fw-blood-river-valley",
+    "Blood River Valley",
+    "Border Princes",
+    1250,
+    937
+  ],
+  [
+    "fw-eastern-badlands",
+    "Eastern Badlands",
+    "Badlands",
+    1302,
+    890
+  ],
+  [
+    "fw-western-badlands",
+    "Western Badlands",
+    "Badlands",
+    1104,
+    838
+  ],
+  [
+    "fw-marshes-of-madness",
+    "Marshes of Madness",
+    "Badlands",
+    1166,
+    1000
+  ],
+  [
+    "fw-blightwater",
+    "Blightwater",
+    "The Southlands",
+    1302,
+    1010
+  ],
+  [
+    "fw-the-barrier-idols",
+    "The Barrier Idols",
+    "The Southlands",
+    989,
+    969
+  ],
+  [
+    "fw-parravon",
+    "Parravon",
+    "Bretonnia",
+    917,
+    562
+  ],
+  [
+    "fw-mousillon",
+    "Mousillon",
+    "Bretonnia",
+    729,
+    573
+  ]
+]

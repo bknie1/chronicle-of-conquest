@@ -3,465 +3,465 @@ export default {
   "id": "old-world",
   "name": "The Old World",
   "image": "/maps/old-world.jpg",
-  "width": 2000,
-  "height": 1987,
-  "maxEdge": 380,
-  "reach": 150,
+  "width": 2508,
+  "height": 2508,
+  "maxEdge": 477,
+  "reach": 188,
   "nodes": [
     {
       "id": "altdorf",
       "name": "Altdorf",
       "region": "Reikland",
-      "x": 870,
-      "y": 1080
+      "x": 1055,
+      "y": 1321
     },
     {
       "id": "middenheim",
       "name": "Middenheim",
       "region": "Middenland",
-      "x": 930,
-      "y": 970
+      "x": 1117,
+      "y": 1176
     },
     {
       "id": "nordland",
       "name": "Nordland",
       "region": "The Empire",
-      "x": 940,
-      "y": 776
+      "x": 1108,
+      "y": 921
     },
     {
       "id": "marienburg",
       "name": "Marienburg",
       "region": "The Wasteland",
-      "x": 770,
-      "y": 900
+      "x": 913,
+      "y": 1086
     },
     {
       "id": "ostland",
       "name": "Ostland",
       "region": "The Empire",
-      "x": 1130,
-      "y": 756
+      "x": 1340,
+      "y": 893
     },
     {
       "id": "hochland",
       "name": "Hochland",
       "region": "The Empire",
-      "x": 1040,
-      "y": 850
+      "x": 1239,
+      "y": 1017
     },
     {
       "id": "talabheim",
       "name": "Talabheim",
       "region": "Talabecland",
-      "x": 1150,
-      "y": 940
+      "x": 1384,
+      "y": 1134
     },
     {
       "id": "ostermark",
       "name": "Ostermark",
       "region": "The Empire",
-      "x": 1330,
-      "y": 940
+      "x": 1605,
+      "y": 1132
     },
     {
       "id": "stirland",
       "name": "Stirland",
       "region": "The Empire",
-      "x": 1200,
-      "y": 1080
+      "x": 1461,
+      "y": 1318
     },
     {
       "id": "nuln",
       "name": "Nuln",
       "region": "Wissenland",
-      "x": 1040,
-      "y": 1180
+      "x": 1275,
+      "y": 1451
     },
     {
       "id": "averheim",
       "name": "Averheim",
       "region": "Averland",
-      "x": 1220,
-      "y": 1200
+      "x": 1498,
+      "y": 1475
     },
     {
       "id": "wissenland",
       "name": "Wissenland",
       "region": "The Empire",
-      "x": 1120,
-      "y": 1280
+      "x": 1384,
+      "y": 1581
     },
     {
       "id": "moot",
       "name": "The Moot",
       "region": "Mootland",
-      "x": 1310,
-      "y": 1160
+      "x": 1604,
+      "y": 1422
     },
     {
       "id": "drakenhof",
       "name": "Drakenhof",
       "region": "Sylvania",
-      "x": 1330,
-      "y": 1040
+      "x": 1616,
+      "y": 1264
     },
     {
       "id": "kislev",
       "name": "Kislev",
       "region": "Kislev",
-      "x": 1400,
-      "y": 730
+      "x": 1669,
+      "y": 856
     },
     {
       "id": "erengrad",
       "name": "Erengrad",
       "region": "Kislev",
-      "x": 1150,
-      "y": 570
+      "x": 1344,
+      "y": 648
     },
     {
       "id": "praag",
       "name": "Praag",
       "region": "Kislev",
-      "x": 1460,
-      "y": 590
+      "x": 1728,
+      "y": 671
     },
     {
       "id": "troll-country",
       "name": "Troll Country",
       "region": "Kislev",
-      "x": 1400,
-      "y": 340
+      "x": 1627,
+      "y": 343
     },
     {
       "id": "norsca-west",
       "name": "Bjornling Coast",
       "region": "Norsca",
-      "x": 460,
-      "y": 480
+      "x": 486,
+      "y": 537
     },
     {
       "id": "norsca-heart",
       "name": "Norscan Heartland",
       "region": "Norsca",
-      "x": 800,
-      "y": 340
+      "x": 889,
+      "y": 349
     },
     {
       "id": "norsca-east",
       "name": "Norscan Frontier",
       "region": "Norsca",
-      "x": 1200,
-      "y": 240
+      "x": 1370,
+      "y": 214
     },
     {
       "id": "chaos-wastes",
       "name": "The Chaos Wastes",
       "region": "Northern Wastes",
-      "x": 1860,
-      "y": 160
+      "x": 2173,
+      "y": 102
     },
     {
       "id": "kurgan-steppe",
       "name": "Kurgan Steppe",
       "region": "Northern Wastes",
-      "x": 1760,
-      "y": 320
+      "x": 2067,
+      "y": 313
     },
     {
       "id": "zorn-uzkul",
       "name": "Zorn Uzkul",
       "region": "Northern Wastes",
-      "x": 1910,
-      "y": 600
+      "x": 2282,
+      "y": 680
     },
     {
       "id": "karak-kadrin",
       "name": "Karak Kadrin",
       "region": "World's Edge Mountains",
-      "x": 1560,
-      "y": 970
+      "x": 1891,
+      "y": 1169
     },
     {
       "id": "karaz-a-karak",
       "name": "Karaz-a-Karak",
       "region": "World's Edge Mountains",
-      "x": 1570,
-      "y": 1220
+      "x": 1931,
+      "y": 1498
     },
     {
       "id": "black-fire-pass",
       "name": "Black Fire Pass",
       "region": "World's Edge Mountains",
-      "x": 1400,
-      "y": 1320
+      "x": 1732,
+      "y": 1631
     },
     {
       "id": "eight-peaks",
       "name": "Karak Eight Peaks",
       "region": "World's Edge Mountains",
-      "x": 1600,
-      "y": 1690
+      "x": 2018,
+      "y": 2115
     },
     {
       "id": "dark-lands",
       "name": "The Dark Lands",
       "region": "Dark Lands",
-      "x": 1920,
-      "y": 940
+      "x": 2331,
+      "y": 1126
     },
     {
       "id": "blasted-wastes",
       "name": "The Blasted Wastes",
       "region": "Dark Lands",
-      "x": 1920,
-      "y": 1120
+      "x": 2350,
+      "y": 1363
     },
     {
       "id": "black-crag",
       "name": "Black Crag",
       "region": "Badlands",
-      "x": 1520,
-      "y": 1585
+      "x": 1908,
+      "y": 1978
     },
     {
       "id": "badlands",
       "name": "The Badlands",
       "region": "Badlands",
-      "x": 1220,
-      "y": 1580
+      "x": 1539,
+      "y": 1974
     },
     {
       "id": "blood-river",
       "name": "Blood River Valley",
       "region": "Badlands",
-      "x": 1380,
-      "y": 1520
+      "x": 1729,
+      "y": 1894
     },
     {
       "id": "marshes",
       "name": "Marshes of Madness",
       "region": "Badlands",
-      "x": 1230,
-      "y": 1900
+      "x": 1586,
+      "y": 2395
     },
     {
       "id": "azgorh",
       "name": "Desolation of Azgorh",
       "region": "Dark Lands",
-      "x": 1930,
-      "y": 1600
+      "x": 2414,
+      "y": 1993
     },
     {
       "id": "border-princes",
       "name": "Border Princes",
       "region": "Border Princes",
-      "x": 1120,
-      "y": 1440
+      "x": 1401,
+      "y": 1791
     },
     {
       "id": "couronne",
       "name": "Couronne",
       "region": "Bretonnia",
-      "x": 600,
-      "y": 880
+      "x": 701,
+      "y": 1061
     },
     {
       "id": "languille",
       "name": "L'Anguille",
       "region": "Bretonnia",
-      "x": 510,
-      "y": 940
+      "x": 597,
+      "y": 1141
     },
     {
       "id": "lyonesse",
       "name": "Lyonesse",
       "region": "Bretonnia",
-      "x": 410,
-      "y": 1010
+      "x": 482,
+      "y": 1234
     },
     {
       "id": "gisoreux",
       "name": "Gisoreux",
       "region": "Bretonnia",
-      "x": 580,
-      "y": 1000
+      "x": 690,
+      "y": 1219
     },
     {
       "id": "montfort",
       "name": "Montfort",
       "region": "Bretonnia",
-      "x": 770,
-      "y": 1040
+      "x": 928,
+      "y": 1269
     },
     {
       "id": "bastonne",
       "name": "Bastonne",
       "region": "Bretonnia",
-      "x": 630,
-      "y": 1090
+      "x": 761,
+      "y": 1337
     },
     {
       "id": "bordeleaux",
       "name": "Bordeleaux",
       "region": "Bretonnia",
-      "x": 540,
-      "y": 1170
+      "x": 659,
+      "y": 1443
     },
     {
       "id": "aquitaine",
       "name": "Aquitaine",
       "region": "Bretonnia",
-      "x": 580,
-      "y": 1250
+      "x": 717,
+      "y": 1547
     },
     {
       "id": "quenelles",
       "name": "Quenelles",
       "region": "Bretonnia",
-      "x": 730,
-      "y": 1250
+      "x": 901,
+      "y": 1546
     },
     {
       "id": "brionne",
       "name": "Brionne",
       "region": "Bretonnia",
-      "x": 600,
-      "y": 1310
+      "x": 748,
+      "y": 1626
     },
     {
       "id": "carcassonne",
       "name": "Carcassonne",
       "region": "Bretonnia",
-      "x": 750,
-      "y": 1410
+      "x": 943,
+      "y": 1756
     },
     {
       "id": "parravon",
       "name": "Parravon",
       "region": "Bretonnia",
-      "x": 840,
-      "y": 1170
+      "x": 1028,
+      "y": 1440
     },
     {
       "id": "athel-loren",
       "name": "Athel Loren",
       "region": "The Forest of Loren",
-      "x": 900,
-      "y": 1300
+      "x": 1115,
+      "y": 1610
     },
     {
       "id": "bilbali",
       "name": "Bilbali",
       "region": "Estalia",
-      "x": 380,
-      "y": 1380
+      "x": 485,
+      "y": 1720
     },
     {
       "id": "magritta",
       "name": "Magritta",
       "region": "Estalia",
-      "x": 390,
-      "y": 1540
+      "x": 514,
+      "y": 1930
     },
     {
       "id": "tobaro",
       "name": "Tobaro",
       "region": "Tilea",
-      "x": 630,
-      "y": 1620
+      "x": 818,
+      "y": 2033
     },
     {
       "id": "miragliano",
       "name": "Miragliano",
       "region": "Tilea",
-      "x": 770,
-      "y": 1525
+      "x": 980,
+      "y": 1907
     },
     {
       "id": "trantio",
       "name": "Trantio",
       "region": "Tilea",
-      "x": 810,
-      "y": 1585
+      "x": 1035,
+      "y": 1985
     },
     {
       "id": "remas",
       "name": "Remas",
       "region": "Tilea",
-      "x": 780,
-      "y": 1665
+      "x": 1007,
+      "y": 2091
     },
     {
       "id": "luccini",
       "name": "Luccini",
       "region": "Tilea",
-      "x": 750,
-      "y": 1810
+      "x": 986,
+      "y": 2281
     },
     {
       "id": "sartosa",
       "name": "Sartosa",
       "region": "Tilea",
-      "x": 700,
-      "y": 1910
+      "x": 935,
+      "y": 2413
     },
     {
       "id": "skavenblight",
       "name": "Skavenblight",
       "region": "The Blighted Marshes",
-      "x": 690,
-      "y": 1500
+      "x": 879,
+      "y": 1875
     },
     {
       "id": "cathay-road",
       "name": "Caravanserai of the Silk Road",
       "region": "Road to Cathay",
-      "x": 1950,
-      "y": 1360
+      "x": 2413,
+      "y": 1678
     },
     {
       "id": "drakwald",
       "name": "The Drakwald",
       "region": "Middenland",
-      "x": 845,
-      "y": 860
+      "x": 1000,
+      "y": 1032
     },
     {
       "id": "nehekhara-road",
       "name": "Road to Nehekhara",
       "region": "Land of the Dead",
-      "x": 1480,
-      "y": 1955
+      "x": 1899,
+      "y": 2464
     },
     {
       "id": "mountains-of-mourn",
       "name": "Mountains of Mourn",
       "region": "Ogre Kingdoms",
-      "x": 1960,
-      "y": 1770
+      "x": 2469,
+      "y": 2216
     },
     {
       "id": "black-ark",
       "name": "The Black Ark Harbinger",
       "region": "The Great Ocean",
-      "x": 180,
-      "y": 1250
+      "x": 225,
+      "y": 1551
     },
     {
       "id": "lustrian-landing",
       "name": "Lustrian Landing",
       "region": "The Great Ocean",
-      "x": 130,
-      "y": 1620
+      "x": 203,
+      "y": 2038
     },
     {
       "id": "chaos-rift",
       "name": "The Northern Chaos Gate",
       "region": "Northern Wastes",
-      "x": 1650,
-      "y": 85
+      "x": 1920,
+      "y": 70
     }
   ],
   "extraLinks": [

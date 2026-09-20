@@ -114,6 +114,34 @@ export default {
       "region": "Ghur",
       "x": 994,
       "y": 743
+    },
+    {
+      "id": "frostmaw-reach",
+      "name": "Frostmaw Reach",
+      "region": "Ghur",
+      "x": 1350,
+      "y": 250
+    },
+    {
+      "id": "stonejaw-flats",
+      "name": "Stonejaw Flats",
+      "region": "Ghur",
+      "x": 750,
+      "y": 950
+    },
+    {
+      "id": "gruesome-heights",
+      "name": "The Gruesome Heights",
+      "region": "Ghur",
+      "x": 200,
+      "y": 250
+    },
+    {
+      "id": "colossus-shoal",
+      "name": "The Colossus Shoal",
+      "region": "Ghur",
+      "x": 1450,
+      "y": 550
     }
   ],
   "extraLinks": [],

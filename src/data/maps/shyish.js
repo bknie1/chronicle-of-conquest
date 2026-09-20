@@ -100,6 +100,27 @@ export default {
       "region": "Shyish",
       "x": 587,
       "y": 252
+    },
+    {
+      "id": "hollowmourne",
+      "name": "Hollowmourne",
+      "region": "Shyish",
+      "x": 1150,
+      "y": 850
+    },
+    {
+      "id": "blisterskin",
+      "name": "Blisterskin",
+      "region": "Shyish",
+      "x": 1050,
+      "y": 300
+    },
+    {
+      "id": "gristlegore",
+      "name": "Gristlegore",
+      "region": "Shyish",
+      "x": 250,
+      "y": 850
     }
   ],
   "extraLinks": [],

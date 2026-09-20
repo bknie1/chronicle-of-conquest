@@ -86,6 +86,13 @@ export default {
       "region": "The Eightpoints",
       "x": 545,
       "y": 361
+    },
+    {
+      "id": "skarrgrim",
+      "name": "Skarrgrim",
+      "region": "The Eightpoints",
+      "x": 680,
+      "y": 680
     }
   ],
   "extraLinks": [],

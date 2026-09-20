@@ -198,7 +198,9 @@ export function campaignRoutes(db) {
     const user = requireUser(req);
     const c = load(req);
     requireMember(c, user);
-    const faction = armyFactionsFor(SETTINGS[c.setting]).find(f => f.id === req.body.faction);
+    // Muster as a sub-faction, or as the army book itself.
+    const setting = SETTINGS[c.setting];
+    const faction = [...armyFactionsFor(setting), ...setting.factions].find(f => f.id === req.body.faction);
     if (!faction) throw new HttpError(400, 'Pick a faction.');
     const name = text(req.body.name, 'Army name', { min: 2, max: 40 });
     if (q.activeArmyCount.get(c.id, user.id).n >= MAX_ACTIVE_ARMIES) {

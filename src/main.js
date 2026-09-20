@@ -780,7 +780,8 @@ function armyOptionsByBook() {
   return [...books].map(([bookId, list]) => {
     const book = C().factionById.get(bookId);
     if (list.length === 1 && list[0].id === bookId) return `<option value="${esc(bookId)}">${esc(book.name)}</option>`;
-    return `<optgroup label="${esc(book.name)}">${list.map(f =>
+    // The book itself is a choice too, for anyone who doesn't pick a sub-faction.
+    return `<optgroup label="${esc(book.name)}"><option value="${esc(bookId)}">${esc(book.name)} (no sub-faction)</option>${list.map(f =>
       `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('')}</optgroup>`;
   }).join('');
 }

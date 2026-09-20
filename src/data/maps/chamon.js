@@ -93,6 +93,20 @@ export default {
       "region": "Chamon",
       "x": 603,
       "y": 660
+    },
+    {
+      "id": "barak-zilfin",
+      "name": "Barak-Zilfin",
+      "region": "Chamon",
+      "x": 1250,
+      "y": 300
+    },
+    {
+      "id": "barak-urbaz",
+      "name": "Barak-Urbaz",
+      "region": "Chamon",
+      "x": 200,
+      "y": 700
     }
   ],
   "extraLinks": [],

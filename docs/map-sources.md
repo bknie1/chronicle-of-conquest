@@ -33,3 +33,8 @@ Found in September 2026. All are official GW art, mostly book scans hosted on Le
 | All realms | Warhammer Community, "What exactly are the Mortal Realms"; Lexicanum Cosmos-Map.jpg; Mortal Realms map 03 | Diagrams of the realms around the Eightpoints |
 
 Switching a realm to real art: put the image in `public/maps/realms/`, point the realm's `image`, `width` and `height` at it in `src/data/maps/<realm>.js`, then move the points in the map editor. Point ids used as homes or realmgates must stay; the editor refuses saves that drop them.
+
+## Ideas parked
+
+- **City maps.** `Map-City-Altdorf-3-Vector.pdf` in the assets folder is a street map of Altdorf. A city could one day be its own small map, the way Blight City is, for skirmish campaigns fought street by street. Low priority: a whole map for one city is a lot of scaffolding for a small payoff.
+- **References kept for naming** (not shipped, see `.mapref/`): the labeled Old World and Heresy maps, both Total War faction maps, Gitzman tiles, and a detailed Norsca map.
