@@ -77,6 +77,9 @@ const LATER_COLUMNS = [
   ['campaigns', 'level', "TEXT NOT NULL DEFAULT 'codex'"],
   ['campaigns', 'season_started_at', 'INTEGER'],
   ['campaigns', 'reset_days', 'INTEGER'],
+  ['campaigns', 'maps', 'TEXT'],
+  ['campaigns', 'settings', 'TEXT'],
+  ['armies', 'setting', 'TEXT'],
   ['armies', 'start', 'TEXT'],
 ];
 

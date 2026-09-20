@@ -82,7 +82,12 @@ function rebuildFactions() {
   state.factionById = new Map(factionList().map(f => [f.id, f]));
 }
 const current = () => C().graph.maps.get(state.mapId);
-const multiMap = () => C().setting.maps.length > 1;
+// The maps a campaign shows: its setting's, less any the organizer has hidden.
+const mapsShown = () => {
+  const on = V()?.maps;
+  return on ? C().setting.maps.filter(m => on.includes(m.id)) : C().setting.maps;
+};
+const multiMap = () => mapsShown().length > 1;
 const toGlobal = local => local + current().offset;
 const onCurrentMap = i => NODES()[i].map === state.mapId;
 const toLocal = i => i - current().offset;
@@ -428,7 +433,7 @@ function renderRealmBar() {
   const bar = $('#realm-bar');
   bar.hidden = !multiMap();
   if (!multiMap()) return;
-  bar.innerHTML = `<button class="${state.overview ? 'active' : ''}" data-realm="__all">All realms</button>${C().setting.maps.map(m => {
+  bar.innerHTML = `<button class="${state.overview ? 'active' : ''}" data-realm="__all">All realms</button>${mapsShown().map(m => {
     const { held, battles } = realmStats(m.id);
     const lead = held[0] && faction(held[0][0]);
     return `<button class="${!state.overview && m.id === state.mapId ? 'active' : ''}" data-realm="${m.id}">
@@ -442,7 +447,7 @@ function renderOverview() {
   $('#viewport').classList.toggle('overview', state.overview);
   box.hidden = !state.overview;
   if (!state.overview) return;
-  const maps = C().setting.maps;
+  const maps = mapsShown();
   const gateCount = id => C().graph.gates.filter(g => NODES()[g.a].map === id || NODES()[g.b].map === id).length;
   const hub = maps.reduce((best, m) => (gateCount(m.id) > gateCount(best.id) ? m : best), maps[0]);
   const ring = maps.filter(m => m !== hub);
@@ -661,11 +666,16 @@ function renderTopbar() {
     `<option value="${esc(val)}" ${val === currentValue ? 'selected' : ''}>${esc(label)}</option>`).join('')}
     ${STATIC ? '' : '<option value="__join">Join with a code…</option><option value="__create">＋ Start a new campaign…</option>'}`;
   // Demos can switch setting; a real campaign is played in the one it was made for.
+  // In a campaign the games it spans come first; the rest open as demos to browse.
   const picker = $('#setting-select');
-  picker.innerHTML = Object.values(SETTINGS).map(st =>
-    `<option value="${esc(st.id)}" ${st.id === v.setting ? 'selected' : ''}>${esc(st.name)}</option>`).join('');
-  picker.disabled = v.kind === 'campaign';
-  picker.title = v.kind === 'campaign' ? 'A campaign is played in one setting' : 'Choose a setting';
+  const opt = st => `<option value="${esc(st.id)}" ${st.id === v.setting ? 'selected' : ''}>${esc(st.name)}</option>`;
+  const all = Object.values(SETTINGS);
+  picker.innerHTML = v.kind === 'campaign'
+    ? `<optgroup label="${esc(v.name)}">${all.filter(st => v.settings.includes(st.id)).map(opt).join('')}</optgroup>
+       <optgroup label="Browse demos">${all.filter(st => !v.settings.includes(st.id)).map(opt).join('')}</optgroup>`
+    : all.map(opt).join('');
+  picker.disabled = false;
+  picker.title = v.kind === 'campaign' ? 'Switch between this campaign’s games' : 'Choose a setting';
   document.title = v.kind === 'demo' ? 'Chronicle of Conquest' : `${v.name} · Chronicle of Conquest`;
 }
 
@@ -720,10 +730,10 @@ function setView(view, { keepDay = false } = {}) {
   }
   if (settingChanged) {
     state.mapId = null;
-    loadMap(C().setting.maps[0].id);
+    loadMap(mapsShown()[0].id);
     // A setting with many maps opens on the overview; one with a main map and
     // an outlying region or two opens on the main map, where the campaign is.
-    state.overview = C().setting.maps.length > 3;
+    state.overview = mapsShown().length > 3;
   }
   if (!keepDay || wasToday) state.at = view.today;
   else state.at = Math.min(state.at, view.today);
@@ -772,7 +782,7 @@ async function campaignCall(method, url, body) {
   const payload = await api(method, `/campaigns/${V().code}${url}`, body);
   const before = state.influence.map(s => s.owner);
   const seen = new Set(confirmed().map(g => g.id));
-  setView(campaignView(payload), { keepDay: true });
+  setView(campaignView(payload, V().setting), { keepDay: true });
   const newlyConfirmed = confirmed().filter(g => !seen.has(g.id));
   if (newlyConfirmed.length === 1) announce(before, newlyConfirmed[0]);
   return payload;
@@ -833,7 +843,7 @@ function nodeOptions(selected) {
   const opts = list => list.map(({ n, i }) => `<option value="${i}" ${i === selected ? 'selected' : ''}>${esc(n.name)}</option>`).join('');
   const all = NODES().map((n, i) => ({ n, i }));
   if (!multiMap()) return opts(all.sort((a, b) => a.n.name.localeCompare(b.n.name)));
-  return C().setting.maps.map(m => `<optgroup label="${esc(m.name)}">${opts(all.filter(x => x.n.map === m.id)
+  return mapsShown().map(m => `<optgroup label="${esc(m.name)}">${opts(all.filter(x => x.n.map === m.id)
     .sort((a, b) => a.n.name.localeCompare(b.n.name)))}</optgroup>`).join('');
 }
 const activeArmies = () => V().players.filter(p => !p.retired);
@@ -951,12 +961,20 @@ function openSettings() {
       `<option value="${l}" ${l === (v.level ?? 'codex') ? 'selected' : ''}>${esc(LEVEL_NAMES[l])} — ${esc(LEVEL_HINTS[l])}</option>`).join('')}</select></label>
     <label>New season every<select name="resetDays">${[0, 30, 60, 90, 180, 365].map(d =>
       `<option value="${d}" ${d === (v.resetDays ?? 0) ? 'selected' : ''}>${d ? `${d} days` : 'Never, I reset it myself'}</option>`).join('')}</select></label>
+    <fieldset class="maps"><legend>Games in play</legend>${Object.values(SETTINGS).map(s =>
+      `<label class="check"><input type="checkbox" name="settings" value="${esc(s.id)}" ${v.settings.includes(s.id) ? 'checked' : ''} ${s.id === v.settings[0] ? 'disabled' : ''}> ${esc(s.name)}</label>`).join('')}
+      <span class="hint">Each game gets its own tab, with its own armies and territory. Switching one off hides it; nothing is lost.</span></fieldset>
+    ${C().setting.maps.length > 1 ? `<fieldset class="maps"><legend>Maps in play for ${esc(C().setting.name)}</legend>${C().setting.maps.map(m =>
+      `<label class="check"><input type="checkbox" name="maps" value="${esc(m.id)}" ${mapsShown().some(x => x.id === m.id) ? 'checked' : ''}> ${esc(m.name)}</label>`).join('')}
+      <span class="hint">A map switched off keeps its games and territory; it is just not shown until it is switched back on.</span></fieldset>` : ''}
     <p class="muted small">A new season clears the map and everyone starts from their homelands again. The chronicle keeps every game.</p>
     <div class="row"><button type="button" class="ghost" data-act="reset">Start a new season now</button></div>
     ${cancelRow('Save settings')}`,
   async data => {
     await campaignCall('POST', '/settings', {
       name: data.get('name'), level: data.get('level'), resetDays: Number(data.get('resetDays')),
+      settings: [v.settings[0], ...data.getAll('settings')],
+      ...(C().setting.maps.length > 1 ? { maps: data.getAll('maps') } : {}),
     });
     toast('Campaign settings saved.');
   });
@@ -974,7 +992,7 @@ function openMuster() {
     ${cancelRow('Muster')}`,
   async data => {
     await campaignCall('POST', '/armies', {
-      faction: data.get('faction'), start: data.get('start'), name: data.get('name'),
+      faction: data.get('faction'), start: data.get('start'), name: data.get('name'), setting: V().setting,
     });
     const where = NODES()[idx(startPoint(C().setting, data.get('start')))];
     toast(`<b>${esc(data.get('name'))}</b> takes the field from ${esc(where.name)}.`);
@@ -1138,8 +1156,10 @@ $('#campaign-select').addEventListener('change', e => {
 // A campaign is fixed to its setting, so picking another one here opens that
 // setting's demo to look around; the campaign picker brings you back.
 $('#setting-select').addEventListener('change', e => {
-  if (V().kind !== 'demo' && e.target.value === V().setting) return renderTopbar();
-  navigate(e.target.value === 'old-world' ? '/' : `/demo/${e.target.value}`);
+  const s = e.target.value;
+  if (V().kind !== 'demo' && s === V().setting) return renderTopbar();
+  if (V().kind !== 'demo' && V().settings.includes(s)) { select(null); return setView(campaignView(V().payload, s), { keepDay: true }); }
+  navigate(s === 'old-world' ? '/' : `/demo/${s}`);
 });
 window.addEventListener('popstate', route);
 window.addEventListener('resize', () => { if (state.overview) renderOverview(); });

@@ -31,33 +31,38 @@ export function demoView(setting, graph) {
   };
 }
 
-export function campaignView(payload) {
+// `setting` picks which of a campaign's games to show; the rest stay in the payload.
+export function campaignView(payload, setting = payload.campaign.setting) {
   // The timeline covers the current season, not all of history.
   const start = midnight(payload.campaign.seasonStartedAt ?? payload.campaign.createdAt);
   const dayOf = ms => (ms - start.getTime()) / DAY;
+  const armySettings = new Map(payload.armies.map(a => [a.id, a.setting ?? payload.campaign.setting]));
   const me = payload.me && {
     ...payload.me,
     armyIds: new Set(payload.armies.filter(a => a.userId === payload.me.userId && !a.retiredAt).map(a => a.id)),
   };
   return {
     kind: 'campaign',
-    setting: payload.campaign.setting,
+    setting,
+    settings: payload.campaign.settings ?? [payload.campaign.setting],
+    payload,
     level: payload.campaign.level ?? 'codex',
     resetDays: payload.campaign.resetDays ?? 0,
+    maps: payload.campaign.maps ?? null,
     seasonStartedAt: payload.campaign.seasonStartedAt,
     code: payload.campaign.code,
     name: payload.campaign.name,
     start,
     today: dayOf(Date.now()),
-    players: payload.armies.map(a => ({
+    players: payload.armies.filter(a => (a.setting ?? payload.campaign.setting) === setting).map(a => ({
       id: a.id, userId: a.userId, name: a.playerName, army: a.name, faction: a.faction,
       joinedDay: dayOf(a.createdAt), retired: !!a.retiredAt,
     })),
-    games: payload.games.map(g => ({
+    games: payload.games.filter(g => armySettings.get(g.winner) === setting).map(g => ({
       id: g.id, day: dayOf(g.playedAt), node: g.node, winner: g.winner, loser: g.loser,
       status: g.status, reportedBy: g.reportedBy, confirmer: g.confirmer,
     })),
-    events: payload.events.map(e => ({
+    events: payload.events.filter(e => armySettings.get(e.armies[0]) === setting).map(e => ({
       id: e.id, day: dayOf(e.scheduledFor), node: e.node, players: e.armies, note: e.note, createdBy: e.createdBy,
     })),
     me,

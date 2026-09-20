@@ -242,3 +242,32 @@ test('an automatic season rolls over once its interval passes', async () => {
   assert.equal(after.body.games.length, 0, 'the old season ended');
   assert.ok(after.body.campaign.seasonStartedAt > old, 'the season moved forward');
 });
+
+test('a campaign can span several games, each with its own armies and battles', async () => {
+  const org = await signup('multi_org');
+  const rival = await signup('multi_rival');
+  const { code } = (await org.post('/campaigns', { name: 'Store Nights', setting: 'mortal-realms' })).body;
+  await rival.post(`/campaigns/${code}/join`);
+  // Not yet part of the campaign, so no mustering there.
+  assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Early', setting: 'old-world' })).status, 400);
+
+  let r = await org.post(`/campaigns/${code}/settings`, { name: 'Store Nights', settings: ['old-world', 'warhammer-40k'] });
+  assert.deepEqual(r.body.campaign.settings, ['mortal-realms', 'old-world', 'warhammer-40k'], 'the home setting stays first');
+
+  const reik = (await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Reiksguard', setting: 'old-world' })).body.armies.at(-1);
+  assert.equal(reik.setting, 'old-world');
+  const orcs = (await rival.post(`/campaigns/${code}/armies`, { faction: 'orcs', name: 'Waaagh', setting: 'old-world' })).body.armies.at(-1);
+  const ironjawz = (await rival.post(`/campaigns/${code}/armies`, { faction: 'orruks', name: 'Ironjawz' })).body.armies.at(-1);
+  assert.equal(ironjawz.setting, 'mortal-realms', 'no setting given means the home setting');
+
+  // Battles stay inside one game: an Old World army cannot fight a Sigmar one, or on a Sigmar map.
+  assert.equal((await org.post(`/campaigns/${code}/games`, { winner: reik.id, loser: ironjawz.id, node: 'altdorf' })).status, 400);
+  assert.equal((await org.post(`/campaigns/${code}/games`, { winner: reik.id, loser: orcs.id, node: 'hammerhal-ghyra' })).status, 400);
+  assert.equal((await org.post(`/campaigns/${code}/games`, { winner: reik.id, loser: orcs.id, node: 'altdorf' })).status, 201);
+
+  // Switching a game off hides it without losing anything; it cannot drop the home setting.
+  r = await org.post(`/campaigns/${code}/settings`, { settings: ['warhammer-40k'] });
+  assert.deepEqual(r.body.campaign.settings, ['mortal-realms', 'warhammer-40k']);
+  assert.equal(r.body.armies.filter(a => a.setting === 'old-world').length, 2, 'hidden game keeps its armies');
+  assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Late', setting: 'old-world' })).status, 400);
+});

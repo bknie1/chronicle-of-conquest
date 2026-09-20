@@ -26,7 +26,7 @@ export function campaignRoutes(db) {
     insertCampaign: db.prepare(`INSERT INTO campaigns (code, name, setting, owner_id, created_at, level, season_started_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)`),
     setSeason: db.prepare('UPDATE campaigns SET season_started_at = ? WHERE id = ?'),
-    setOptions: db.prepare('UPDATE campaigns SET name = ?, level = ?, reset_days = ? WHERE id = ?'),
+    setOptions: db.prepare('UPDATE campaigns SET name = ?, level = ?, reset_days = ?, maps = ?, settings = ? WHERE id = ?'),
     myCampaigns: db.prepare(`SELECT c.code, c.name, c.setting, c.level, m.role FROM members m JOIN campaigns c ON c.id = m.campaign_id
       WHERE m.user_id = ? ORDER BY m.joined_at DESC`),
     member: db.prepare('SELECT role FROM members WHERE campaign_id = ? AND user_id = ?'),
@@ -36,7 +36,7 @@ export function campaignRoutes(db) {
     armies: db.prepare(`SELECT a.*, u.display_name FROM armies a JOIN users u ON u.id = a.user_id WHERE a.campaign_id = ? ORDER BY a.created_at`),
     army: db.prepare('SELECT * FROM armies WHERE id = ? AND campaign_id = ?'),
     activeArmyCount: db.prepare('SELECT COUNT(*) n FROM armies WHERE campaign_id = ? AND user_id = ? AND retired_at IS NULL'),
-    insertArmy: db.prepare('INSERT INTO armies (campaign_id, user_id, faction, start, name, created_at) VALUES (?, ?, ?, ?, ?, ?)'),
+    insertArmy: db.prepare('INSERT INTO armies (campaign_id, user_id, faction, start, name, created_at, setting) VALUES (?, ?, ?, ?, ?, ?, ?)'),
     retireArmy: db.prepare('UPDATE armies SET retired_at = ? WHERE id = ?'),
     games: db.prepare('SELECT * FROM games WHERE campaign_id = ? ORDER BY played_at, id'),
     game: db.prepare('SELECT * FROM games WHERE id = ? AND campaign_id = ?'),
@@ -73,14 +73,18 @@ export function campaignRoutes(db) {
     if (a.retired_at) throw new HttpError(400, `${a.name} has been retired.`);
     return a;
   };
-  const node = (c, value) => {
-    const n = SETTINGS[c.setting].nodes.find(x => x.id === value);
+  // A campaign may span several games; each army belongs to one of them.
+  const settingsOf = c => (c.settings ? JSON.parse(c.settings) : [c.setting]);
+  const settingOf = (c, a) => a.setting ?? c.setting;
+  const node = (c, value, a) => {
+    const n = SETTINGS[settingOf(c, a)].nodes.find(x => x.id === value);
     if (!n) throw new HttpError(400, 'Pick a battlefield on the map.');
     return n.id;
   };
-  const opposed = (a, b) => {
+  const opposed = (c, a, b) => {
     if (a.id === b.id) throw new HttpError(400, 'An army cannot fight itself.');
     if (a.faction === b.faction) throw new HttpError(400, 'Pick armies from two different factions.');
+    if (settingOf(c, a) !== settingOf(c, b)) throw new HttpError(400, 'Those armies fight in different games.');
   };
   // The player who must confirm a result is whoever owns the side the reporter didn't.
   const confirmerOf = (g) => {
@@ -114,11 +118,14 @@ export function campaignRoutes(db) {
       campaign: {
         code: c.code, name: c.name, setting: c.setting, createdAt: c.created_at,
         level: c.level ?? 'codex', seasonStartedAt: seasonStart, resetDays: c.reset_days ?? 0,
+        maps: c.maps ? JSON.parse(c.maps) : null,
+        settings: settingsOf(c),
       },
       me: user ? { userId: user.id, displayName: user.displayName, role: roleOf(c, user) } : null,
       members: q.members.all(c.id).map(m => ({ userId: m.user_id, displayName: m.display_name, role: m.role, joinedAt: m.joined_at })),
       armies: q.armies.all(c.id).map(a => ({
         id: a.id, userId: a.user_id, playerName: a.display_name, faction: a.faction, start: a.start, name: a.name,
+        setting: settingOf(c, a),
         createdAt: a.created_at, retiredAt: a.retired_at,
       })),
       games: q.games.all(c.id).filter(g => g.played_at >= seasonStart).map(g => ({
@@ -181,7 +188,24 @@ export function campaignRoutes(db) {
     if (!Number.isInteger(resetDays) || resetDays < 0 || resetDays > 365) {
       throw new HttpError(400, 'A season can run from 1 to 365 days, or 0 for no automatic reset.');
     }
-    q.setOptions.run(name, level, resetDays || null, c.id);
+    // Which of the setting's maps the campaign shows. Hidden maps keep their
+    // games and territory; they are simply not offered until switched back on.
+    let maps = c.maps;
+    if (Array.isArray(req.body.maps)) {
+      const known = SETTINGS[c.setting].maps.map(m => m.id);
+      const chosen = req.body.maps.filter(id => known.includes(id));
+      if (!chosen.length) throw new HttpError(400, 'A campaign needs at least one map.');
+      maps = chosen.length === known.length ? null : JSON.stringify(chosen);
+    }
+    // Which games the campaign spans. The first is its home setting.
+    let settings = c.settings;
+    if (Array.isArray(req.body.settings)) {
+      const chosen = req.body.settings.filter(id => SETTINGS[id]);
+      if (!chosen.length) throw new HttpError(400, 'A campaign needs at least one game.');
+      if (!chosen.includes(c.setting)) chosen.unshift(c.setting);
+      settings = chosen.length === 1 ? null : JSON.stringify(chosen);
+    }
+    q.setOptions.run(name, level, resetDays || null, maps, settings, c.id);
     res.json(payload(q.campaignByCode.get(c.code), user));
   });
 
@@ -198,8 +222,11 @@ export function campaignRoutes(db) {
     const user = requireUser(req);
     const c = load(req);
     requireMember(c, user);
-    // An army fights for one army book, from one of that book's starting grounds.
-    const setting = SETTINGS[c.setting];
+    // An army fights in one of the campaign's games, for one army book, from
+    // one of that book's starting grounds.
+    const settingId = req.body.setting ?? c.setting;
+    if (!settingsOf(c).includes(settingId)) throw new HttpError(400, 'That game is not part of this campaign.');
+    const setting = SETTINGS[settingId];
     const faction = armyFactionsFor(setting).find(f => f.id === req.body.faction);
     if (!faction) throw new HttpError(400, 'Pick a faction.');
     const starts = startsFor(setting, faction.id);
@@ -209,7 +236,7 @@ export function campaignRoutes(db) {
     if (q.activeArmyCount.get(c.id, user.id).n >= MAX_ACTIVE_ARMIES) {
       throw new HttpError(400, `You can field at most ${MAX_ACTIVE_ARMIES} armies at once. Retire one first.`);
     }
-    q.insertArmy.run(c.id, user.id, faction.id, start.id, name, Date.now());
+    q.insertArmy.run(c.id, user.id, faction.id, start.id, name, Date.now(), settingId);
     res.status(201).json(payload(c, user));
   });
 
@@ -230,14 +257,14 @@ export function campaignRoutes(db) {
     const mine = activeArmy(c, req.body.army, 'Your army');
     if (mine.user_id !== user.id) throw new HttpError(403, 'You can only issue challenges with your own army.');
     const foe = activeArmy(c, req.body.opponent, 'Opponent');
-    opposed(mine, foe);
+    opposed(c, mine, foe);
     const when = Number(req.body.scheduledFor);
     const now = Date.now();
     if (!Number.isFinite(when) || when < now - 86400e3 || when > now + 60 * 86400e3) {
       throw new HttpError(400, 'Pick a date within the next two months.');
     }
     const note = text(req.body.note, 'Stakes', { max: 80 });
-    q.insertEvent.run(c.id, node(c, req.body.node), mine.id, foe.id, when, note, user.id);
+    q.insertEvent.run(c.id, node(c, req.body.node, mine), mine.id, foe.id, when, note, user.id);
     res.status(201).json(payload(c, user));
   });
 
@@ -259,11 +286,11 @@ export function campaignRoutes(db) {
     requireMember(c, user);
     const winner = activeArmy(c, req.body.winner, 'Victor');
     const loser = activeArmy(c, req.body.loser, 'Defeated army');
-    opposed(winner, loser);
+    opposed(c, winner, loser);
     if (winner.user_id !== user.id && loser.user_id !== user.id) {
       throw new HttpError(403, 'Only a player who fought can report the result.');
     }
-    const where = node(c, req.body.node);
+    const where = node(c, req.body.node, winner);
     db.transaction(() => {
       q.insertGame.run(c.id, where, winner.id, loser.id, Date.now(), user.id);
       if (req.body.eventId) {
