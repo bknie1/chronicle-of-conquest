@@ -40,7 +40,7 @@ export const HORUS_HERESY = {
     { id: 'thousand-sons', name: 'Thousand Sons', color: '#8e0000', home: 'prospero', alliance: 'hh-traitor',
       subfactions: [
         { id: 'hh-thousand-sons-nikaea', name: 'Thousand Sons — the Council of Nikaea', color: '#8e0000', home: 'nikaea' },
-        { id: 'hh-thousand-sons-terra', name: "Thousand Sons — Ahriman's War", color: '#8e0000', home: 'terra' },
+        { id: 'hh-thousand-sons-terra', name: 'Thousand Sons — the Siege of Terra', color: '#8e0000', home: 'terra' },
       ] },
     { id: 'night-lords', name: 'Night Lords', color: '#1a237e', home: 'nostramo', alliance: 'hh-traitor',
       subfactions: [
@@ -138,6 +138,21 @@ export const HORUS_HERESY = {
         { id: 'hh-ruinstorm-daemons-calth', name: 'Daemons of the Ruinstorm — the Calth Warp Storm', color: '#e040fb', home: 'calth' },
         { id: 'hh-ruinstorm-daemons-terra', name: 'Daemons of the Ruinstorm — the Siege of Terra', color: '#e040fb', home: 'terra' },
         { id: 'hh-ruinstorm-daemons-isstvan', name: 'Daemons of the Ruinstorm — the Isstvan Atrocities', color: '#e040fb', home: 'isstvan' },
+      ] },
+    // Legionaries who fought against their own Legion's choice. Their wins
+    // count for the side they kept faith with, not the Legion they were born to.
+    { id: 'shattered-legions', name: 'Shattered Legions', color: '#90a4ae', home: 'cypra-mundi', alliance: 'hh-loyalist',
+      subfactions: [
+        { id: 'hh-shattered-garro', name: "Shattered Legions — Garro's Oath", color: '#90a4ae', home: 'terra' },
+        { id: 'hh-shattered-eisenstein', name: 'Shattered Legions — the Eisenstein Survivors', color: '#90a4ae', home: 'isstvan' },
+        { id: 'hh-shattered-world-eaters', name: 'Shattered Legions — the Loyalist World Eaters', color: '#90a4ae', home: 'bodt' },
+        { id: 'hh-shattered-beta-garmon', name: 'Shattered Legions — the Avenging Fleet', color: '#90a4ae', home: 'beta-garmon' },
+      ] },
+    { id: 'blackshields', name: 'Blackshields', color: '#37474f', home: 'the-maelstrom', alliance: 'hh-traitor',
+      subfactions: [
+        { id: 'hh-blackshields-caliban', name: 'Blackshields — the Fallen of Caliban', color: '#37474f', home: 'caliban' },
+        { id: 'hh-blackshields-golgotha', name: 'Blackshields — the Golgothan Warbands', color: '#37474f', home: 'golgothan-wastes' },
+        { id: 'hh-blackshields-ghoul-stars', name: 'Blackshields — the Ghoul Stars Renegades', color: '#37474f', home: 'the-ghoul-stars' },
       ] },
   ],
 };

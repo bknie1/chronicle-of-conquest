@@ -99,6 +99,8 @@ export const DEMOS = {
       { id: 'david', name: 'David', army: 'Tra Company', faction: 'space-wolves', skill: 0.6, active: [0, 123] },
       { id: 'danil', name: 'Danil', army: 'Pyroclasts of Nocturne', faction: 'salamanders', skill: 0.56, active: [0, 123] },
       { id: 'conrad', name: 'Conrad', army: 'House Taranis', faction: 'knights', skill: 0.55, active: [0, 90] },
+      { id: 'jowi', name: 'Jowi', army: "Garro's Oathsworn", faction: 'hh-shattered-garro', skill: 0.58, active: [0, 123] },
+      { id: 'jordan', name: 'Jordan', army: 'The Headsmen', faction: 'hh-blackshields-caliban', skill: 0.56, active: [20, 123] },
     ],
     // The Dropsite Massacre, tonight, twice over.
     events: [
