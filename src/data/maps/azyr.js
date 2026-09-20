@@ -60,8 +60,8 @@ export default {
       "y": 292
     },
     {
-      "id": "perspicarium",
-      "name": "The Perspicarium",
+      "id": "gladitorium",
+      "name": "The Gladitorium",
       "region": "Azyr",
       "x": 1078,
       "y": 403

@@ -105,7 +105,7 @@ export const MORTAL_REALMS = {
       id: 'seraphon', name: 'Seraphon', color: '#00b894', home: 'azyrite-watch', alliance: 'aos-order',
       subfactions: [
         { id: 'constellation-koatls-claw', name: "Koatl's Claw", home: 'azyrite-watch' },
-        { id: 'constellation-thunder-lizard', name: 'Thunder Lizard', home: 'perspicarium' },
+        { id: 'constellation-thunder-lizard', name: 'Thunder Lizard', home: 'gladitorium' },
         { id: 'constellation-dracothions-tail', name: "Dracothion's Tail", home: 'skydock' },
         { id: 'constellation-fangs-of-sotek', name: 'Fangs of Sotek', home: 'gates-of-azyr' },
       ],
