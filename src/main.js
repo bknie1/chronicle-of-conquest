@@ -1,7 +1,8 @@
 import './style.css';
 import { buildSettingGraph, computeInfluence, RULES } from './engine.js';
 import { MapView } from './map.js';
-import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
+import { loreFor } from './data/lore/index.js';
+import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, levelName, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
 
@@ -45,6 +46,8 @@ const state = {
   mapId: null,      // which of the setting's maps is showing
   overview: false,  // showing every realm at once
   level: 'codex',   // alliance | codex (see src/data/settings.js)
+  levelChoice: null, // a level the viewer picked, which outlives a refresh
+  regionTab: 'battle', // which tab a place's panel is showing: battle | lore
   at: 0,            // the day being shown; < view.today while replaying
   selected: null,   // setting-wide point index
   influence: null,
@@ -249,16 +252,18 @@ function campaignHeader() {
       <button class="small" data-copy="${esc(link)}">Copy invite link</button></div>${cta}`;
 }
 
-// How much faction detail is on screen. Demos can switch freely; a campaign
-// plays at the level its organizer set.
+// How much faction detail is on screen. Anyone can flip between the levels:
+// it only changes how the same games are counted up, so a Heresy player can
+// see Loyalists against Traitors, then how their own Legion is faring.
 function detailControl() {
   const v = V();
-  if (v.kind === 'demo') {
-    return `<div class="levels">${LEVELS.map(l => `<button class="${l === state.level ? 'active' : ''}"
-      data-level="${l}" title="${esc(LEVEL_HINTS[l])}">${esc(LEVEL_NAMES[l])}</button>`).join('')}</div>`;
-  }
+  const name = l => levelName(C().setting, l);
+  const buttons = `<div class="levels">${LEVELS.map(l => `<button class="${l === state.level ? 'active' : ''}"
+    data-level="${l}" title="${esc(LEVEL_HINTS[l])}">${esc(name(l))}</button>`).join('')}</div>`;
+  if (v.kind === 'demo') return buttons;
   const season = v.seasonStartedAt ? new Date(v.seasonStartedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : null;
-  return `<p class="muted small">Factions: <b>${esc(LEVEL_NAMES[state.level])}</b>${season ? ` · season began ${esc(season)}` : ''}${v.resetDays ? ` · new season every ${v.resetDays} days` : ''}
+  return `${buttons}
+    <p class="muted small">Campaign plays at <b>${esc(name(v.level ?? 'codex'))}</b>${season ? ` · season began ${esc(season)}` : ''}${v.resetDays ? ` · new season every ${v.resetDays} days` : ''}
     ${isOrganizer() ? ' · <button class="link" data-act="settings">Settings</button>' : ''}</p>`;
 }
 
@@ -341,11 +346,9 @@ function renderRegion(panel, i) {
   const s = state.influence[i];
   const events = upcoming().filter(e => e.node === n.id);
   const history = gamesSoFar().filter(g => g.node === n.id).slice(-8).reverse();
-  panel.innerHTML = `
-    <button class="link back" id="panel-back">← ${esc(V().name)}</button>
-    <h2>${esc(n.name)}</h2>
-    <p class="muted">${esc(multiMap() ? `${mapName(n.map)} · ${C().mapById.get(n.map).title ?? ''}` : n.region)}</p>
-    <p class="control">${controlLine(s)}</p>
+  const lore = loreFor(V().setting, n.id);
+  const tab = state.regionTab;
+  const battle = `
     <h3>Influence</h3>
     ${influenceBars(s)}
     ${isToday() ? `<div class="row">
@@ -355,7 +358,21 @@ function renderRegion(panel, i) {
     ${events.length ? `<h3>Battles here</h3><ul class="events">${events.map(e => eventLine(e, false)).join('')}</ul>` : ''}
     <h3>Battles fought here</h3>
     ${history.length ? `<ul class="chronicle">${history.map(gameLine).join('')}</ul>` : '<p class="muted">No blood has been spilled here. Yet.</p>'}`;
+  panel.innerHTML = `
+    <button class="link back" id="panel-back">← ${esc(V().name)}</button>
+    <h2>${esc(n.name)}</h2>
+    <p class="muted">${esc(multiMap() ? `${mapName(n.map)} · ${C().mapById.get(n.map).title ?? ''}` : n.region)}</p>
+    <p class="control">${controlLine(s)}</p>
+    <div class="tabs">
+      <button type="button" class="tab ${tab === 'battle' ? 'active' : ''}" data-region-tab="battle">Battle report</button>
+      <button type="button" class="tab ${tab === 'lore' ? 'active' : ''}" data-region-tab="lore">Lore</button>
+    </div>
+    ${tab === 'lore'
+      ? `<div class="lore">${lore ? `<p>${esc(lore)}</p>` : `<p class="muted">No lore written for ${esc(n.name)} yet.</p>`}
+         <p class="small muted">${esc(n.region ?? '')}</p></div>`
+      : battle}`;
 }
+
 
 // --- tooltip ---------------------------------------------------------------
 
@@ -592,6 +609,7 @@ function showPeek(i) {
 }
 
 function select(i) {
+  if (i !== state.selected) state.regionTab = 'battle';
   state.selected = i;
   $('#tooltip').hidden = true;
   showPeek(i);
@@ -672,10 +690,12 @@ async function refreshSession() {
   state.session = { user: s.user ?? null, campaigns: Array.isArray(s.campaigns) ? s.campaigns : [] };
 }
 
-// Demos let you flip between levels of detail to see what each looks like.
+// Flipping between levels is a lens on the same chronicle, never a change to
+// it, so a player may do it in a campaign without touching what the organizer set.
 function setLevel(level) {
   if (!LEVELS.includes(level) || level === state.level) return;
   state.level = level;
+  state.levelChoice = level;
   if (V().kind === 'demo') V().level = level;
   rebuildFactions();
   mapView.setFactions(factionList());
@@ -686,8 +706,10 @@ function setView(view, { keepDay = false } = {}) {
   const wasToday = !state.view || isToday();
   const settingChanged = state.view?.setting !== view.setting;
   state.view = view;
-  const levelChanged = state.level !== (view.level ?? 'codex');
-  state.level = view.level ?? 'codex';
+  if (settingChanged) state.levelChoice = null;
+  const wanted = state.levelChoice ?? view.level ?? 'codex';
+  const levelChanged = state.level !== wanted;
+  state.level = wanted;
   if (settingChanged || levelChanged) {
     if (settingChanged) state.ctx = contextFor(view.setting);
     rebuildFactions();
@@ -920,7 +942,7 @@ function openSettings() {
     <h2>Campaign settings</h2>
     <label>Campaign name<input name="name" required minlength="3" maxlength="60" value="${esc(v.name)}"></label>
     <label>Faction detail<select name="level">${LEVELS.map(l =>
-      `<option value="${l}" ${l === state.level ? 'selected' : ''}>${esc(LEVEL_NAMES[l])} — ${esc(LEVEL_HINTS[l])}</option>`).join('')}</select></label>
+      `<option value="${l}" ${l === (v.level ?? 'codex') ? 'selected' : ''}>${esc(levelName(C().setting, l))} — ${esc(LEVEL_HINTS[l])}</option>`).join('')}</select></label>
     <label>New season every<select name="resetDays">${[0, 30, 60, 90, 180, 365].map(d =>
       `<option value="${d}" ${d === (v.resetDays ?? 0) ? 'selected' : ''}>${d ? `${d} days` : 'Never, I reset it myself'}</option>`).join('')}</select></label>
     <p class="muted small">A new season clears the map and everyone starts from their homelands again. The chronicle keeps every game.</p>
@@ -1109,12 +1131,13 @@ const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-level],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
   if ('peekClose' in d) return select(null);
   if (d.level) return setLevel(d.level);
+  if (d.regionTab) { state.regionTab = d.regionTab; return renderPanel(); }
   if ('peekDetails' in d) return narrow() ? setSheet('full') : $('#panel').scrollIntoView({ behavior: 'smooth' });
   if (d.realm) {
     if (d.realm === '__all') return showOverview();

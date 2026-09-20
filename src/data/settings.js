@@ -5,7 +5,8 @@
 //   codex     one entry per army book: Space Marines, Idoneth Deepkin...
 // The influence rules never change; the level only decides who holds ground.
 // A setting may set `defaultLevel`: the Age of Darkness is Loyalists against
-// Traitors before it is anything else, so those campaigns open there.
+// Traitors before it is anything else, so those campaigns open there. It may
+// also set `levelNames` where "Grand Alliances" is the wrong words for it.
 // Every faction at the active level has exactly one home, its safe zone, which
 // can never fall.
 //
@@ -36,7 +37,7 @@ export const LEVEL_HINTS = {
   codex: 'One per army book, the usual choice. Armies still choose where they start.',
 };
 
-function defineSetting({ id, name, maps, alliances = [], factions, gates = [], defaultLevel = 'codex' }) {
+function defineSetting({ id, name, maps, alliances = [], factions, gates = [], defaultLevel = 'codex', levelNames = {} }) {
   const nodes = maps.flatMap(map => map.nodes.map(n => ({ ...n, map: map.id })));
   const points = new Set();
   for (const n of nodes) {
@@ -92,7 +93,7 @@ function defineSetting({ id, name, maps, alliances = [], factions, gates = [], d
   if (!LEVELS.includes(defaultLevel)) throw new Error(`${id}: "${defaultLevel}" is not a level`);
 
   return {
-    id, name, maps, gates, nodes, alliances, factions: codex, levels, resolve, defaultLevel,
+    id, name, maps, gates, nodes, alliances, factions: codex, levels, resolve, defaultLevel, levelNames,
     starts, startsOf, factionOfStart, allianceOf,
   };
 }
@@ -111,6 +112,8 @@ export const SETTINGS = {
 export const factionsFor = (setting, level) => setting.levels[level] ?? setting.levels.codex;
 // Every faction someone can muster as: always the army books.
 export const armyFactionsFor = setting => setting.levels.codex;
+// What to call a level in this setting.
+export const levelName = (setting, level) => setting.levelNames?.[level] ?? LEVEL_NAMES[level];
 // Where an army of this faction may begin. The first entry is the faction's own seat.
 export const startsFor = (setting, factionId) => setting.startsOf.get(factionId) ?? [];
 // The point a recorded start id sits on.

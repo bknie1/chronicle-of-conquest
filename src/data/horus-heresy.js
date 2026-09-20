@@ -8,6 +8,7 @@ export const HORUS_HERESY = {
   // Simplest mode: which side of the Heresy you're on.
   // Loyalist or Traitor is the choice that matters most here.
   defaultLevel: 'alliance',
+  levelNames: { alliance: 'Loyalists & Traitors', codex: 'Legions' },
   alliances: [
     { id: 'hh-loyalist', name: 'Loyalists', color: '#0d47a1', home: 'terra' },
     { id: 'hh-traitor', name: 'Traitors', color: '#8e0000', home: 'isstvan' },
