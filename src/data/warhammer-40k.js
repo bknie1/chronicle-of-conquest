@@ -6,7 +6,12 @@ import { MAPS } from './maps/index.js';
 export const WARHAMMER_40K = {
   id: 'warhammer-40k',
   name: 'Warhammer 40,000',
-  maps: [MAPS['galaxy-40k']],
+  maps: [MAPS['galaxy-40k'], MAPS['armageddon']],
+  // Armageddon is drawn twice: as a world on the galaxy map, and as its own
+  // surface. Landing there from orbit puts you at Hive Infernus.
+  gates: [
+    ['armageddon', 'hive-infernus', 'Orbital descent'],
+  ],
   // Simplest mode: the three great sides of the 41st millennium.
   alliances: [
     { id: 'imperium', name: 'The Imperium', color: '#c9a227', home: 'terra-40k' },
@@ -60,7 +65,7 @@ export const WARHAMMER_40K = {
         { id: 'catachan-jungle-fighters', name: 'Catachan Jungle Fighters', home: 'catachan', color: '#33691e' },
         { id: 'death-korps-of-krieg', name: 'Death Korps of Krieg', home: 'krieg', color: '#37474f' },
         { id: 'valhallan-ice-warriors', name: 'Valhallan Ice Warriors', home: 'valhalla', color: '#5c6bc0' },
-        { id: 'armageddon-steel-legion', name: 'Armageddon Steel Legion', home: 'armageddon', color: '#455a64' },
+        { id: 'armageddon-steel-legion', name: 'Armageddon Steel Legion', home: 'hive-infernus', color: '#455a64' },
         { id: 'tallarn-desert-raiders', name: 'Tallarn Desert Raiders', home: 'tallarn-40k', color: '#c1440e' },
       ] },
     { id: 'sororitas', name: 'Adepta Sororitas', color: '#ad1457', home: 'ophelia', alliance: 'imperium',
