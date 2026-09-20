@@ -8,9 +8,9 @@ export default {
   "nodes": [
     { "id": "fw-altdorf", "name": "Altdorf", "region": "Reikland", "x": 995, "y": 542 },
     { "id": "fw-nuln", "name": "Nuln", "region": "Wissenland", "x": 1042, "y": 625 },
-    { "id": "fw-marienburg", "name": "Marienburg", "region": "The Wasteland", "x": 844, "y": 417 },
+    { "id": "fw-marienburg", "name": "Marienburg", "region": "The Wasteland", "x": 908, "y": 450 },
     { "id": "fw-middenheim", "name": "Middenheim", "region": "Middenland", "x": 1031, "y": 448 },
-    { "id": "fw-nordland", "name": "Nordland", "region": "The Empire", "x": 1005, "y": 354 },
+    { "id": "fw-nordland", "name": "Nordland", "region": "The Empire", "x": 1012, "y": 344 },
     { "id": "fw-ostland", "name": "Ostland", "region": "The Empire", "x": 1125, "y": 359 },
     { "id": "fw-hochland", "name": "Hochland", "region": "The Empire", "x": 1075, "y": 405 },
     { "id": "fw-talabheim", "name": "Talabheim", "region": "Talabecland", "x": 1156, "y": 474 },
@@ -19,27 +19,27 @@ export default {
     { "id": "fw-averland", "name": "Averland", "region": "The Empire", "x": 1150, "y": 620 },
     { "id": "fw-solland", "name": "Solland", "region": "The Empire", "x": 1080, "y": 700 },
     { "id": "fw-drakenhof", "name": "Drakenhof", "region": "Sylvania", "x": 1213, "y": 550 },
-    { "id": "fw-drakwald", "name": "The Drakwald", "region": "Middenland", "x": 937, "y": 417 },
+    { "id": "fw-drakwald", "name": "The Drakwald", "region": "Middenland", "x": 946, "y": 417 },
     { "id": "fw-athel-loren", "name": "Athel Loren", "region": "The Forest of Loren", "x": 917, "y": 625 },
-    { "id": "fw-couronne", "name": "Couronne", "region": "Bretonnia", "x": 875, "y": 469 },
-    { "id": "fw-bastonne", "name": "Bastonne", "region": "Bretonnia", "x": 865, "y": 590 },
+    { "id": "fw-couronne", "name": "Couronne", "region": "Bretonnia", "x": 864, "y": 474 },
+    { "id": "fw-bastonne", "name": "Bastonne", "region": "Bretonnia", "x": 881, "y": 583 },
     { "id": "fw-carcassonne", "name": "Carcassonne", "region": "Bretonnia", "x": 874, "y": 699 },
     { "id": "fw-lyonesse", "name": "Lyonesse", "region": "Bretonnia", "x": 823, "y": 521 },
     { "id": "fw-quenelles", "name": "Quenelles", "region": "Bretonnia", "x": 937, "y": 677 },
     { "id": "fw-bordeleaux", "name": "Bordeleaux", "region": "Bretonnia", "x": 852, "y": 652 },
     { "id": "fw-kislev-city", "name": "Kislev", "region": "Kislev", "x": 1208, "y": 333 },
-    { "id": "fw-erengrad", "name": "Erengrad", "region": "Kislev", "x": 1052, "y": 292 },
+    { "id": "fw-erengrad", "name": "Erengrad", "region": "Kislev", "x": 1088, "y": 312 },
     { "id": "fw-praag", "name": "Praag", "region": "Kislev", "x": 1253, "y": 306 },
-    { "id": "fw-norsca-heart", "name": "Norscan Heartland", "region": "Norsca", "x": 1042, "y": 156 },
-    { "id": "fw-norsca-west", "name": "Bjornling Coast", "region": "Norsca", "x": 885, "y": 115 },
-    { "id": "fw-norsca-east", "name": "Norscan Frontier", "region": "Norsca", "x": 1250, "y": 180 },
+    { "id": "fw-norsca-heart", "name": "Norscan Heartland", "region": "Norsca", "x": 1052, "y": 198 },
+    { "id": "fw-norsca-west", "name": "Bjornling Coast", "region": "Norsca", "x": 862, "y": 224 },
+    { "id": "fw-norsca-east", "name": "Norscan Frontier", "region": "Norsca", "x": 1239, "y": 242 },
     { "id": "fw-chaos-wastes-north", "name": "The Chaos Wastes", "region": "Northern Wastes", "x": 1354, "y": 62 },
     { "id": "fw-border-princes", "name": "Border Princes", "region": "Border Princes", "x": 1135, "y": 683 },
     { "id": "fw-tilea", "name": "Tilea", "region": "Tilea", "x": 1032, "y": 856 },
-    { "id": "fw-miragliano", "name": "Miragliano", "region": "Tilea", "x": 1015, "y": 904 },
-    { "id": "fw-sartosa", "name": "Sartosa", "region": "Tilea", "x": 924, "y": 888 },
-    { "id": "fw-estalia", "name": "Estalia", "region": "Estalia", "x": 897, "y": 840 },
-    { "id": "fw-magritta", "name": "Magritta", "region": "Estalia", "x": 860, "y": 895 },
+    { "id": "fw-miragliano", "name": "Miragliano", "region": "Tilea", "x": 1031, "y": 904 },
+    { "id": "fw-sartosa", "name": "Sartosa", "region": "Tilea", "x": 929, "y": 898 },
+    { "id": "fw-estalia", "name": "Estalia", "region": "Estalia", "x": 890, "y": 828 },
+    { "id": "fw-magritta", "name": "Magritta", "region": "Estalia", "x": 883, "y": 875 },
     { "id": "fw-badlands", "name": "The Badlands", "region": "Badlands", "x": 1200, "y": 860 },
     { "id": "fw-black-crag", "name": "Black Crag", "region": "Badlands", "x": 1260, "y": 955 },
     { "id": "fw-karaz-a-karak", "name": "Karaz-a-Karak", "region": "World's Edge Mountains", "x": 1370, "y": 530 },
@@ -47,24 +47,24 @@ export default {
     { "id": "fw-eight-peaks", "name": "Karak Eight Peaks", "region": "World's Edge Mountains", "x": 1281, "y": 796 },
     { "id": "fw-zhufbar", "name": "Zhufbar", "region": "World's Edge Mountains", "x": 1406, "y": 729 },
     { "id": "fw-black-fire-pass", "name": "Black Fire Pass", "region": "World's Edge Mountains", "x": 1300, "y": 630 },
-    { "id": "fw-skavenblight", "name": "Skavenblight", "region": "The Blighted Marshes", "x": 870, "y": 765 },
-    { "id": "fw-albion", "name": "Albion", "region": "The Great Ocean", "x": 757, "y": 347 },
-    { "id": "fw-great-ocean-isle", "name": "The Isles", "region": "The Great Ocean", "x": 680, "y": 470 },
-    { "id": "fw-lothern", "name": "Lothern", "region": "Eataine", "x": 676, "y": 753 },
+    { "id": "fw-skavenblight", "name": "Skavenblight", "region": "The Blighted Marshes", "x": 935, "y": 808 },
+    { "id": "fw-albion", "name": "Albion", "region": "The Great Ocean", "x": 786, "y": 370 },
+    { "id": "fw-great-ocean-isle", "name": "The Isles", "region": "The Great Ocean", "x": 696, "y": 477 },
+    { "id": "fw-lothern", "name": "Lothern", "region": "Eataine", "x": 669, "y": 735 },
     { "id": "fw-eataine", "name": "Eataine", "region": "Ulthuan", "x": 598, "y": 700 },
     { "id": "fw-caledor", "name": "Caledor", "region": "Ulthuan", "x": 552, "y": 684 },
     { "id": "fw-saphery", "name": "Saphery", "region": "Ulthuan", "x": 670, "y": 650 },
     { "id": "fw-tor-yvresse", "name": "Tor Yvresse", "region": "Ulthuan", "x": 715, "y": 620 },
     { "id": "fw-chrace", "name": "Chrace", "region": "Ulthuan", "x": 668, "y": 531 },
-    { "id": "fw-avelorn", "name": "Avelorn", "region": "Ulthuan", "x": 630, "y": 580 },
+    { "id": "fw-avelorn", "name": "Avelorn", "region": "Ulthuan", "x": 619, "y": 568 },
     { "id": "fw-ellyrion", "name": "Ellyrion", "region": "Ulthuan", "x": 560, "y": 600 },
     { "id": "fw-cothique", "name": "Cothique", "region": "Ulthuan", "x": 724, "y": 555 },
     { "id": "fw-tiranoc", "name": "Tiranoc", "region": "Ulthuan", "x": 523, "y": 644 },
-    { "id": "fw-nagarythe", "name": "Nagarythe", "region": "Ulthuan", "x": 595, "y": 515 },
+    { "id": "fw-nagarythe", "name": "Nagarythe", "region": "Ulthuan", "x": 614, "y": 526 },
     { "id": "fw-armheim", "name": "Armheim", "region": "Nagarythe", "x": 402, "y": 633 },
-    { "id": "fw-gaen-vale", "name": "Gaen Vale", "region": "Avelorn", "x": 600, "y": 470 },
-    { "id": "fw-blighted-isle", "name": "The Blighted Isle", "region": "Ulthuan", "x": 500, "y": 444 },
-    { "id": "fw-naggarond", "name": "Naggarond", "region": "Naggaroth", "x": 500, "y": 312 },
+    { "id": "fw-gaen-vale", "name": "Gaen Vale", "region": "Avelorn", "x": 646, "y": 609 },
+    { "id": "fw-blighted-isle", "name": "The Blighted Isle", "region": "Ulthuan", "x": 623, "y": 456 },
+    { "id": "fw-naggarond", "name": "Naggarond", "region": "Naggaroth", "x": 466, "y": 304 },
     { "id": "fw-clar-karond", "name": "Clar Karond", "region": "Naggaroth", "x": 417, "y": 521 },
     { "id": "fw-hag-graef", "name": "Hag Graef", "region": "Naggaroth", "x": 573, "y": 365 },
     { "id": "fw-karond-kar", "name": "Karond Kar", "region": "Naggaroth", "x": 365, "y": 573 },
@@ -87,7 +87,7 @@ export default {
     { "id": "fw-serpent-coast", "name": "Serpent Coast", "region": "The Southlands", "x": 1208, "y": 1474 },
     { "id": "fw-oyxl", "name": "Oyxl", "region": "Lustria", "x": 479, "y": 1125 },
     { "id": "fw-al-haikk", "name": "Al-Haikk", "region": "Araby", "x": 969, "y": 1052 },
-    { "id": "fw-lashiek", "name": "Lashiek", "region": "Araby", "x": 885, "y": 1041 },
+    { "id": "fw-lashiek", "name": "Lashiek", "region": "Araby", "x": 894, "y": 1036 },
     { "id": "fw-martek", "name": "Martek", "region": "Araby", "x": 989, "y": 1094 },
     { "id": "fw-copher", "name": "Copher", "region": "Araby", "x": 1042, "y": 1041 },
     { "id": "fw-zharr-naggrund", "name": "Zharr-Naggrund", "region": "The Dark Lands", "x": 1625, "y": 583 },
@@ -106,14 +106,14 @@ export default {
     { "id": "fw-broken-lands-tian-li", "name": "The Broken Lands of Tian Li", "region": "Grand Cathay", "x": 1884, "y": 823 },
     { "id": "fw-mount-li", "name": "Mount Li", "region": "Grand Cathay", "x": 2079, "y": 811 },
     { "id": "fw-ind", "name": "Ind", "region": "Ind", "x": 1670, "y": 935 },
-    { "id": "fw-nippon", "name": "Nippon", "region": "Nippon", "x": 2166, "y": 937 },
+    { "id": "fw-nippon", "name": "Nippon", "region": "Nippon", "x": 2200, "y": 914 },
     { "id": "fw-chaos-wastes-south", "name": "The Southern Chaos Wastes", "region": "Southern Wastes", "x": 917, "y": 1533 },
     { "id": "fw-vanaheim-mountains", "name": "Vanaheim Mountains", "region": "Norsca", "x": 906, "y": 255 },
     { "id": "fw-troll-country", "name": "Troll Country", "region": "Kislev", "x": 1203, "y": 286 },
-    { "id": "fw-mountains-of-naglfar", "name": "Mountains of Naglfar", "region": "Northern Wastes", "x": 1010, "y": 250 },
+    { "id": "fw-mountains-of-naglfar", "name": "Mountains of Naglfar", "region": "Northern Wastes", "x": 1008, "y": 214 },
     { "id": "fw-gash-kadrak", "name": "Gash Kadrak", "region": "The Dark Lands", "x": 1547, "y": 444 },
     { "id": "fw-chimera-plateau", "name": "Chimera Plateau", "region": "The Dark Lands", "x": 1669, "y": 308 },
-    { "id": "fw-the-skull-road", "name": "The Skull Road", "region": "The Dark Lands", "x": 1437, "y": 278 },
+    { "id": "fw-the-skull-road", "name": "The Skull Road", "region": "The Dark Lands", "x": 1479, "y": 302 },
     { "id": "fw-ancient-giant-lands", "name": "Ancient Giant Lands", "region": "The Dark Lands", "x": 1624, "y": 490 },
     { "id": "fw-bone-road", "name": "Bone Road", "region": "The Dark Lands", "x": 1665, "y": 556 },
     { "id": "fw-rib-peaks", "name": "Rib Peaks", "region": "World's Edge Mountains", "x": 1322, "y": 576 },
@@ -128,8 +128,8 @@ export default {
     { "id": "fw-marshes-of-madness", "name": "Marshes of Madness", "region": "Badlands", "x": 1176, "y": 905 },
     { "id": "fw-blightwater", "name": "Blightwater", "region": "The Southlands", "x": 1299, "y": 914 },
     { "id": "fw-the-barrier-idols", "name": "The Barrier Idols", "region": "The Southlands", "x": 1153, "y": 983 },
-    { "id": "fw-parravon", "name": "Parravon", "region": "Bretonnia", "x": 917, "y": 562 },
-    { "id": "fw-mousillon", "name": "Mousillon", "region": "Bretonnia", "x": 818, "y": 592 },
+    { "id": "fw-parravon", "name": "Parravon", "region": "Bretonnia", "x": 925, "y": 554 },
+    { "id": "fw-mousillon", "name": "Mousillon", "region": "Bretonnia", "x": 830, "y": 598 },
     {
       "id": "fw-ironfrost-glacier",
       "name": "Ironfrost Glacier",
@@ -176,8 +176,8 @@ export default {
       "id": "fw-iron-foot-hills",
       "name": "Iron Foot Hills",
       "region": "Naggaroth",
-      "x": 443,
-      "y": 276
+      "x": 437,
+      "y": 269
     },
     {
       "id": "fw-iron-coast",
@@ -225,8 +225,8 @@ export default {
       "id": "fw-clawed-coast",
       "name": "The Clawed Coast",
       "region": "Naggaroth",
-      "x": 568,
-      "y": 427
+      "x": 542,
+      "y": 422
     },
     {
       "id": "fw-witchwood",
@@ -246,8 +246,8 @@ export default {
       "id": "fw-sunken-lands",
       "name": "Sunken Lands",
       "region": "Naggaroth",
-      "x": 550,
-      "y": 481
+      "x": 583,
+      "y": 487
     },
     {
       "id": "fw-ironsand-desert",
@@ -274,8 +274,8 @@ export default {
       "id": "fw-ashen-coast",
       "name": "Ashen Coast",
       "region": "Naggaroth",
-      "x": 325,
-      "y": 646
+      "x": 338,
+      "y": 635
     },
     {
       "id": "fw-forbidding-coast",
@@ -302,7 +302,7 @@ export default {
       "id": "fw-shard-coast",
       "name": "The Shard Coast",
       "region": "Northern Wastes",
-      "x": 729,
+      "x": 781,
       "y": 224
     },
     {
@@ -316,8 +316,8 @@ export default {
       "id": "fw-helspire-mountains",
       "name": "Helspire Mountains",
       "region": "Norsca",
-      "x": 974,
-      "y": 167
+      "x": 963,
+      "y": 179
     },
     {
       "id": "fw-noisome-tumour",
@@ -372,8 +372,8 @@ export default {
       "id": "fw-goromadny-mountains",
       "name": "Goromadny Mountains",
       "region": "Kislev",
-      "x": 1375,
-      "y": 250
+      "x": 1352,
+      "y": 283
     },
     {
       "id": "fw-eastern-oblast",
@@ -414,8 +414,8 @@ export default {
       "id": "fw-misty-hills",
       "name": "The Misty Hills",
       "region": "Middenland",
-      "x": 963,
-      "y": 377
+      "x": 974,
+      "y": 373
     },
     {
       "id": "fw-laurelorn-forest",
@@ -519,22 +519,22 @@ export default {
       "id": "fw-irrana-mountains",
       "name": "Irrana Mountains",
       "region": "Estalia",
-      "x": 849,
-      "y": 812
+      "x": 844,
+      "y": 810
     },
     {
       "id": "fw-blighted-marshes",
       "name": "The Blighted Marshes",
       "region": "The Blighted Marshes",
-      "x": 943,
-      "y": 810
+      "x": 984,
+      "y": 789
     },
     {
       "id": "fw-estalia-coastline",
       "name": "The Estalia Coastline",
       "region": "Estalia",
-      "x": 810,
-      "y": 849
+      "x": 823,
+      "y": 859
     },
     {
       "id": "fw-galleons-graveyard",
@@ -596,15 +596,15 @@ export default {
       "id": "fw-mouth-of-ruin",
       "name": "Mouth of Ruin",
       "region": "The Dark Lands",
-      "x": 1616,
-      "y": 896
+      "x": 1612,
+      "y": 877
     },
     {
       "id": "fw-southern-yvresse",
       "name": "Southern Yvresse",
       "region": "Ulthuan",
-      "x": 719,
-      "y": 708
+      "x": 710,
+      "y": 682
     },
     {
       "id": "fw-pirate-coast",
@@ -624,7 +624,7 @@ export default {
       "id": "fw-atalan-mountains",
       "name": "Atalan Mountains",
       "region": "Araby",
-      "x": 849,
+      "x": 873,
       "y": 1073
     },
     {
