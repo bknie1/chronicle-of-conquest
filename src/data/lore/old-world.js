@@ -249,6 +249,9 @@ export const OLD_WORLD_LORE = {
   svartblodgard: 'A hall of black stone in Aesling country, held by a line that has kept the same name and the same reputation for generations. The reputation is deserved.',
   'norse-war-trade-fort': 'A fortified trading post on the eastern road where Norscans and Kislevites do business under a truce that holds until it does not. Both sides garrison it and neither trusts the arrangement.',
 
+  // Tilea
+  'elven-landing': 'A walled anchorage on the Tilean coast where the Sea Guard of Lothern come ashore, the Phoenix King’s only foothold on the mainland this side of Ulthuan. It exists to protect the Elven trade that runs through Tilea and Estalia, and to remind everyone with a fleet whose the sea really is.',
+
   // Chaos Wastes
   'karak-dum': 'The Doomed Hold, once known as the Watchful Hold, a Dwarf outpost built on the very edge of the Chaos Wastes to keep watch on the north. It fell to a Chaos horde millennia ago, and nothing since has suggested it could be retaken, though the Dwarfs have never struck it from their maps.',
 };

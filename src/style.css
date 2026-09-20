@@ -157,6 +157,18 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
   white-space: nowrap;
 }
 .viewport.far .marker:not(.home, .has-events, .selected) .label { display: none; }
+.viewport.mid .marker.minor:not(.home, .has-events, .selected) .label { display: none; }
+.viewport.no-labels .marker:not(.selected) .label { display: none; }
+/* Markers by kind: hives and cities loom, forges are square, fortresses
+   diamond, water plants small, sites and regions lighter. */
+.marker[data-kind="hive"] .pin, .marker[data-kind="city"] .pin { width: 18px; height: 18px; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
+.marker[data-kind="forge"] .pin { border-radius: 2px; }
+.marker[data-kind="fortress"] .pin { border-radius: 2px; transform: rotate(45deg); width: 12px; height: 12px; }
+.marker[data-kind="plant"] .pin { width: 10px; height: 10px; }
+.marker[data-kind="site"] .pin { clip-path: polygon(50% 0, 100% 100%, 0 100%); border-radius: 0; width: 14px; height: 13px; }
+.marker[data-kind="region"] .pin { background: transparent; border: 2px dashed var(--faction); box-shadow: none; }
+.marker[data-kind="region"]:not(.owned) .pin { border-color: #d9ccb0; }
+.marker[data-kind="region"] .label { font-weight: 400; font-style: italic; opacity: .9; }
 .viewport.far .marker:not(.home, .selected) .banner { width: 14px; height: 20px; }
 .banner { width: 20px; height: 28px; display: none; margin-bottom: -4px; filter: drop-shadow(0 2px 2px #0009); }
 .banner .pole { stroke: #2b1d10; stroke-width: 2; }
@@ -198,6 +210,8 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 
 .map-controls { position: absolute; right: 12px; top: 12px; display: flex; flex-direction: column; gap: 4px; z-index: 3; }
 .map-controls button { width: 34px; height: 34px; padding: 0; font-size: 18px; }
+#labels-toggle { font: 700 13px var(--heading); letter-spacing: .5px; }
+#labels-toggle.off { opacity: .5; text-decoration: line-through; }
 .back-btn { position: absolute; left: 12px; top: 12px; z-index: 3; }
 .back-btn[hidden] { display: none; }
 

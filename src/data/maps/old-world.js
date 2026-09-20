@@ -380,6 +380,13 @@ export default {
       "y": 2413
     },
     {
+      "id": "elven-landing",
+      "name": "The Lothern Landing",
+      "region": "Tilea",
+      "x": 1020,
+      "y": 2400
+    },
+    {
       "id": "skavenblight",
       "name": "Skavenblight",
       "region": "The Blighted Marshes",

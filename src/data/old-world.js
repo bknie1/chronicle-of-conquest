@@ -34,10 +34,10 @@ export const OLD_WORLD = {
         { id: 'ow-karak-norn', name: 'Karak Norn', color: '#d0621c', home: 'karak-norn' },
         { id: 'ow-kraka-drak', name: 'Kraka Drak', color: '#d0621c', home: 'kraka-drak' },
       ] },
-    { id: 'high-elves', name: 'High Elves', color: '#b0bec5', home: 'marienburg', alliance: 'ow-order',
+    { id: 'high-elves', name: 'High Elves', color: '#b0bec5', home: 'elven-landing', alliance: 'ow-order',
       subfactions: [
-        { id: 'ow-lothern-fleet', name: 'The Lothern Fleet', color: '#b0bec5', home: 'black-ark' },
         { id: 'ow-tor-elasor', name: 'The Elven Quarter', color: '#b0bec5', home: 'marienburg' },
+        { id: 'ow-lothern-fleet', name: 'The Lothern Fleet', color: '#b0bec5', home: 'black-ark' },
       ] },
     { id: 'wood-elves', name: 'Wood Elf Realms', color: '#2e7d32', home: 'athel-loren', alliance: 'ow-order',
       subfactions: [

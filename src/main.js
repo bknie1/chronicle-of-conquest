@@ -1113,6 +1113,17 @@ $('#play').addEventListener('click', play);
 $('#zoom-in').addEventListener('click', () => mapView.zoomBy(1.3));
 $('#zoom-out').addEventListener('click', () => mapView.zoomBy(1 / 1.3));
 $('#zoom-fit').addEventListener('click', () => { select(null); mapView.fit(true); });
+// Place names can be switched off for a cleaner look; the choice is remembered.
+const labelsBtn = $('#labels-toggle');
+let labelsOn = true;
+try { labelsOn = localStorage.getItem('labels') !== 'off'; } catch { /* private mode */ }
+const applyLabels = () => { mapView.setLabels(labelsOn); labelsBtn.setAttribute('aria-pressed', String(labelsOn)); labelsBtn.classList.toggle('off', !labelsOn); };
+labelsBtn.addEventListener('click', () => {
+  labelsOn = !labelsOn;
+  try { localStorage.setItem('labels', labelsOn ? 'on' : 'off'); } catch { /* ignore */ }
+  applyLabels();
+});
+applyLabels();
 $('#back-btn').addEventListener('click', () => select(null));
 $('#btn-report').addEventListener('click', () => openReport());
 $('#btn-challenge').addEventListener('click', () => openChallenge());

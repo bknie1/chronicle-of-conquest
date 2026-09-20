@@ -13,6 +13,12 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};
 
 const TILT_DEG = 42;
 const FOCUS_ZOOM = 3.2; // relative to the fit-to-screen zoom
+// Kinds whose labels only appear once you are fairly close in. Maps that do
+// not say what a point is get a guess from its name: a range or a forest is
+// scenery, a town is a town.
+const MINOR_KINDS = new Set(['forge', 'plant', 'site', 'fortress', 'region', 'hamlet', 'mine']);
+const SCENERY = /\b(Mountains?|Forest|Pass|Coast(line)?|Wastes?|Plains?|Marsh(es)?|Hills|Desert|Jungles?|Isles?|Road|Valley|Steppes?|Lands|Peaks|Ridge|Glacier|Wood|Swamps?|Bay|River|Delta|Gap|Wilds|Fjords?|Country|Reach|Straits?)\b/;
+const isMinor = n => (n.kind ? MINOR_KINDS.has(n.kind) : SCENERY.test(n.name));
 
 export class MapView {
   constructor({ viewport, onHover, onSelect, onGate }) {
@@ -122,6 +128,9 @@ export class MapView {
     this.markers = this.map.nodes.map((n, i) => {
       const m = document.createElement('div');
       m.className = 'marker';
+      // What sort of place it is decides its marker, and how soon its label shows.
+      if (n.kind) m.dataset.kind = n.kind;
+      m.classList.toggle('minor', isMinor(n));
       m.style.left = `${n.x}px`;
       m.style.top = `${n.y}px`;
       const portals = gatesAt.get(i) || [];
@@ -153,7 +162,9 @@ export class MapView {
       const cell = this.cells[i];
       const faction = s.owner && this.factionById.get(s.owner);
       if (!faction) {
-        cell.style.fill = 'transparent';
+        // 'none', not 'transparent': under a luminance mask Chromium paints a
+        // transparent fill as a black disc while the fill transition runs.
+        cell.style.fill = 'none';
       } else {
         cell.style.fill = s.contested ? this.stripes(s.owner, s.rival) : faction.color;
         cell.style.fillOpacity = s.home ? 0.5 : (0.22 + 0.26 * Math.min(1, s.strength / 30)).toFixed(2);
@@ -208,13 +219,24 @@ export class MapView {
     this.world.style.setProperty('--k', k);
     this.world.style.setProperty('--tilt', `${tilt}deg`);
     this.viewport.classList.toggle('focused', this.focus != null);
-    this.viewport.classList.toggle('far', k < 0.45); // too zoomed out for every label to fit
+    // Labels come in as you zoom past the fit-to-screen scale, later on dense
+    // maps: homes first, then the towns, then the lesser sites.
+    const density = Math.min(1.6, Math.max(1, Math.sqrt(this.map.nodes.length / 120)));
+    const rel = k / (this.fitK || k);
+    this.viewport.classList.toggle('far', rel < 2.0 * density);
+    this.viewport.classList.toggle('mid', rel < 3.4 * density);
+  }
+
+  // Labels can be switched off entirely; the selected place keeps its name.
+  setLabels(on) {
+    this.viewport.classList.toggle('no-labels', !on);
   }
 
   fit(animate) {
     const r = this.viewport.getBoundingClientRect();
     const k = Math.min(r.width / this.map.width, r.height / this.map.height);
     this.minK = k * 0.9;
+    this.fitK = k;
     this.focus = null;
     this.view = { k, x: (r.width - this.map.width * k) / 2, y: (r.height - this.map.height * k) / 2 };
     this.apply(animate);

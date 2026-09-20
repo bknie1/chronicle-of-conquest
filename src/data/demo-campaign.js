@@ -123,7 +123,7 @@ export const DEMOS = {
       { id: 'david', name: 'David', army: 'Ultramar Expeditionary Force', faction: 'li-ultramarines', skill: 0.6, active: [0, 123] },
       { id: 'danil', name: 'Danil', army: 'Pyre Guard Company', faction: 'li-salamanders', skill: 0.56, active: [0, 123] },
       { id: 'dylan', name: 'Dylan', army: 'Death Stalkers Maniple', faction: 'li-legio-mortis', skill: 0.58, active: [0, 123] },
-      { id: 'taylor', name: 'Taylor', army: 'Warp Runners Maniple', faction: 'li-legio-astorum', skill: 0.57, active: [10, 123] },
+      { id: 'tyler', name: 'Tyler', army: 'Warp Runners Maniple', faction: 'li-legio-astorum', skill: 0.57, active: [10, 123] },
       { id: 'jowi', name: 'Jowi', army: 'Tempestus Battlegroup', faction: 'li-legio-tempestus', skill: 0.56, active: [0, 123] },
       { id: 'conrad', name: 'Conrad', army: 'House Malinax Lance', faction: 'li-house-malinax', skill: 0.55, active: [0, 123] },
       { id: 'charles', name: 'Charles', army: 'Taghmata Omnissiah', faction: 'li-mechanicum', skill: 0.57, active: [0, 123] },
@@ -144,7 +144,8 @@ export const DEMOS = {
     name: 'Indomitus Crusade League',
     seed: 4040,
     players: [
-      { id: 'taylor', name: 'Taylor', army: 'Hive Fleet Leviathan', faction: 'hive-fleet-leviathan', skill: 0.61, active: [0, 123], surge: 70 },
+      { id: 'tyler', name: 'Tyler', army: 'Hive Fleet Leviathan', faction: 'hive-fleet-leviathan', skill: 0.61, active: [0, 123], surge: 70 },
+      { id: 'tyler-sharks', name: 'Tyler', army: 'Void Reavers', faction: 'carcharodons', skill: 0.58, active: [35, 123] },
       { id: 'anthony-b', name: 'Anthony B.', army: 'Hive Fleet Kraken', faction: 'kraken', skill: 0.55, active: [25, 123] },
       { id: 'conrad', name: 'Conrad', army: 'House Terryn', faction: 'house-terryn', skill: 0.57, active: [0, 123] },
       { id: 'brett', name: 'Brett', army: 'House Lucaris', faction: 'house-lucaris', skill: 0.62, active: [0, 123] },
@@ -165,7 +166,7 @@ export const DEMOS = {
     ],
     // The Great Devourer reaches Ichar IV tonight.
     events: [
-      { id: 'e1', day: 123, node: 'ichar-iv', players: ['taylor', 'jean'], note: 'The Great Devourer descends' },
+      { id: 'e1', day: 123, node: 'ichar-iv', players: ['tyler', 'jean'], note: 'The Great Devourer descends' },
       { id: 'e2', day: 123, node: 'ichar-iv', players: ['anthony-b', 'conrad'] },
       { id: 'e3', day: 123, node: 'belis-corona', players: ['dee', 'xander'], note: 'Hold the Cadian Gate' },
       { id: 'e4', day: 125, node: 'armageddon', players: ['jordan', 'david'], note: 'The Third War for Armageddon' },
