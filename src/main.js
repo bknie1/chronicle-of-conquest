@@ -1135,8 +1135,10 @@ $('#campaign-select').addEventListener('change', e => {
   if (v === '__create') return openCreate();
   navigate(v === 'demo' ? (V().setting === 'old-world' ? '/' : `/demo/${V().setting}`) : `/c/${v}`);
 });
+// A campaign is fixed to its setting, so picking another one here opens that
+// setting's demo to look around; the campaign picker brings you back.
 $('#setting-select').addEventListener('change', e => {
-  if (V().kind !== 'demo') return renderTopbar();
+  if (V().kind !== 'demo' && e.target.value === V().setting) return renderTopbar();
   navigate(e.target.value === 'old-world' ? '/' : `/demo/${e.target.value}`);
 });
 window.addEventListener('popstate', route);

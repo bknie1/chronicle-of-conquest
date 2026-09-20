@@ -60,7 +60,7 @@ export default {
     { "id": "fw-ellyrion", "name": "Ellyrion", "region": "Ulthuan", "x": 560, "y": 600 },
     { "id": "fw-cothique", "name": "Cothique", "region": "Ulthuan", "x": 724, "y": 555 },
     { "id": "fw-tiranoc", "name": "Tiranoc", "region": "Ulthuan", "x": 523, "y": 644 },
-    { "id": "fw-nagarythe", "name": "Nagarythe", "region": "Ulthuan", "x": 614, "y": 526 },
+    { "id": "fw-nagarythe", "name": "Nagarythe", "region": "Ulthuan", "x": 617, "y": 521 },
     { "id": "fw-armheim", "name": "Armheim", "region": "Nagarythe", "x": 402, "y": 633 },
     { "id": "fw-gaen-vale", "name": "Gaen Vale", "region": "Avelorn", "x": 646, "y": 609 },
     { "id": "fw-blighted-isle", "name": "The Blighted Isle", "region": "Ulthuan", "x": 623, "y": 456 },
@@ -87,7 +87,7 @@ export default {
     { "id": "fw-serpent-coast", "name": "Serpent Coast", "region": "The Southlands", "x": 1208, "y": 1474 },
     { "id": "fw-oyxl", "name": "Oyxl", "region": "Lustria", "x": 479, "y": 1125 },
     { "id": "fw-al-haikk", "name": "Al-Haikk", "region": "Araby", "x": 969, "y": 1052 },
-    { "id": "fw-lashiek", "name": "Lashiek", "region": "Araby", "x": 894, "y": 1036 },
+    { "id": "fw-lashiek", "name": "Lashiek", "region": "Araby", "x": 884, "y": 1040 },
     { "id": "fw-martek", "name": "Martek", "region": "Araby", "x": 989, "y": 1094 },
     { "id": "fw-copher", "name": "Copher", "region": "Araby", "x": 1042, "y": 1041 },
     { "id": "fw-zharr-naggrund", "name": "Zharr-Naggrund", "region": "The Dark Lands", "x": 1625, "y": 583 },
@@ -365,22 +365,22 @@ export default {
       "id": "fw-black-blood-pass",
       "name": "Black Blood Pass",
       "region": "Kislev",
-      "x": 1321,
-      "y": 276
+      "x": 1300,
+      "y": 262
     },
     {
       "id": "fw-goromadny-mountains",
       "name": "Goromadny Mountains",
       "region": "Kislev",
       "x": 1352,
-      "y": 283
+      "y": 278
     },
     {
       "id": "fw-eastern-oblast",
       "name": "Eastern Oblast",
       "region": "Kislev",
-      "x": 1362,
-      "y": 310
+      "x": 1372,
+      "y": 332
     },
     {
       "id": "fw-cursed-city",
@@ -533,8 +533,8 @@ export default {
       "id": "fw-estalia-coastline",
       "name": "The Estalia Coastline",
       "region": "Estalia",
-      "x": 823,
-      "y": 859
+      "x": 838,
+      "y": 862
     },
     {
       "id": "fw-galleons-graveyard",
@@ -624,15 +624,15 @@ export default {
       "id": "fw-atalan-mountains",
       "name": "Atalan Mountains",
       "region": "Araby",
-      "x": 873,
-      "y": 1073
+      "x": 855,
+      "y": 1078
     },
     {
       "id": "fw-land-of-assassins",
       "name": "Land of Assassins",
       "region": "Araby",
-      "x": 894,
-      "y": 1106
+      "x": 896,
+      "y": 1112
     },
     {
       "id": "fw-great-desert-of-araby",

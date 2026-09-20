@@ -124,6 +124,8 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 /* No blend mode: multiply forced the whole map layer to re-blend on every repaint. */
 .cell { transition: fill-opacity .5s, fill .5s; }
 .roads line { stroke: #3b2a17; stroke-opacity: .28; stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+.territory.has-lit .roads line { stroke-opacity: .12; }
+.roads line.lit { stroke: var(--gold-2); stroke-opacity: .95; stroke-width: 4; stroke-dasharray: none; filter: drop-shadow(0 0 3px #000); }
 .borders line { stroke: #1c120a; stroke-opacity: .8; stroke-width: 3.5; stroke-linecap: round; }
 .borders line.contested { stroke-dasharray: 10 8; }
 

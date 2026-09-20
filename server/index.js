@@ -34,7 +34,9 @@ app.use(inner);
 if (production) {
   const dist = path.join(root, 'dist');
   app.use(express.static(dist, { index: false, maxAge: '1h' }));
-  app.get('*', (req, res) => res.sendFile(path.join(dist, 'index.html')));
+  // The shell must never be cached: it names the hashed bundle, and a stale
+  // copy after a deploy points at files that no longer exist.
+  app.get('*', (req, res) => res.sendFile(path.join(dist, 'index.html'), { headers: { 'Cache-Control': 'no-cache' } }));
 } else {
   const { createServer } = await import('vite');
   const vite = await createServer({ root, server: { middlewareMode: true }, appType: 'spa' });

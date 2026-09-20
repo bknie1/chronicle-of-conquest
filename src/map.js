@@ -62,10 +62,11 @@ export class MapView {
 
     // Faint roads between neighbouring points.
     const roads = el('g', { class: 'roads' }, svg);
+    this.roads = [];
     graph.adj.forEach((js, i) => js.forEach(j => {
       if (j < i) return;
       const a = map.nodes[i], b = map.nodes[j];
-      el('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y }, roads);
+      this.roads.push({ i, j, line: el('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y }, roads) });
     }));
 
     const territory = el('g', { mask: 'url(#reach)' }, svg);
@@ -255,6 +256,13 @@ export class MapView {
     this.view = { k, x: r.width / 2 - k * n.x, y: r.height * 0.58 - k * n.y };
     this.apply(animate);
     this.markers.forEach((m, j) => m.classList.toggle('selected', j === i));
+    this.litRoads(i);
+  }
+
+  // Bring the selected place's roads forward, so its neighbours are obvious.
+  litRoads(i) {
+    for (const r of this.roads || []) r.line.classList.toggle('lit', i != null && (r.i === i || r.j === i));
+    this.svg.classList.toggle('has-lit', i != null);
   }
 
   unfocus() {
@@ -263,6 +271,7 @@ export class MapView {
     this.view = this.saved || this.view;
     this.apply(true);
     this.markers.forEach(m => m.classList.remove('selected'));
+    this.litRoads(null);
   }
 
   zoomBy(factor, cx, cy) {

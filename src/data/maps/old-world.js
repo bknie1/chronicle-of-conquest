@@ -376,8 +376,8 @@ export default {
       "id": "sartosa",
       "name": "Sartosa",
       "region": "Tilea",
-      "x": 935,
-      "y": 2413
+      "x": 905,
+      "y": 2428
     },
     {
       "id": "elven-landing",
@@ -887,8 +887,8 @@ export default {
       "id": "san-luis",
       "name": "San Luis",
       "region": "Estalia",
-      "x": 455,
-      "y": 1652
+      "x": 440,
+      "y": 1690
     },
     {
       "id": "novareno",
