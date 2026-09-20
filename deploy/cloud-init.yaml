@@ -42,7 +42,7 @@ write_files:
 
       [Install]
       WantedBy=multi-user.target
-  - path: /etc/caddy/Caddyfile
+  - path: /root/Caddyfile.chronicle
     content: |
       # Plain HTTP on the bare address, so the site works by IP before DNS
       # exists. The domain gets a certificate automatically once it resolves.
@@ -60,10 +60,11 @@ write_files:
       # Pull the latest master, rebuild, restart. Run as root.
       set -euo pipefail
       cd /opt/chronicle
-      sudo -u chronicle git fetch -q origin master
-      sudo -u chronicle git reset -q --hard origin/master
-      sudo -u chronicle npm ci --no-audit --no-fund
-      sudo -u chronicle npm run build
+      git fetch -q origin master
+      git reset -q --hard origin/master
+      HOME=/root npm ci --no-audit --no-fund
+      HOME=/root npm run build
+      chown -R chronicle:chronicle /opt/chronicle
       systemctl restart chronicle
       echo "deployed $(git rev-parse --short HEAD)"
 
@@ -72,11 +73,13 @@ runcmd:
   - apt-get install -y nodejs
   - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
   - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-  - apt-get update && apt-get install -y caddy
+  - DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y caddy
+  - cp /root/Caddyfile.chronicle /etc/caddy/Caddyfile
   - mkdir -p /var/lib/chronicle && chown chronicle:chronicle /var/lib/chronicle
   - git clone -q https://github.com/bknie1/chronicle-of-conquest.git /opt/chronicle
+  - git config --global --add safe.directory /opt/chronicle
+  - bash -c 'cd /opt/chronicle && HOME=/root npm ci --no-audit --no-fund && HOME=/root npm run build'
   - chown -R chronicle:chronicle /opt/chronicle
-  - sudo -u chronicle bash -c 'cd /opt/chronicle && npm ci --no-audit --no-fund && npm run build'
   - systemctl daemon-reload
   - systemctl enable --now chronicle
   - systemctl restart caddy
