@@ -63,6 +63,13 @@ const faction = id => state.factionById?.get(id)
   ?? { id, name: 'Unknown faction', color: '#8a8a8a' };
 // An army records its army book; at the alliance level it counts as its side.
 const factionOfArmy = armyFaction => C().setting.resolve(armyFaction, state.level);
+// Where an army took the field, for its line in the roster.
+function mustered(p) {
+  const point = p.start ? startPoint(C().setting, p.start) : null;
+  const n = point == null ? null : NODES()[idx(point)];
+  return n ? ` · mustered at ${esc(n.name)}` : '';
+}
+
 // The grounds armies mustered from, other than their faction's own seat.
 const footholds = () => activeArmies().map(p => ({
   faction: factionOfArmy(p.faction),
@@ -319,7 +326,7 @@ function renderPanel() {
     ${players.length ? `<ul class="players">${players.map(p => `
       <li>${army(p.id)} <span class="muted">${esc(p.name)}</span>
         <span class="record">${p.wins}–${p.losses}</span>
-        <div class="sub">${p.last == null ? 'No battles yet' : `Last battle ${ago(p.last)}`}
+        <div class="sub">${p.last == null ? 'No battles yet' : `Last battle ${ago(p.last)}`}${mustered(p)}
           ${p.streak >= 3 ? `<span class="tag hot">${p.streak} win streak</span>` : ''}
           ${p.fading ? '<span class="tag fade">Influence fading</span>' : ''}</div>
       </li>`).join('')}</ul>` : '<p class="muted">No armies have mustered yet.</p>'}
