@@ -222,7 +222,7 @@ export class MapView {
     // Labels come in as you zoom past the fit-to-screen scale, later on dense
     // maps: homes first, then the towns, then the lesser sites.
     const density = Math.min(1.6, Math.max(1, Math.sqrt(this.map.nodes.length / 120)));
-    const rel = k / (this.fitK || k);
+    const rel = this.fitK > 0 ? k / this.fitK : 1;
     this.viewport.classList.toggle('far', rel < 2.0 * density);
     this.viewport.classList.toggle('mid', rel < 3.4 * density);
   }
@@ -234,6 +234,9 @@ export class MapView {
 
   fit(animate) {
     const r = this.viewport.getBoundingClientRect();
+    // Not laid out yet (a route change mid-load): try again next frame rather
+    // than fitting to a zero-sized box.
+    if (!r.width || !r.height) { requestAnimationFrame(() => this.fit(animate)); return; }
     const k = Math.min(r.width / this.map.width, r.height / this.map.height);
     this.minK = k * 0.9;
     this.fitK = k;
