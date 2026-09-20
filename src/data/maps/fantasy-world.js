@@ -369,8 +369,8 @@ export default {
       "y": 276
     },
     {
-      "id": "fw-coromandy-mountains",
-      "name": "Coromandy Mountains",
+      "id": "fw-goromadny-mountains",
+      "name": "Goromadny Mountains",
       "region": "Kislev",
       "x": 1375,
       "y": 250
