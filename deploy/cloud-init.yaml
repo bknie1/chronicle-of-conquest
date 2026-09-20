@@ -1,0 +1,84 @@
+#cloud-config
+# First boot of a Chronicle of Conquest droplet: Node 20, the app under
+# systemd on :3000, Caddy in front on :80/:443 with automatic TLS for the
+# domain, SQLite in /var/lib/chronicle.
+#
+#   doctl compute droplet create chronicle --image ubuntu-24-04-x64 \
+#     --size s-1vcpu-1gb --region sfo3 --ssh-keys <id> --user-data-file deploy/cloud-init.yaml
+package_update: true
+packages:
+  - git
+  - build-essential
+  - python3
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+  - curl
+  - ufw
+
+users:
+  - name: chronicle
+    system: true
+    shell: /usr/sbin/nologin
+    home: /opt/chronicle
+
+write_files:
+  - path: /etc/systemd/system/chronicle.service
+    content: |
+      [Unit]
+      Description=Chronicle of Conquest
+      After=network.target
+
+      [Service]
+      User=chronicle
+      WorkingDirectory=/opt/chronicle
+      Environment=NODE_ENV=production
+      Environment=PORT=3000
+      Environment=DATA_DIR=/var/lib/chronicle
+      Environment=SECURE_COOKIES=0
+      ExecStart=/usr/bin/node server/index.js --production
+      Restart=always
+      RestartSec=3
+
+      [Install]
+      WantedBy=multi-user.target
+  - path: /etc/caddy/Caddyfile
+    content: |
+      # Plain HTTP on the bare address, so the site works by IP before DNS
+      # exists. The domain gets a certificate automatically once it resolves.
+      :80 {
+        reverse_proxy localhost:3000
+      }
+      chronicleofconquest.app, www.chronicleofconquest.app {
+        reverse_proxy localhost:3000
+        encode zstd gzip
+      }
+  - path: /usr/local/bin/chronicle-deploy
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # Pull the latest master, rebuild, restart. Run as root.
+      set -euo pipefail
+      cd /opt/chronicle
+      sudo -u chronicle git fetch -q origin master
+      sudo -u chronicle git reset -q --hard origin/master
+      sudo -u chronicle npm ci --no-audit --no-fund
+      sudo -u chronicle npm run build
+      systemctl restart chronicle
+      echo "deployed $(git rev-parse --short HEAD)"
+
+runcmd:
+  - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  - apt-get install -y nodejs
+  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+  - apt-get update && apt-get install -y caddy
+  - mkdir -p /var/lib/chronicle && chown chronicle:chronicle /var/lib/chronicle
+  - git clone -q https://github.com/bknie1/chronicle-of-conquest.git /opt/chronicle
+  - chown -R chronicle:chronicle /opt/chronicle
+  - sudo -u chronicle bash -c 'cd /opt/chronicle && npm ci --no-audit --no-fund && npm run build'
+  - systemctl daemon-reload
+  - systemctl enable --now chronicle
+  - systemctl restart caddy
+  - ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw --force enable
+  - touch /var/lib/chronicle/.cloud-init-done
