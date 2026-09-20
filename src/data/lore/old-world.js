@@ -105,11 +105,8 @@ export const OLD_WORLD_LORE = {
   'karak-varn': 'Once called Cragmere, a flourishing gromril-mining hold until an earthquake let the Black Water flood its tunnels and drown thousands of Dwarfs along with their treasure. Skaven have infested the flooded ruin ever since, and the gromril seams beneath it are worth almost any risk to reach.',
   // Dark Lands
   'dark-lands': 'A blasted, volcanic expanse east of the Worlds Edge Mountains, home to Chaos Dwarfs, Hobgoblins and worse things drawn by the taint that seeps from the ground itself. Almost nothing grows here, which has never stopped armies from wanting to control what does.',
-  'blasted-wastes': 'A stretch of the Dark Lands scoured by old sorcery until nothing grows and little survives above ground. It is fought over anyway, for the mineral wealth and the strategic ground it denies to whoever does not hold it.',
   azgorh: 'The great slave-port and fortress of the Chaos Dwarfs on the Dark Lands’ coast, where captives are broken to labour before being marched inland. Its harbour makes it the gateway for everything the Chaos Dwarf empire imports and exports, willingly or otherwise.',
-  nagashizzar: 'A fortified mountain riddled with countless leagues of tunnel, built by the Great Necromancer Nagash above the deepest warpstone deposits in the world. Undead legions and Skaven alike still fight for the mines beneath it, because whoever controls that warpstone controls a fortune in sorcerous power.',
   uzkulak: 'The Place of the Skull, once a proud Dwarf hold and now a fortified slave-port of the Chaos Dwarfs, its ancient inner sanctum reduced to a heavily guarded tomb. It is a grim monument to how thoroughly the Dwarfs can lose a hold and how little that stops them wanting it back.',
-  'ash-ridge-mountains': 'A jagged, smoke-wreathed range on the edge of the Dark Lands, its slopes riddled with Chaos Dwarf workings and hobgoblin camps. Nothing about it is hospitable, which is exactly why it makes a useful place to hide an army.',
   // Badlands
   badlands: 'Arid, orc-infested hill country south of the Worlds Edge Mountains, considered the ancestral homeland of the greenskin tribes of the Old World. Waaaghs! gather here the way storms gather over open water, and just as predictably break somewhere else.',
   'black-crag': 'Once the Dwarf hold of Karak Drazh, now the largest and most feared Orc stronghold in the Badlands, a black fortress that has never been retaken since it fell. Its Orc garrison treats every attempt to dislodge them as sport.',
@@ -180,7 +177,6 @@ export const OLD_WORLD_LORE = {
   helmgart: 'A fortified Reikland town guarding one of the routes into the Grey Mountains and the passes toward Bretonnia beyond. It has stood as a border watch for longer than most of the noble houses that have claimed it.',
   // Land of the Dead
   'nehekhara-road': 'The overland route into the desert kingdom of the Tomb Kings, marked by the bones of those who underestimated it. Trade caravans that survive the crossing bring back gold; the ones that do not simply add to the road’s reputation.',
-  'plain-of-bones': 'A stretch of Nehekharan desert littered with the remains of armies that met the Tomb Kings’ legions and lost. It is exactly as inhospitable as it sounds, and exactly as haunted.',
   // Ogre Kingdoms
   'mountains-of-mourn': 'A brutal, high mountain range east of the Dark Lands, home to the Ogre Kingdoms and named for a grief older than any living memory can explain. Its ogre tribes fight for meat and glory in roughly equal measure, and neither is easily denied them.',
   // The Great Ocean
@@ -197,6 +193,62 @@ export const OLD_WORLD_LORE = {
   // The Forest of Loren
   'coeth-mara': 'A glade within Athel Loren, part of the frozen realm of Atylwyth where winter never fully releases its hold. The Wood Elves who keep it are as cold to outsiders as the ground beneath the frost.',
   talsyn: 'Another of Athel Loren’s deep glades, its paths shifting for reasons no outsider has ever mapped successfully. Those who wander in without the forest’s leave rarely wander back out the same way.',
+  // Norsca — the crossing from the Old World map
+  'norsca-crossing': 'The stretch of grey water every longship crosses to reach the Empire, and every Imperial fleet crosses to regret it. Nothing is built here; it is simply the shortest line between Norsca’s fjords and somebody else’s harvest.',
+
+  // Norsca — Bjornling lands
+  kalevanvik: 'A Bjornling harbour town on the western fjords, its jetties built long enough to berth a raiding fleet and its longhouses built to be rebuilt. Wealth here is measured in what came back from the south.',
+  stavgard: 'The great southern anchorage of the Bjornlings, where the crossing to the Empire begins and where the spoils come home. Whoever holds Stavgard decides which tribes sail and when.',
+  'swerborg-gottborg': 'A twinned settlement grown together across a narrow inlet, one half trading, the other raiding, both pretending not to know what the other is doing. Its smiths are the best on this coast.',
+  goslor: 'A Bjornling hold on high ground above the treeline, chosen for a view of the sea rather than good soil. It survives on fish, feud and whatever the tide brings in.',
+  iskvard: 'A fortified fishing settlement on a cold inlet, the sort of place that empties into the boats in raiding season and refills, thinner, in autumn.',
+  heimseter: 'An inland Bjornling steading among high pasture, one of the few places in Norsca where anyone bothers keeping cattle. That alone makes it worth stealing.',
+
+  // Norsca — Graeling lands
+  fjirgard: 'A Graeling hold on the northwestern coast, its hall built against a cliff and its warriors known for taking to the sea in weather other tribes will not. Reputation is the currency here.',
+  tiurivik: 'A Graeling harbour in a narrow fjord, defensible to the point of tedium: an attacking fleet has to come in single file and the locals know exactly where.',
+  bjarkoy: 'An island settlement off the Graeling coast, a natural stopping point for fleets heading south and a natural target for anyone who wants that route closed.',
+  hrakon: 'A Graeling hold of longhouses and burial mounds, ruled by whichever family last won an argument decisively. The mounds outnumber the houses.',
+  nilfheim: 'A cold, half-abandoned settlement in the far north of Graeling country, named for the mists that sit on it most of the year. Those who remain are not often asked why.',
+
+  // Norsca — Varg lands
+  novgoborg: 'A Varg stronghold on the northern trade road, as much a market as a fortress, where furs and amber go south and iron comes north. The Vargs raid Kislev and trade with it in the same season.',
+  arothborg: 'A Varg hold guarding the inland route east, its palisade rebuilt so many times that the newest timber is never more than a few winters old.',
+  aldeigborg: 'The northernmost Varg settlement of any size, sitting where the forest gives out. Whoever holds it controls the overland road to the Frozen Sea.',
+  gardariborg: 'A Varg town built around a river portage, where longships are hauled overland between waterways. Control the portage and you control which fleets reach the east.',
+
+  // Norsca — the dwarf holds
+  'kraka-ornsmotek': 'A Dwarf hold in the Skadi Mountains, cut off from the Karaz Ankor since the Time of Woes and holding out on stubbornness and stored grudges. Its gates have not opened to a stranger in living memory.',
+  'kraka-drak': 'The greatest of the Norse Dwarf holds, deep in the Mountains of Hel, whose people have fought the tribes above them for so long that neither side remembers starting. Its vaults are the richest prize in the north, which is exactly the problem.',
+
+  // Norsca — Skaeling lands
+  'olricstaad-heorot': 'A Skaeling seat of two halls, the old and the greater, where kings are acclaimed and rivals quietly disappear. It is the closest thing this coast has to a capital.',
+  thorkavik: 'A Skaeling harbour crowded with longships through the winter and empty of them by spring. Its wealth is entirely seasonal and entirely stolen.',
+  kleitborg: 'A hill fort above the Skaeling coast, holding the road between the southern fjords and the high passes. Armies going anywhere inland go past it.',
+  trollskyrka: 'A place of standing stones and older rites, where the tribes sacrifice for favour and sometimes receive it. The priests here outlive the chieftains who use them.',
+  'baga-yar': 'A black fortress raised by something that was not a man when it finished, squatting above the southern marshes. The tribes camp around it and never quite inside it.',
+  'the-blood-fane': 'A shrine on the Skaeling coast where offerings are made to gods who answer in kind. Nobody holds it for long, and nobody who takes it sleeps easily afterward.',
+  aarvik: 'A small Skaeling harbour on the southern shore, close enough to the crossing to be first out and first back. It has burned twice and been rebuilt in the same place both times.',
+
+  // Norsca — Sarl lands
+  suderholm: 'The Sarls’ southern port and the busiest anchorage on the Sea of Claws coast, where fleets gather before they sail and argue over the spoils when they return.',
+  stromstaad: 'A Sarl stronghold on the eastern approaches, positioned to watch both the sea lanes and the road into Troll Country. Little moves through this coast unnoticed.',
+  ormskaro: 'A Sarl hold built around a serpent-carved hall, its chieftains claiming descent from something that came out of the sea. The claim is humoured because they can back it.',
+  thorshafn: 'A deep-water harbour where the largest Sarl fleets winter, its shipwrights the only ones in Norsca who build to a plan rather than a memory.',
+  tuvfjord: 'A fjord settlement at the head of a long, narrow inlet, easy to defend and miserable to besiege. That is most of its history.',
+  winterpyre: 'A Sarl hold named for the fires kept burning through the dark months, less for warmth than for what the light keeps at the treeline.',
+  trollheim: 'The high mountain country the tribes cross only in numbers, home to trolls and older things that were here before anyone raised a hall. The passes through it are the only land route worth the name.',
+
+  // Norsca — Baersonling lands
+  angvold: 'A Baersonling hold on the eastern marches where Norsca gives way to Troll Country, garrisoned against what wanders down out of the peaks. The overland road south runs through its gate.',
+  vinteerholm: 'A Baersonling steading in a sheltered valley, one of the few places inland where anything will grow. It feeds warbands that will not thank it.',
+
+  // Norsca — Aesling lands
+  morkestaad: 'An Aesling hold in the far northeast, its people the most openly devoted to the Dark Gods on a coast where that is a high standard. Outsiders are welcomed exactly once.',
+  rugard: 'An Aesling stronghold above the White Sea, from which raids go east along the ice rather than south. Its chieftains measure themselves against Kislev, not the Empire.',
+  svartblodgard: 'A hall of black stone in Aesling country, held by a line that has kept the same name and the same reputation for generations. The reputation is deserved.',
+  'norse-war-trade-fort': 'A fortified trading post on the eastern road where Norscans and Kislevites do business under a truce that holds until it does not. Both sides garrison it and neither trusts the arrangement.',
+
   // Chaos Wastes
   'karak-dum': 'The Doomed Hold, once known as the Watchful Hold, a Dwarf outpost built on the very edge of the Chaos Wastes to keep watch on the north. It fell to a Chaos horde millennia ago, and nothing since has suggested it could be retaken, though the Dwarfs have never struck it from their maps.',
 };

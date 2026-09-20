@@ -716,7 +716,9 @@ function setView(view, { keepDay = false } = {}) {
   if (settingChanged) {
     state.mapId = null;
     loadMap(C().setting.maps[0].id);
-    state.overview = multiMap(); // a multi-realm setting opens on the overview
+    // A setting with many maps opens on the overview; one with a main map and
+    // an outlying region or two opens on the main map, where the campaign is.
+    state.overview = C().setting.maps.length > 3;
   }
   if (!keepDay || wasToday) state.at = view.today;
   else state.at = Math.min(state.at, view.today);

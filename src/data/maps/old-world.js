@@ -135,32 +135,18 @@ export default {
       "y": 343
     },
     {
-      "id": "norsca-west",
-      "name": "Bjornling Coast",
+      "id": "norsca-crossing",
+      "name": "The Sea of Claws Crossing",
       "region": "Norsca",
-      "x": 486,
-      "y": 537
-    },
-    {
-      "id": "norsca-heart",
-      "name": "Norscan Heartland",
-      "region": "Norsca",
-      "x": 889,
-      "y": 349
-    },
-    {
-      "id": "norsca-east",
-      "name": "Norscan Frontier",
-      "region": "Norsca",
-      "x": 1370,
-      "y": 214
+      "x": 700,
+      "y": 600
     },
     {
       "id": "chaos-wastes",
       "name": "The Chaos Wastes",
       "region": "Northern Wastes",
-      "x": 2173,
-      "y": 102
+      "x": 2035,
+      "y": 90
     },
     {
       "id": "kurgan-steppe",
@@ -208,15 +194,8 @@ export default {
       "id": "dark-lands",
       "name": "The Dark Lands",
       "region": "Dark Lands",
-      "x": 2331,
-      "y": 1126
-    },
-    {
-      "id": "blasted-wastes",
-      "name": "The Blasted Wastes",
-      "region": "Dark Lands",
-      "x": 2350,
-      "y": 1363
+      "x": 2190,
+      "y": 1060
     },
     {
       "id": "black-crag",
@@ -250,8 +229,8 @@ export default {
       "id": "azgorh",
       "name": "Desolation of Azgorh",
       "region": "Dark Lands",
-      "x": 2414,
-      "y": 1993
+      "x": 2462,
+      "y": 1873
     },
     {
       "id": "border-princes",
@@ -467,8 +446,8 @@ export default {
       "id": "salkalten",
       "name": "Salkalten",
       "region": "Nordland",
-      "x": 1235,
-      "y": 789
+      "x": 1220,
+      "y": 880
     },
     {
       "id": "norden",
@@ -518,13 +497,6 @@ export default {
       "region": "Ostland",
       "x": 1372,
       "y": 944
-    },
-    {
-      "id": "the-blood-fane",
-      "name": "The Blood Fane",
-      "region": "Ostland",
-      "x": 1313,
-      "y": 809
     },
     {
       "id": "bechafen",
@@ -968,76 +940,6 @@ export default {
       "y": 2222
     },
     {
-      "id": "kalevanvik",
-      "name": "Kalevanvik",
-      "region": "Norsca",
-      "x": 425,
-      "y": 407
-    },
-    {
-      "id": "sverboig-gottborg",
-      "name": "Sverboig-Gottborg",
-      "region": "Norsca",
-      "x": 523,
-      "y": 489
-    },
-    {
-      "id": "stavgard",
-      "name": "Stavgard",
-      "region": "Norsca",
-      "x": 536,
-      "y": 570
-    },
-    {
-      "id": "olriostad-heorot",
-      "name": "Olriostad-Heorot",
-      "region": "Norsca",
-      "x": 708,
-      "y": 501
-    },
-    {
-      "id": "tharkavik",
-      "name": "Tharkavik",
-      "region": "Norsca",
-      "x": 834,
-      "y": 571
-    },
-    {
-      "id": "trollkyrka",
-      "name": "Trollkyrka",
-      "region": "Norsca",
-      "x": 970,
-      "y": 427
-    },
-    {
-      "id": "the-daemon-fortress-of-baga-yar",
-      "name": "The Daemon Fortress of Baga Yar",
-      "region": "Norsca",
-      "x": 985,
-      "y": 542
-    },
-    {
-      "id": "soderholm",
-      "name": "Soderholm",
-      "region": "Norsca",
-      "x": 1430,
-      "y": 214
-    },
-    {
-      "id": "mount-vanir",
-      "name": "Mount Vanir",
-      "region": "Norsca",
-      "x": 1167,
-      "y": 419
-    },
-    {
-      "id": "stromstaad",
-      "name": "Stromstaad",
-      "region": "Norsca",
-      "x": 1411,
-      "y": 295
-    },
-    {
       "id": "karag-dron",
       "name": "Karag Dron",
       "region": "World's Edge Mountains",
@@ -1085,27 +987,6 @@ export default {
       "region": "Badlands",
       "x": 1407,
       "y": 2193
-    },
-    {
-      "id": "nagashizzar",
-      "name": "Nagashizzar",
-      "region": "Dark Lands",
-      "x": 2377,
-      "y": 1946
-    },
-    {
-      "id": "plain-of-bones",
-      "name": "Plain of Bones",
-      "region": "Land of the Dead",
-      "x": 2485,
-      "y": 1929
-    },
-    {
-      "id": "ash-ridge-mountains",
-      "name": "Ash Ridge Mountains",
-      "region": "Dark Lands",
-      "x": 2437,
-      "y": 1869
     },
     {
       "id": "yellow-eye-goblins",
@@ -1278,8 +1159,16 @@ export default {
   ],
   "extraLinks": [
     [
-      "norsca-heart",
-      "norsca-east"
+      "norsca-crossing",
+      "troll-country"
+    ],
+    [
+      "azgorh",
+      "karag-haraz"
+    ],
+    [
+      "mountains-of-mourn",
+      "karag-haraz"
     ]
   ],
   "blockedLinks": []

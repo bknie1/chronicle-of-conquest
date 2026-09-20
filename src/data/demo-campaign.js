@@ -14,13 +14,13 @@ export const DEMOS = {
     seed: 40000,
     players: [
       { id: 'michael', name: 'Michael', army: 'The Grail Company of Couronne', faction: 'bretonnia', skill: 0.6, active: [0, 123] },
-      { id: 'brett', name: 'Brett', army: "Brett's Chaos Knights", faction: 'chaos', skill: 0.64, active: [0, 123], surge: 85 },
-      { id: 'sean', name: 'Sean', army: 'Rotbringers of the North', faction: 'chaos', skill: 0.57, active: [0, 123] },
-      { id: 'ryan', name: 'Ryan', army: 'Sea Guard of Lothern', faction: 'high-elves', skill: 0.6, active: [10, 123] },
+      { id: 'brett', name: 'Brett', army: "Brett's Chaos Knights", faction: 'ow-bjornlings', skill: 0.64, active: [0, 123], surge: 85 },
+      { id: 'sean', name: 'Sean', army: 'Rotbringers of the North', faction: 'ow-skaelings', skill: 0.57, active: [0, 123] },
+      { id: 'ryan', name: 'Ryan', army: 'Sea Guard of Lothern', faction: 'ow-lothern-fleet', skill: 0.6, active: [10, 123] },
       { id: 'conrad', name: 'Conrad', army: 'The Jade Caravan', faction: 'cathay', skill: 0.56, active: [0, 75] },
       { id: 'anthony', name: 'Anthony', army: 'Infernal Guard of Zharr-Naggrund', faction: 'chaos-dwarfs', skill: 0.6, active: [0, 123] },
       { id: 'jordan', name: 'Jordan', army: 'Waaagh! Jordgut', faction: 'orcs', skill: 0.55, active: [0, 123] },
-      { id: 'andy', name: 'Andy', army: 'Da Moonclan Gitz', faction: 'orcs', skill: 0.5, active: [20, 123] },
+      { id: 'andy', name: 'Andy', army: 'Da Moonclan Gitz', faction: 'ow-crooked-moon', skill: 0.5, active: [20, 123] },
       { id: 'rattmatt', name: 'Ratt Matt', army: 'Clan Rattmatt', faction: 'skaven', skill: 0.57, active: [0, 123] },
     ],
     // Games people have agreed to but not yet played. Two on Parravon tonight.
@@ -31,6 +31,7 @@ export const DEMOS = {
       { id: 'e4', day: 125, node: 'stirland', players: ['andy', 'sean'] },
       { id: 'e5', day: 128, node: 'cathay-road', players: ['conrad', 'anthony'], note: 'Has the Jade Caravan returned?' },
       { id: 'e6', day: 130, node: 'bastonne', players: ['michael', 'jordan'] },
+      { id: 'e7', day: 124, node: 'stavgard', players: ['brett', 'sean'], note: 'Which tribe sails first' },
     ],
   },
   'warhammer-fantasy': {
