@@ -368,8 +368,7 @@ function renderRegion(panel, i) {
       <button type="button" class="tab ${tab === 'lore' ? 'active' : ''}" data-region-tab="lore">Lore</button>
     </div>
     ${tab === 'lore'
-      ? `<div class="lore">${lore ? `<p>${esc(lore)}</p>` : `<p class="muted">No lore written for ${esc(n.name)} yet.</p>`}
-         <p class="small muted">${esc(n.region ?? '')}</p></div>`
+      ? `<div class="lore">${lore ? `<p>${esc(lore)}</p>` : `<p class="muted">No lore written for ${esc(n.name)} yet.</p>`}</div>`
       : battle}`;
 }
 
