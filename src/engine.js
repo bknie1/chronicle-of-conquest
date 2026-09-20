@@ -134,6 +134,9 @@ export function rollUp(scores, bucketOf) {
   });
 }
 
+// A decree reaches as far as a victory does, in the same proportions.
+const DECREE_SPREAD = [1, 0.4, 0.1];
+
 export function shortestPath(adj, from, to) {
   const prev = new Map([[from, -1]]);
   const queue = [from];
@@ -152,7 +155,9 @@ export function shortestPath(adj, from, to) {
 // Each faction has one home, its safe zone, which can never fall. `footholds`
 // are the other grounds armies mustered from — [{ faction, point }] — and give
 // a strong but beatable claim there; the same ground counts once per faction.
-export function computeInfluence({ graph, nodes, factions, games, at, footholds = [] }) {
+// `decrees` are a gamemaster's hand on the map — [{ faction, point, amount }],
+// an invasion or a correction — and do not decay: they hold until revoked.
+export function computeInfluence({ graph, nodes, factions, games, at, footholds = [], decrees = [] }) {
   const scores = nodes.map(() => new Map());
   const add = (i, f, v) => scores[i].set(f, (scores[i].get(f) || 0) + v);
   const homeOf = new Map();
@@ -169,6 +174,12 @@ export function computeInfluence({ graph, nodes, factions, games, at, footholds 
     if (i < 0 || homeOf.has(i) || claimed.has(`${faction}@${point}`)) continue;
     claimed.add(`${faction}@${point}`);
     for (const [j, d] of graph.hops(i)) add(j, faction, RULES.startingGround[d]);
+  }
+
+  for (const { faction, point, amount } of decrees) {
+    const i = nodes.findIndex(n => n.id === point);
+    if (i < 0) continue;
+    for (const [j, d] of graph.hops(i)) add(j, faction, amount * DECREE_SPREAD[d]);
   }
 
   for (const g of games) {

@@ -116,6 +116,7 @@ function recompute() {
   const influence = computeInfluence({
     graph: C().graph, nodes: NODES(), factions: factionsFor(C().setting, 'codex'),
     games, at: state.at, footholds: footholds(),
+    decrees: (V().decrees ?? []).map(d => ({ faction: armyOf(d.faction), point: d.node, amount: d.amount })),
   });
   // Allegiance is the same influence with each army counted towards its side.
   state.influence = state.level === 'alliance'
@@ -279,6 +280,8 @@ function detailControl() {
 
 function attention() {
   const v = V();
+  if (v.frozen) return `<div class="callout frozen"><b>This campaign is frozen.</b> An organizer has paused it, so no results,
+    challenges or musters can be recorded until it is thawed. The map and the chronicle are still here to read.</div>`;
   if (v.kind !== 'campaign' || !v.me?.role) return '';
   const me = v.me.userId;
   const items = [];
@@ -351,6 +354,40 @@ function renderPanel() {
       : '<p class="muted">No battles fought yet. Issue a challenge and write the first page.</p>'}`;
 }
 
+// What a gamemaster has put on this place by hand, and how to take it off.
+function decreeLines(i) {
+  const here = (V().decrees ?? []).filter(d => d.node === NODES()[i].id);
+  if (!here.length) return '';
+  return `<h3>By decree</h3><ul class="chronicle">${here.map(d => {
+    const f = faction(C().setting.resolve(d.faction, state.level));
+    return `<li><span class="army" style="--c:${f.color}">${esc(f.name)}</span>
+      ${d.amount > 0 ? 'granted' : 'stripped of'} <b>${Math.abs(d.amount)}</b> influence${d.reason ? ` · ${esc(d.reason)}` : ''}
+      ${isOrganizer() ? ` <button class="small ghost" data-undecree="${d.id}">Revoke</button>` : ''}</li>`;
+  }).join('')}</ul>`;
+}
+
+function openDecree(i) {
+  const n = NODES()[i];
+  const list = factionsFor(C().setting, 'codex');
+  openModal(`
+    <h2>Decree at ${esc(n.name)}</h2>
+    <p class="muted">A gamemaster's hand on the map: an invasion, a landing, a WAAAGH!, or a correction.
+      It sits outside the record of games and holds until it is revoked.</p>
+    <label>Whose influence<select name="faction" required>${list.map(f =>
+      `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('')}</select></label>
+    <label>How much<input name="amount" type="number" required value="20" min="-200" max="200" step="1">
+      <span class="hint">Positive grants it, negative strips it. A hard-won battle is worth about 10.</span></label>
+    <label>Reason <span class="muted">(optional)</span><input name="reason" maxlength="80" placeholder="A Chaos invasion out of the north"></label>
+    ${cancelRow('Decree it')}`,
+  async data => {
+    await campaignCall('POST', '/decrees', {
+      setting: V().setting, node: n.id, faction: data.get('faction'),
+      amount: Number(data.get('amount')), reason: data.get('reason'),
+    });
+    toast(`Decreed at <b>${esc(n.name)}</b>.`);
+  });
+}
+
 function renderRegion(panel, i) {
   const n = NODES()[i];
   const s = state.influence[i];
@@ -361,9 +398,11 @@ function renderRegion(panel, i) {
   const battle = `
     <h3>Influence</h3>
     ${influenceBars(s)}
-    ${isToday() ? `<div class="row">
+    ${isToday() && !V().frozen ? `<div class="row">
       <button data-challenge="${i}">⚔ Challenge for ${esc(n.name)}</button>
       <button class="primary" data-report="${i}">Report a result here</button></div>` : ''}
+    ${isOrganizer() ? `<div class="row"><button class="small ghost" data-decree="${i}">Decree influence here</button></div>` : ''}
+    ${decreeLines(i)}
     ${gateLines(i)}
     ${events.length ? `<h3>Battles here</h3><ul class="events">${events.map(e => eventLine(e, false)).join('')}</ul>` : ''}
     <h3>Battles fought here</h3>
@@ -1011,7 +1050,9 @@ function openSettings() {
       `<label class="check"><input type="checkbox" name="maps" value="${esc(m.id)}" ${mapsShown().some(x => x.id === m.id) ? 'checked' : ''}> ${esc(m.name)}</label>`).join('')}
       <span class="hint">A map switched off keeps its games and territory; it is just not shown until it is switched back on.</span></fieldset>` : ''}
     <p class="muted small">A new season clears the map and everyone starts from their homelands again. The chronicle keeps every game.</p>
-    <div class="row"><button type="button" class="ghost" data-act="reset">Start a new season now</button></div>
+    <div class="row"><button type="button" class="ghost" data-act="reset">Start a new season now</button>
+      <button type="button" class="ghost" data-act="freeze">${v.frozen ? 'Thaw the campaign' : 'Freeze the campaign'}</button></div>
+    <p class="muted small">Freezing pauses results, challenges and mustering. Everyone can still read the map; nothing is hidden.</p>
     ${cancelRow('Save settings')}`,
   async data => {
     await campaignCall('POST', '/settings', {
@@ -1213,13 +1254,16 @@ const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-decree],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
   if ('peekClose' in d) return select(null);
   if (d.level) return setLevel(d.level);
   if (d.regionTab) { state.regionTab = d.regionTab; return renderPanel(); }
+  if (d.decree) return openDecree(Number(d.decree));
+  if (d.undecree) return confirmAct('Revoke this decree? Its influence comes off the map.',
+    () => act(() => campaignCall('DELETE', `/decrees/${d.undecree}`)));
   if ('peekDetails' in d) return narrow() ? setSheet('full') : $('#panel').scrollIntoView({ behavior: 'smooth' });
   if (d.realm) {
     if (d.realm === '__all') return showOverview();
@@ -1249,6 +1293,11 @@ document.addEventListener('click', e => {
   if (d.act === 'muster') return openMuster();
   if (d.act === 'auth') return openAuth();
   if (d.act === 'settings') return openSettings();
+  if (d.act === 'freeze') {
+    const on = !V().frozen;
+    return confirmAct(on ? 'Freeze the campaign? Nothing can be recorded until it is thawed.' : 'Thaw the campaign?',
+      () => act(async () => { await campaignCall('POST', '/freeze', { frozen: on }); $('#modal').close(); toast(on ? 'The campaign is frozen.' : 'The campaign is thawed.'); }));
+  }
   if (d.act === 'reset') return confirmAct('Start a new season? The map clears and every faction falls back to its homeland. Games stay in the chronicle.',
     () => act(async () => { $('#modal').close(); await campaignCall('POST', '/reset'); toast('A new season begins.'); }));
 });

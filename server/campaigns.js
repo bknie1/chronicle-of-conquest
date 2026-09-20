@@ -26,6 +26,11 @@ export function campaignRoutes(db) {
     insertCampaign: db.prepare(`INSERT INTO campaigns (code, name, setting, owner_id, created_at, level, season_started_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)`),
     setSeason: db.prepare('UPDATE campaigns SET season_started_at = ? WHERE id = ?'),
+    setFrozen: db.prepare('UPDATE campaigns SET frozen = ? WHERE id = ?'),
+    decrees: db.prepare('SELECT * FROM decrees WHERE campaign_id = ? ORDER BY created_at, id'),
+    insertDecree: db.prepare(`INSERT INTO decrees (campaign_id, setting, node, faction, amount, reason, created_at, created_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`),
+    deleteDecree: db.prepare('DELETE FROM decrees WHERE id = ? AND campaign_id = ?'),
     setOptions: db.prepare('UPDATE campaigns SET name = ?, level = ?, reset_days = ?, maps = ?, settings = ? WHERE id = ?'),
     myCampaigns: db.prepare(`SELECT c.code, c.name, c.setting, c.level, m.role FROM members m JOIN campaigns c ON c.id = m.campaign_id
       WHERE m.user_id = ? ORDER BY m.joined_at DESC`),
@@ -120,8 +125,13 @@ export function campaignRoutes(db) {
         level: c.level ?? 'codex', seasonStartedAt: seasonStart, resetDays: c.reset_days ?? 0,
         maps: c.maps ? JSON.parse(c.maps) : null,
         settings: settingsOf(c),
+        frozen: !!c.frozen,
       },
       me: user ? { userId: user.id, displayName: user.displayName, role: roleOf(c, user) } : null,
+      decrees: q.decrees.all(c.id).map(d => ({
+        id: d.id, setting: d.setting, node: d.node, faction: d.faction,
+        amount: d.amount, reason: d.reason, createdAt: d.created_at,
+      })),
       members: q.members.all(c.id).map(m => ({ userId: m.user_id, displayName: m.display_name, role: m.role, joinedAt: m.joined_at })),
       armies: q.armies.all(c.id).map(a => ({
         id: a.id, userId: a.user_id, playerName: a.display_name, faction: a.faction, start: a.start, name: a.name,
@@ -173,6 +183,11 @@ export function campaignRoutes(db) {
     res.json(payload(c, user));
   });
 
+  // A frozen campaign is readable but cannot be written to: the map stays
+  // exactly as it is until an organizer thaws it. Visibility is untouched.
+  const requireThawed = c => {
+    if (c.frozen) throw new HttpError(409, 'This campaign is frozen. An organizer has paused it.');
+  };
   const requireOrganizer = (c, user) => {
     if (requireMember(c, user) !== 'organizer') throw new HttpError(403, 'Only an organizer can do that.');
   };
@@ -209,6 +224,48 @@ export function campaignRoutes(db) {
     res.json(payload(q.campaignByCode.get(c.code), user));
   });
 
+  // Gamemaster: pause the campaign without hiding it.
+  router.post('/campaigns/:code/freeze', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    q.setFrozen.run(req.body.frozen === false ? null : 1, c.id);
+    c.frozen = req.body.frozen === false ? null : 1;
+    res.json(payload(c, user));
+  });
+
+  // Gamemaster: put influence on the map by decree — an invasion, a landing,
+  // a WAAAGH!, or a correction. It sits outside the record of games, and
+  // removing it takes it off the map again.
+  router.post('/campaigns/:code/decrees', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    const settingId = req.body.setting ?? c.setting;
+    if (!settingsOf(c).includes(settingId)) throw new HttpError(400, 'That game is not part of this campaign.');
+    const setting = SETTINGS[settingId];
+    const n = setting.nodes.find(x => x.id === req.body.node);
+    if (!n) throw new HttpError(400, 'Pick a place on the map.');
+    const faction = setting.factions.find(f => f.id === req.body.faction)
+      ?? setting.alliances.find(f => f.id === req.body.faction);
+    if (!faction) throw new HttpError(400, 'Pick whose influence this is.');
+    const amount = Number(req.body.amount);
+    if (!Number.isFinite(amount) || amount === 0 || Math.abs(amount) > 200) {
+      throw new HttpError(400, 'An amount between -200 and 200, and not zero.');
+    }
+    const reason = text(req.body.reason ?? '', 'Reason', { min: 0, max: 80 });
+    q.insertDecree.run(c.id, settingId, n.id, faction.id, amount, reason, Date.now(), user.id);
+    res.status(201).json(payload(c, user));
+  });
+
+  router.delete('/campaigns/:code/decrees/:id', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    q.deleteDecree.run(id(req.params.id, 'Decree'), c.id);
+    res.json(payload(c, user));
+  });
+
   // A new season: the map starts fresh, the chronicle keeps everything.
   router.post('/campaigns/:code/reset', (req, res) => {
     const user = requireUser(req);
@@ -222,6 +279,7 @@ export function campaignRoutes(db) {
     const user = requireUser(req);
     const c = load(req);
     requireMember(c, user);
+    requireThawed(c);
     // An army fights in one of the campaign's games, for one army book, from
     // one of that book's starting grounds.
     const settingId = req.body.setting ?? c.setting;
@@ -254,6 +312,7 @@ export function campaignRoutes(db) {
     const user = requireUser(req);
     const c = load(req);
     requireMember(c, user);
+    requireThawed(c);
     const mine = activeArmy(c, req.body.army, 'Your army');
     if (mine.user_id !== user.id) throw new HttpError(403, 'You can only issue challenges with your own army.');
     const foe = activeArmy(c, req.body.opponent, 'Opponent');
@@ -284,6 +343,7 @@ export function campaignRoutes(db) {
     const user = requireUser(req);
     const c = load(req);
     requireMember(c, user);
+    requireThawed(c);
     const winner = activeArmy(c, req.body.winner, 'Victor');
     const loser = activeArmy(c, req.body.loser, 'Defeated army');
     opposed(c, winner, loser);

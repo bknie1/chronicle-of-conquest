@@ -69,6 +69,20 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 CREATE INDEX IF NOT EXISTS games_campaign ON games(campaign_id, played_at);
 CREATE INDEX IF NOT EXISTS events_campaign ON events(campaign_id, scheduled_for);
+-- A gamemaster's hand on the map: influence granted or taken away at a
+-- point, outside the record of games. Deleting one undoes it completely.
+CREATE TABLE IF NOT EXISTS decrees (
+  id INTEGER PRIMARY KEY,
+  campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  setting TEXT NOT NULL,
+  node TEXT NOT NULL,
+  faction TEXT NOT NULL,
+  amount REAL NOT NULL,
+  reason TEXT NOT NULL DEFAULT '',
+  created_at INTEGER NOT NULL,
+  created_by INTEGER NOT NULL REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS decrees_campaign ON decrees(campaign_id);
 CREATE INDEX IF NOT EXISTS armies_campaign ON armies(campaign_id);
 `;
 
@@ -80,6 +94,7 @@ const LATER_COLUMNS = [
   ['campaigns', 'maps', 'TEXT'],
   ['campaigns', 'settings', 'TEXT'],
   ['armies', 'setting', 'TEXT'],
+  ['campaigns', 'frozen', 'INTEGER'],
   ['armies', 'start', 'TEXT'],
 ];
 

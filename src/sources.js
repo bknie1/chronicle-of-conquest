@@ -45,6 +45,8 @@ export function campaignView(payload, setting = payload.campaign.setting) {
     kind: 'campaign',
     setting,
     settings: payload.campaign.settings ?? [payload.campaign.setting],
+    frozen: !!payload.campaign.frozen,
+    decrees: (payload.decrees ?? []).filter(d => d.setting === setting),
     payload,
     level: payload.campaign.level ?? 'codex',
     resetDays: payload.campaign.resetDays ?? 0,

@@ -281,3 +281,39 @@ test('a campaign link can name the game and the place being fought over', async 
   assert.deepEqual(r.body.campaign.settings, ['old-world']);
   assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'A', setting: 'mortal-realms' })).status, 400);
 });
+
+test('a gamemaster can freeze a campaign and put influence on the map by decree', async () => {
+  const gm = await signup('gm_org');
+  const player = await signup('gm_player');
+  const { code } = (await gm.post('/campaigns', { name: 'Gamemaster Test', setting: 'old-world' })).body;
+  await player.post(`/campaigns/${code}/join`);
+  const mine = (await gm.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Reiksguard' })).body.armies.at(-1).id;
+  const theirs = (await player.post(`/campaigns/${code}/armies`, { faction: 'orcs', name: 'Waaagh' })).body.armies.at(-1).id;
+
+  // Only organizers hold the gamemaster's powers.
+  assert.equal((await player.post(`/campaigns/${code}/freeze`, { frozen: true })).status, 403);
+  assert.equal((await player.post(`/campaigns/${code}/decrees`, { node: 'altdorf', faction: 'chaos', amount: 30 })).status, 403);
+
+  // A decree is checked before it lands.
+  assert.equal((await gm.post(`/campaigns/${code}/decrees`, { node: 'nowhere', faction: 'chaos', amount: 30 })).status, 400);
+  assert.equal((await gm.post(`/campaigns/${code}/decrees`, { node: 'altdorf', faction: 'nobody', amount: 30 })).status, 400);
+  assert.equal((await gm.post(`/campaigns/${code}/decrees`, { node: 'altdorf', faction: 'chaos', amount: 0 })).status, 400);
+
+  let r = await gm.post(`/campaigns/${code}/decrees`, { node: 'altdorf', faction: 'chaos', amount: 40, reason: 'A Chaos invasion' });
+  assert.equal(r.status, 201);
+  assert.equal(r.body.decrees.length, 1);
+  assert.equal(r.body.decrees[0].reason, 'A Chaos invasion');
+
+  // Freezing stops the campaign being written to, without hiding it.
+  r = await gm.post(`/campaigns/${code}/freeze`, { frozen: true });
+  assert.equal(r.body.campaign.frozen, true);
+  assert.equal((await gm.post(`/campaigns/${code}/games`, { winner: mine, loser: theirs, node: 'altdorf' })).status, 409);
+  assert.equal((await player.post(`/campaigns/${code}/armies`, { faction: 'dwarfs', name: 'Too late' })).status, 409);
+  assert.equal((await player.get(`/campaigns/${code}`)).status, 200, 'a frozen campaign is still readable');
+
+  // Thawing lets play resume, and a decree can be revoked.
+  await gm.post(`/campaigns/${code}/freeze`, { frozen: false });
+  assert.equal((await gm.post(`/campaigns/${code}/games`, { winner: mine, loser: theirs, node: 'altdorf' })).status, 201);
+  r = await gm.del(`/campaigns/${code}/decrees/${r.body.decrees?.[0]?.id ?? 1}`);
+  assert.equal(r.body.decrees.length, 0);
+});
