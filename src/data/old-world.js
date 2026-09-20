@@ -1,18 +1,12 @@
 // The Old World: one map, and the armies that fight over it.
+// Norsca is part of it, in the north — see the Norsca points on the map.
 // See src/data/settings.js for what alliances, factions and subfactions mean.
 import { MAPS } from './maps/index.js';
 
 export const OLD_WORLD = {
   id: 'old-world',
   name: 'The Old World',
-  maps: [MAPS['old-world'], MAPS['norsca']],
-  // Norsca is its own map (see src/data/maps/norsca.js): a sea crossing from
-  // the Old World's Sea of Claws, plus the overland route out of Troll Country.
-  gates: [
-    ['norsca-crossing', 'stavgard', 'The Sea of Claws Crossing'],
-    ['troll-country', 'angvold', 'The Trollheim Road'],
-    ['erengrad', 'suderholm', 'The Northern Sea Route'],
-  ],
+  maps: [MAPS['old-world']],
   // Simplest mode: four sides, one homeland each.
   alliances: [
     { id: 'ow-order', name: 'Order', color: '#2f5bd8', home: 'altdorf' },

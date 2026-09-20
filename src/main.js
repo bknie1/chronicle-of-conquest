@@ -1,8 +1,8 @@
 import './style.css';
-import { buildSettingGraph, computeInfluence, RULES } from './engine.js';
+import { buildSettingGraph, computeInfluence, rollUp, RULES } from './engine.js';
 import { MapView } from './map.js';
 import { loreFor } from './data/lore/index.js';
-import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, levelName, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
+import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
 
@@ -65,6 +65,7 @@ const faction = id => state.factionById?.get(id)
   ?? { id, name: 'Unknown faction', color: '#8a8a8a' };
 // An army records its army book; at the alliance level it counts as its side.
 const factionOfArmy = armyFaction => C().setting.resolve(armyFaction, state.level);
+const armyOf = armyFaction => C().setting.resolve(armyFaction, 'codex');
 // Where an army took the field, for its line in the roster.
 function mustered(p) {
   const point = p.start ? startPoint(C().setting, p.start) : null;
@@ -74,7 +75,7 @@ function mustered(p) {
 
 // The grounds armies mustered from, other than their faction's own seat.
 const footholds = () => activeArmies().map(p => ({
-  faction: factionOfArmy(p.faction),
+  faction: armyOf(p.faction),
   point: p.start ? startPoint(C().setting, p.start) : null,
 })).filter(f => f.point);
 function rebuildFactions() {
@@ -104,13 +105,17 @@ function recompute() {
   const games = gamesSoFar().map(g => ({
     day: g.day,
     nodeIndex: idx(g.node),
-    winnerFaction: factionOfArmy(playerById(g.winner).faction),
-    loserFaction: factionOfArmy(playerById(g.loser).faction),
+    winnerFaction: armyOf(playerById(g.winner).faction),
+    loserFaction: armyOf(playerById(g.loser).faction),
   }));
-  state.influence = computeInfluence({
-    graph: C().graph, nodes: NODES(), factions: factionList(), games, at: state.at,
-    footholds: footholds(),
+  const influence = computeInfluence({
+    graph: C().graph, nodes: NODES(), factions: factionsFor(C().setting, 'codex'),
+    games, at: state.at, footholds: footholds(),
   });
+  // Allegiance is the same influence with each army counted towards its side.
+  state.influence = state.level === 'alliance'
+    ? rollUp(influence, id => C().setting.allianceOf.get(id) ?? id)
+    : influence;
 }
 
 function eventsByNode() {
@@ -257,7 +262,7 @@ function campaignHeader() {
 // see Loyalists against Traitors, then how their own Legion is faring.
 function detailControl() {
   const v = V();
-  const name = l => levelName(C().setting, l);
+  const name = l => LEVEL_NAMES[l];
   const buttons = `<div class="levels">${LEVELS.map(l => `<button class="${l === state.level ? 'active' : ''}"
     data-level="${l}" title="${esc(LEVEL_HINTS[l])}">${esc(name(l))}</button>`).join('')}</div>`;
   if (v.kind === 'demo') return buttons;
@@ -943,7 +948,7 @@ function openSettings() {
     <h2>Campaign settings</h2>
     <label>Campaign name<input name="name" required minlength="3" maxlength="60" value="${esc(v.name)}"></label>
     <label>Faction detail<select name="level">${LEVELS.map(l =>
-      `<option value="${l}" ${l === (v.level ?? 'codex') ? 'selected' : ''}>${esc(levelName(C().setting, l))} — ${esc(LEVEL_HINTS[l])}</option>`).join('')}</select></label>
+      `<option value="${l}" ${l === (v.level ?? 'codex') ? 'selected' : ''}>${esc(LEVEL_NAMES[l])} — ${esc(LEVEL_HINTS[l])}</option>`).join('')}</select></label>
     <label>New season every<select name="resetDays">${[0, 30, 60, 90, 180, 365].map(d =>
       `<option value="${d}" ${d === (v.resetDays ?? 0) ? 'selected' : ''}>${d ? `${d} days` : 'Never, I reset it myself'}</option>`).join('')}</select></label>
     <p class="muted small">A new season clears the map and everyone starts from their homelands again. The chronicle keeps every game.</p>

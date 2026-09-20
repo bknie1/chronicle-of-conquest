@@ -112,6 +112,28 @@ function sharedEdge(p, q) {
   return common.length >= 2 ? common : null;
 }
 
+// Roll a node's influence up into coarser buckets: the same games, counted the
+// same way, with each army's score added to the side it fights for. Nothing is
+// recomputed — an allegiance is a sum of its armies, not a faction of its own.
+export function rollUp(scores, bucketOf) {
+  return scores.map(s => {
+    const totals = new Map();
+    for (const { faction, value } of s.ranked) {
+      const b = bucketOf(faction);
+      totals.set(b, (totals.get(b) || 0) + value);
+    }
+    const ranked = [...totals].map(([faction, value]) => ({ faction, value }))
+      .sort((a, b) => b.value - a.value);
+    const [top, second] = ranked;
+    const home = s.home ? bucketOf(s.home) : null;
+    let owner = top && top.value >= RULES.controlThreshold ? top.faction : null;
+    let contested = !!(owner && second && second.value >= RULES.controlThreshold
+      && second.value >= top.value * RULES.contestedRatio);
+    if (home) { owner = home; contested = false; }
+    return { ranked, owner, home, contested, rival: contested ? second.faction : null, strength: top ? top.value : 0 };
+  });
+}
+
 export function shortestPath(adj, from, to) {
   const prev = new Map([[from, -1]]);
   const queue = [from];

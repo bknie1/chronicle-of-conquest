@@ -1,12 +1,13 @@
 // A setting is one or more maps, the gates between them, and its factions.
 //
 // Factions are described at two levels of detail, and a campaign picks one:
-//   alliance  Grand Alliances: the Imperium, Chaos, Xenos; Order, Death...
-//   codex     one entry per army book: Space Marines, Idoneth Deepkin...
-// The influence rules never change; the level only decides who holds ground.
+//   codex     one entry per army: Space Marines, Idoneth Deepkin, Legio Mortis
+//   alliance  those same armies added up into sides: Loyalists and Traitors,
+//             Order and Chaos, the Imperium and the Xenos
+// Only the army level is ever computed. An allegiance is the sum of its
+// armies' influence at a point, not a faction with a territory of its own.
 // A setting may set `defaultLevel`: the Age of Darkness is Loyalists against
-// Traitors before it is anything else, so those campaigns open there. It may
-// also set `levelNames` where "Grand Alliances" is the wrong words for it.
+// Traitors before it is anything else, so those campaigns open there.
 // Every faction at the active level has exactly one home, its safe zone, which
 // can never fall.
 //
@@ -29,15 +30,15 @@ import { WARHAMMER_40K } from './warhammer-40k.js';
 
 export const LEVELS = ['alliance', 'codex'];
 export const LEVEL_NAMES = {
-  alliance: 'Grand Alliances',
-  codex: 'Army books',
+  alliance: 'Allegiance',
+  codex: 'Armies',
 };
 export const LEVEL_HINTS = {
-  alliance: 'Loyalists and Traitors, Order and Chaos: everyone on a side shares one territory.',
-  codex: 'One per army book, the usual choice. Armies still choose where they start.',
+  alliance: 'The same battles, counted into two or three sides: Loyalists and Traitors, Order and Chaos.',
+  codex: 'One entry per army, the usual choice.',
 };
 
-function defineSetting({ id, name, maps, alliances = [], factions, gates = [], defaultLevel = 'codex', levelNames = {} }) {
+function defineSetting({ id, name, maps, alliances = [], factions, gates = [], defaultLevel = 'codex' }) {
   const nodes = maps.flatMap(map => map.nodes.map(n => ({ ...n, map: map.id })));
   const points = new Set();
   for (const n of nodes) {
@@ -93,7 +94,7 @@ function defineSetting({ id, name, maps, alliances = [], factions, gates = [], d
   if (!LEVELS.includes(defaultLevel)) throw new Error(`${id}: "${defaultLevel}" is not a level`);
 
   return {
-    id, name, maps, gates, nodes, alliances, factions: codex, levels, resolve, defaultLevel, levelNames,
+    id, name, maps, gates, nodes, alliances, factions: codex, levels, resolve, defaultLevel,
     starts, startsOf, factionOfStart, allianceOf,
   };
 }
@@ -112,8 +113,6 @@ export const SETTINGS = {
 export const factionsFor = (setting, level) => setting.levels[level] ?? setting.levels.codex;
 // Every faction someone can muster as: always the army books.
 export const armyFactionsFor = setting => setting.levels.codex;
-// What to call a level in this setting.
-export const levelName = (setting, level) => setting.levelNames?.[level] ?? LEVEL_NAMES[level];
 // Where an army of this faction may begin. The first entry is the faction's own seat.
 export const startsFor = (setting, factionId) => setting.startsOf.get(factionId) ?? [];
 // The point a recorded start id sits on.

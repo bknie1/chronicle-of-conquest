@@ -18,7 +18,6 @@ export const LEGIONS_IMPERIALIS = {
     { id: 'li-traitor', name: 'Traitors', color: '#8e0000', home: 'isstvan' },
   ],
   defaultLevel: 'alliance',
-  levelNames: { alliance: 'Loyalists & Traitors', codex: 'Army lists' },
   factions: [
     { id: 'li-astartes', name: 'Legiones Astartes', color: '#0d47a1', home: 'terra', alliance: 'li-loyalist',
       subfactions: [

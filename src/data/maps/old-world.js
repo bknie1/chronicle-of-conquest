@@ -134,14 +134,7 @@ export default {
       "x": 1627,
       "y": 343
     },
-    {
-      "id": "norsca-crossing",
-      "name": "The Sea of Claws Crossing",
-      "region": "Norsca",
-      "x": 700,
-      "y": 600
-    },
-    {
+        {
       "id": "chaos-wastes",
       "name": "The Chaos Wastes",
       "region": "Northern Wastes",
@@ -1155,13 +1148,198 @@ export default {
       "region": "Border Princes",
       "x": 1250,
       "y": 1650
+    },
+    {
+      "id": "kalevanvik",
+      "name": "Kalevanvik",
+      "region": "Norsca",
+      "x": 455,
+      "y": 545
+    },
+    {
+      "id": "stavgard",
+      "name": "Stavgard",
+      "region": "Norsca",
+      "x": 470,
+      "y": 600
+    },
+    {
+      "id": "swerborg-gottborg",
+      "name": "Swerborg-Gottborg",
+      "region": "Norsca",
+      "x": 484,
+      "y": 490
+    },
+    {
+      "id": "goslor",
+      "name": "Goslor",
+      "region": "Norsca",
+      "x": 480,
+      "y": 655
+    },
+    {
+      "id": "heimseter",
+      "name": "Heimseter",
+      "region": "Norsca",
+      "x": 532,
+      "y": 586
+    },
+    {
+      "id": "iskvard",
+      "name": "Iskvard",
+      "region": "Norsca",
+      "x": 636,
+      "y": 570
+    },
+    {
+      "id": "fjirgard",
+      "name": "Fjirgard",
+      "region": "Norsca",
+      "x": 588,
+      "y": 474
+    },
+    {
+      "id": "tiurivik",
+      "name": "Tiurivik",
+      "region": "Norsca",
+      "x": 700,
+      "y": 474
+    },
+    {
+      "id": "hrakon",
+      "name": "Hrakon",
+      "region": "Norsca",
+      "x": 804,
+      "y": 490
+    },
+    {
+      "id": "bjarkoy",
+      "name": "Bjarkoy",
+      "region": "Norsca",
+      "x": 868,
+      "y": 394
+    },
+    {
+      "id": "nilfheim",
+      "name": "Nilfheim",
+      "region": "Norsca",
+      "x": 932,
+      "y": 298
+    },
+    {
+      "id": "the-blood-fane",
+      "name": "The Blood Fane",
+      "region": "Norsca",
+      "x": 596,
+      "y": 674
+    },
+    {
+      "id": "olricstaad-heorot",
+      "name": "Olricstaad-Heorot",
+      "region": "Norsca",
+      "x": 740,
+      "y": 586
+    },
+    {
+      "id": "trollskyrka",
+      "name": "Trollskyrka",
+      "region": "Norsca",
+      "x": 788,
+      "y": 682
+    },
+    {
+      "id": "thorkavik",
+      "name": "Thorkavik",
+      "region": "Norsca",
+      "x": 852,
+      "y": 586
+    },
+    {
+      "id": "baga-yar",
+      "name": "The Daemon Fortress of Baga Yar",
+      "region": "Norsca",
+      "x": 916,
+      "y": 674
+    },
+    {
+      "id": "novgoborg",
+      "name": "Novgoborg",
+      "region": "Norsca",
+      "x": 1036,
+      "y": 282
+    },
+    {
+      "id": "gardariborg",
+      "name": "Gardariborg",
+      "region": "Norsca",
+      "x": 980,
+      "y": 394
+    },
+    {
+      "id": "aldeigborg",
+      "name": "Aldeigborg",
+      "region": "Norsca",
+      "x": 1148,
+      "y": 282
+    },
+    {
+      "id": "morkestaad",
+      "name": "Morkestaad",
+      "region": "Norsca",
+      "x": 1244,
+      "y": 330
+    },
+    {
+      "id": "kraka-ornsmotek",
+      "name": "Kraka Ornsmotek",
+      "region": "Norsca",
+      "x": 1084,
+      "y": 378
+    },
+    {
+      "id": "kraka-drak",
+      "name": "Kraka Drak",
+      "region": "Norsca",
+      "x": 1180,
+      "y": 426
+    },
+    {
+      "id": "thorshafn",
+      "name": "Thorshafn",
+      "region": "Norsca",
+      "x": 916,
+      "y": 490
+    },
+    {
+      "id": "stromstaad",
+      "name": "Stromstaad",
+      "region": "Norsca",
+      "x": 1044,
+      "y": 482
+    },
+    {
+      "id": "suderholm",
+      "name": "Suderholm",
+      "region": "Norsca",
+      "x": 980,
+      "y": 578
+    },
+    {
+      "id": "trollheim",
+      "name": "Trollheim Mountains",
+      "region": "Norsca",
+      "x": 1140,
+      "y": 530
+    },
+    {
+      "id": "angvold",
+      "name": "Angvold",
+      "region": "Norsca",
+      "x": 1284,
+      "y": 490
     }
   ],
   "extraLinks": [
-    [
-      "norsca-crossing",
-      "troll-country"
-    ],
     [
       "azgorh",
       "karag-haraz"
