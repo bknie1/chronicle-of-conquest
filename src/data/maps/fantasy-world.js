@@ -365,8 +365,8 @@ export default {
       "id": "fw-black-blood-pass",
       "name": "Black Blood Pass",
       "region": "Kislev",
-      "x": 1300,
-      "y": 262
+      "x": 1322,
+      "y": 290
     },
     {
       "id": "fw-goromadny-mountains",

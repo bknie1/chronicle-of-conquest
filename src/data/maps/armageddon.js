@@ -66,7 +66,19 @@ export default {
     { "id": "mccready-cape", "name": "McCready Cape Research Station", "kind": "site", "region": "Deadlands", "x": 2114, "y": 2318 },
     { "id": "armageddon-annie", "name": "Emplacement OC-1867 “Armageddon Annie”", "kind": "fortress", "region": "Deadlands", "x": 2045, "y": 2444 },
     { "id": "eagle-river", "name": "Eagle River", "kind": "plant", "region": "Deadlands", "x": 1975, "y": 2555 }
+,
+    { "id": "victorinius-spaceport", "name": "Victorinius Spaceport", "kind": "fortress", "region": "The Boiling Sea", "x": 1698, "y": 1071 },
+    { "id": "nadala-gorge", "name": "Nadala Gorge", "kind": "mine", "region": "The Boiling Sea", "x": 1616, "y": 1096 },
+    { "id": "phoenix-island", "name": "Phoenix Island", "kind": "plant", "region": "The Boiling Sea", "x": 1608, "y": 1153 },
+    { "id": "wolf-outpost", "name": "Wolf Outpost", "kind": "fortress", "region": "Armageddon Prime", "x": 1336, "y": 1782 },
+    { "id": "cerbera-base", "name": "Cerbera Base", "kind": "fortress", "region": "Armageddon Prime", "x": 1310, "y": 1826 },
+    { "id": "angrons-monolith", "name": "Angron’s Monolith", "kind": "site", "region": "Armageddon Prime", "x": 1256, "y": 2017 },
+    { "id": "ghattana-bay", "name": "Ghattana Bay", "kind": "plant", "region": "Deadlands", "x": 347, "y": 2106 },
+    { "id": "yarrick-point", "name": "Yarrick Point Oil Platform", "kind": "forge", "region": "Deadlands", "x": 322, "y": 2341 }  ],
+  "extraLinks": [
+    ["ghattana-bay", "yarrick-point"],
+    ["ghattana-bay", "nemesis-island"],
+    ["ghattana-bay", "volcanus-ridge"]
   ],
-  "extraLinks": [],
   "blockedLinks": []
 };
