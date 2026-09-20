@@ -376,6 +376,7 @@ function renderRegion(panel, i) {
     <div class="tabs">
       <button type="button" class="tab ${tab === 'battle' ? 'active' : ''}" data-region-tab="battle">Battle report</button>
       <button type="button" class="tab ${tab === 'lore' ? 'active' : ''}" data-region-tab="lore">Lore</button>
+      <button type="button" class="link place-link" data-copy="${esc(linkToPlace(i))}" title="Copy a link that opens this place">Copy link</button>
     </div>
     ${tab === 'lore'
       ? `<div class="lore">${lore ? `<p>${esc(lore)}</p>` : `<p class="muted">No lore written for ${esc(n.name)} yet.</p>`}</div>`
@@ -620,6 +621,7 @@ function showPeek(i) {
 function select(i) {
   if (i !== state.selected) state.regionTab = 'battle';
   state.selected = i;
+  syncPlaceUrl(i);
   $('#tooltip').hidden = true;
   showPeek(i);
   if (i == null) {
@@ -754,9 +756,14 @@ async function route() {
   stopPlayback();
   if (state.selected != null) select(null);
   const path = appPath();
-  const demo = path.match(/^\/demo\/([a-z0-9-]+)\/?$/);
-  if (demo && SETTINGS[demo[1]]) return setView(demoFor(demo[1]));
-  const m = path.match(/^\/c\/([A-Za-z0-9-]{6,7})\/?$/);
+  // A link can name a place, so one can be sent to whoever you are fighting:
+  //   /demo/<setting>/<place>   /c/<code>/<place>   /c/<code>/<game>/<place>
+  const demo = path.match(/^\/demo\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?\/?$/);
+  if (demo && SETTINGS[demo[1]]) {
+    setView(demoFor(demo[1]));
+    return selectById(demo[2]);
+  }
+  const m = path.match(/^\/c\/([A-Za-z0-9-]{6,7})(?:\/([a-z0-9-]+))?(?:\/([a-z0-9-]+))?\/?$/);
   if (!m) return setView(demoFor('old-world'));
   if (STATIC) {
     history.replaceState(null, '', urlFor('/'));
@@ -764,12 +771,48 @@ async function route() {
     return toast('Campaigns need the full app running on a server. This site is the demo.');
   }
   try {
-    await loadCampaign(m[1]);
+    const payload = await loadCampaign(m[1]);
+    // The second part is a game of this campaign when it names one, else a place.
+    const settings = payload.campaign.settings ?? [payload.campaign.setting];
+    if (m[2] && settings.includes(m[2])) {
+      if (m[2] !== V().setting) setView(campaignView(payload, m[2]), { keepDay: true });
+      selectById(m[3]);
+    } else {
+      selectById(m[2]);
+    }
   } catch (e) {
     history.replaceState(null, '', urlFor('/'));
     setView(demoFor('old-world'));
     toast(esc(e.message));
   }
+}
+
+// Keep the address bar on the place being looked at, so a copied URL works.
+function syncPlaceUrl(i) {
+  if (STATIC && V()?.kind === 'campaign') return;
+  const want = i == null
+    ? (V().kind === 'demo' ? (V().setting === 'old-world' ? '/' : `/demo/${V().setting}`)
+                           : (V().settings?.length > 1 ? `/c/${V().code}/${V().setting}` : `/c/${V().code}`))
+    : linkToPlace(i).slice(location.origin.length + BASE.length - 1);
+  if (appPath() !== want) history.replaceState(null, '', urlFor(want));
+}
+
+// Open a place named in a link, once its setting is loaded.
+function selectById(id) {
+  if (!id) return;
+  const i = C().nodeIndex.get(id);
+  if (i == null) return toast('That place is not on this map.');
+  select(i);
+}
+
+// The link to the place being looked at, for sending to an opponent.
+function linkToPlace(i) {
+  const id = NODES()[i].id;
+  const v = V();
+  const path = v.kind === 'demo'
+    ? `/demo/${v.setting}/${id}`
+    : (v.settings.length > 1 ? `/c/${v.code}/${v.setting}/${id}` : `/c/${v.code}/${id}`);
+  return location.origin + urlFor(path);
 }
 
 function navigate(path) {

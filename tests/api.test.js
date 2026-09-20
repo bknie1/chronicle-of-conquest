@@ -271,3 +271,13 @@ test('a campaign can span several games, each with its own armies and battles', 
   assert.equal(r.body.armies.filter(a => a.setting === 'old-world').length, 2, 'hidden game keeps its armies');
   assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Late', setting: 'old-world' })).status, 400);
 });
+
+test('a campaign link can name the game and the place being fought over', async () => {
+  const org = await signup('link_org');
+  const { code } = (await org.post('/campaigns', { name: 'Link Test', setting: 'old-world' })).body;
+  // The client builds /c/<code>/<game>/<place>; both parts must be real, and the
+  // server is what says whether a game belongs to the campaign.
+  const r = await org.get(`/campaigns/${code}`);
+  assert.deepEqual(r.body.campaign.settings, ['old-world']);
+  assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'A', setting: 'mortal-realms' })).status, 400);
+});

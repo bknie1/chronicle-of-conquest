@@ -255,7 +255,8 @@ dialog::backdrop { background: #000a; }
 dialog h2 { color: var(--gold-2); font-size: 20px; margin-bottom: 12px; }
 dialog label { display: block; margin: 10px 0; font-size: 14px; color: var(--muted); }
 dialog label[hidden] { display: none; } /* the block display above would otherwise defeat `hidden` */
-#panel .tabs { margin: 14px 0 4px; }
+#panel .tabs { margin: 14px 0 4px; display: flex; align-items: center; gap: 6px; }
+#panel .place-link { margin-left: auto; font-size: 12px; }
 #panel .lore p { margin: 10px 0; line-height: 1.55; }
 dialog fieldset.maps { border: 1px solid #5a4a30; border-radius: 6px; padding: 6px 10px; margin: 10px 0; }
 dialog fieldset.maps legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
