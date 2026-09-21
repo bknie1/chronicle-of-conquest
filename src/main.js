@@ -715,8 +715,11 @@ function renderTopbar() {
   $('#btn-account').hidden = STATIC;
   const mine = state.session.campaigns;
   const currentValue = v.kind === 'campaign' ? v.code : 'demo';
+  // The demo is for people who have not signed in yet. Once someone has a
+  // campaign of their own, offering them a made-up store is just noise.
+  const showDemo = !state.session.user || !mine.length || V().kind === 'demo';
   const options = [
-    ['demo', 'Demo store campaign'],
+    ...(showDemo ? [['demo', 'Demo store campaign']] : []),
     ...mine.map(c => [c.code, c.name]),
     ...(v.kind === 'campaign' && !mine.some(c => c.code === v.code) ? [[v.code, v.name]] : []),
   ];
