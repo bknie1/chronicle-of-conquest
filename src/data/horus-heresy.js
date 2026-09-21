@@ -22,7 +22,7 @@ export const HORUS_HERESY = {
   // real theatres each Legion actually fought in, away from its homeworld.
   factions: [
     // Traitor Legions
-    { id: 'sons-of-horus', name: 'Sons of Horus', color: '#00897b', home: 'isstvan', alliance: 'hh-traitor',
+    { id: 'sons-of-horus', name: 'Sons of Horus', color: '#4a6f5d', home: 'isstvan', alliance: 'hh-traitor',
       subfactions: [
         { id: 'hh-sons-of-horus-cthonia', name: 'Sons of Horus — Cthonia, the Old Homeworld', color: '#00897b', home: 'cthonia' },
         { id: 'hh-sons-of-horus-beta-garmon', name: 'Sons of Horus — the Beta-Garmon War', color: '#00897b', home: 'beta-garmon' },
@@ -64,7 +64,7 @@ export const HORUS_HERESY = {
         { id: 'hh-word-bearers-calth', name: 'Word Bearers — the Calth Betrayal', color: '#6a1b1b', home: 'calth' },
         { id: 'hh-word-bearers-khur', name: 'Word Bearers — the Fall of Monarchia', color: '#6a1b1b', home: 'khur' },
       ] },
-    { id: 'alpha-legion', name: 'Alpha Legion', color: '#26a69a', home: 'desperation', alliance: 'hh-traitor',
+    { id: 'alpha-legion', name: 'Alpha Legion', color: '#2fbfa8', home: 'desperation', alliance: 'hh-traitor',
       subfactions: [
         { id: 'hh-alpha-legion-mars', name: 'Alpha Legion — the Battle of Mars', color: '#26a69a', home: 'mars' },
         { id: 'hh-alpha-legion-isstvan', name: 'Alpha Legion — the Isstvan Reserve', color: '#26a69a', home: 'isstvan' },
@@ -81,7 +81,7 @@ export const HORUS_HERESY = {
         { id: 'hh-white-scars-isstvan', name: 'White Scars — the Isstvan Relief', color: '#eceff1', home: 'isstvan' },
         { id: 'hh-white-scars-terra', name: 'White Scars — the Ride to Terra', color: '#eceff1', home: 'terra' },
       ] },
-    { id: 'space-wolves', name: 'Space Wolves', color: '#b0bec5', home: 'fenris', alliance: 'hh-loyalist',
+    { id: 'space-wolves', name: 'Space Wolves', color: '#7d9bb0', home: 'fenris', alliance: 'hh-loyalist',
       subfactions: [
         { id: 'hh-space-wolves-prospero', name: 'Space Wolves — the Burning of Prospero', color: '#b0bec5', home: 'prospero' },
         { id: 'hh-space-wolves-terra', name: 'Space Wolves — the Road to Terra', color: '#b0bec5', home: 'terra' },
@@ -96,7 +96,7 @@ export const HORUS_HERESY = {
         { id: 'hh-blood-angels-signus-prime', name: 'Blood Angels — the Signus Campaign', color: '#e53935', home: 'signus-prime' },
         { id: 'hh-blood-angels-terra', name: "Blood Angels — Sanguinius's Last Stand", color: '#e53935', home: 'terra' },
       ] },
-    { id: 'iron-hands', name: 'Iron Hands', color: '#607d8b', home: 'medusa', alliance: 'hh-loyalist',
+    { id: 'iron-hands', name: 'Iron Hands', color: '#55606b', home: 'medusa', alliance: 'hh-loyalist',
       subfactions: [
         { id: 'hh-iron-hands-isstvan', name: 'Iron Hands — the Dropsite Massacre', color: '#607d8b', home: 'isstvan' },
         { id: 'hh-iron-hands-beta-garmon', name: "Iron Hands — the Shattered Legions' War", color: '#607d8b', home: 'beta-garmon' },
@@ -147,7 +147,7 @@ export const HORUS_HERESY = {
       ] },
     // Legionaries who fought against their own Legion's choice. Their wins
     // count for the side they kept faith with, not the Legion they were born to.
-    { id: 'shattered-legions', name: 'Shattered Legions', color: '#90a4ae', home: 'cypra-mundi', alliance: 'hh-loyalist',
+    { id: 'shattered-legions', name: 'Shattered Legions', color: '#9c6f4a', home: 'cypra-mundi', alliance: 'hh-loyalist',
       subfactions: [
         { id: 'hh-shattered-garro', name: "Shattered Legions — Garro's Oath", color: '#90a4ae', home: 'terra' },
         { id: 'hh-shattered-eisenstein', name: 'Shattered Legions — the Eisenstein Survivors', color: '#90a4ae', home: 'isstvan' },

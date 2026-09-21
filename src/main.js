@@ -6,7 +6,7 @@ import { play as sfx, setSound, soundOn, soundForPlace } from './audio.js';
 import { aboutPage } from './about.js';
 import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint, familyOf } from './data/settings.js';
 import { api } from './api.js';
-import { demoView, campaignView, dayToMs } from './sources.js';
+import { demoView, campaignView, dayToMs, settingToKeep } from './sources.js';
 
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
@@ -944,9 +944,14 @@ function setView(view, { keepDay = false } = {}) {
   draw();
 }
 
-async function loadCampaign(code, opts) {
+async function loadCampaign(code, opts = {}) {
   const payload = await api('GET', `/campaigns/${encodeURIComponent(code)}`);
-  setView(campaignView(payload), opts);
+  // A campaign spans several games, and reloading it has to keep the one you
+  // are looking at. Rebuilding at the campaign's HOME game is what the
+  // once-a-minute refresh used to do: a player browsing the Old World was
+  // dropped back into Age of Sigmar, on its overview, a minute later — which
+  // read as the app redirecting at random when it was in fact on a timer.
+  setView(campaignView(payload, opts.setting ?? settingToKeep(payload, V())), opts);
   return payload;
 }
 

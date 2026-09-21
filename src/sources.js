@@ -5,6 +5,21 @@ import { DEMOS, DEMO_START, DEMO_TODAY, generateHistory } from './data/demo-camp
 const DAY = 864e5;
 const midnight = ms => { const d = new Date(ms); d.setHours(0, 0, 0, 0); return d; };
 
+// Which game a reloaded campaign should open on: the one being looked at, so
+// long as this is the same campaign and it still spans that game. Otherwise
+// the campaign's own.
+//
+// This exists as its own function because getting it wrong is invisible and
+// intermittent: the once-a-minute background refresh rebuilt the view at the
+// campaign's home game, so a player browsing one game was dropped into another
+// a minute later, with no action of theirs to connect it to.
+export function settingToKeep(payload, current) {
+  const settings = payload.campaign.settings ?? [payload.campaign.setting];
+  if (!current || current.kind !== 'campaign') return undefined;
+  if (current.code !== payload.campaign.code) return undefined;
+  return settings.includes(current.setting) ? current.setting : undefined;
+}
+
 export function demoView(setting, graph) {
   const demo = DEMOS[setting.id];
   return {
