@@ -75,6 +75,7 @@ const state = {
   level: 'codex',   // alliance | codex (see src/data/settings.js)
   levelChoice: null, // a level the viewer picked, which outlives a refresh
   regionTab: 'battle', // which tab a place's panel is showing: battle | lore
+  hiddenFactions: new Set(), // switched off in the standings, so off the map too
   at: 0,            // the day being shown; < view.today while replaying
   selected: null,   // setting-wide point index
   influence: null,
@@ -369,7 +370,10 @@ function renderPanel() {
 
     <h3>Factions</h3>
     <ol class="factions">${factions.map(f => `
-      <li>${swatch(f)}<span class="name">${esc(f.name)}${f.recent >= 4 ? ' <span class="tag hot" title="4+ wins in the last two weeks">Rising</span>' : ''}</span>
+      <li class="${state.hiddenFactions.has(f.id) ? 'off' : ''}">
+        <button class="swatch" data-show-faction="${esc(f.id)}" style="--c:${f.color}"
+          aria-pressed="${!state.hiddenFactions.has(f.id)}"
+          title="${state.hiddenFactions.has(f.id) ? 'Show' : 'Hide'} ${esc(f.name)} on the map"></button><span class="name">${esc(f.name)}${f.recent >= 4 ? ' <span class="tag hot" title="4+ wins in the last two weeks">Rising</span>' : ''}</span>
         <span class="held" title="Regions held">${f.held}</span>
         <i class="meter" style="--c:${f.color};--w:${(100 * f.held / maxHeld).toFixed(0)}%"></i>
       </li>`).join('')}</ol>
@@ -790,7 +794,8 @@ function select(i) {
       hasEvents: upcoming().some(e => e.node === n.id),
     }));
   }
-  if (i !== state.selected) state.regionTab = 'battle';
+  // The tab you are reading stays put as you move from place to place: if you
+  // are reading lore, the next place opens on its lore.
   state.selected = i;
   syncPlaceUrl(i);
   $('#tooltip').hidden = true;
@@ -806,11 +811,23 @@ function select(i) {
   renderPanel();
 }
 
+// A faction switched off in the standings comes off the map. The standings
+// themselves still count it — you are hiding it to see past it, not pretending
+// it lost. A place whose holder is hidden reads as unclaimed.
+function asShown(s) {
+  if (!state.hiddenFactions.size) return s;
+  const ownerGone = s.owner && state.hiddenFactions.has(s.owner);
+  const rivalGone = s.rival && state.hiddenFactions.has(s.rival);
+  if (!ownerGone && !rivalGone) return s;
+  if (ownerGone) return { ...s, owner: null, rival: null, contested: false, home: false, strength: 0 };
+  return { ...s, rival: null, contested: false };
+}
+
 function draw() {
   recompute();
   tipFor = null; // the numbers may have changed; rebuild the tooltip on the next move
   const cur = current();
-  mapView.render(state.influence.slice(cur.offset, cur.offset + cur.map.nodes.length), eventsByNode());
+  mapView.render(state.influence.slice(cur.offset, cur.offset + cur.map.nodes.length).map(asShown), eventsByNode());
   renderRealmBar();
   renderOverview();
   renderPanel();
@@ -1529,7 +1546,7 @@ const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-find],[data-decree],[data-edit-place],[data-remove-place],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-find],[data-show-faction],[data-decree],[data-edit-place],[data-remove-place],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
@@ -1537,6 +1554,11 @@ document.addEventListener('click', e => {
   if (d.level) return setLevel(d.level);
   if (d.regionTab) { state.regionTab = d.regionTab; return renderPanel(); }
   if (d.find) return goToPlace(Number(d.find));
+  if (d.showFaction) {
+    const hidden = state.hiddenFactions;
+    if (hidden.has(d.showFaction)) hidden.delete(d.showFaction); else hidden.add(d.showFaction);
+    return draw();
+  }
   if (d.decree) return openDecree(Number(d.decree));
   if (d.editPlace) return openPlace(null, addedPlace(d.editPlace));
   if (d.removePlace) {

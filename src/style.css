@@ -92,6 +92,13 @@ button.sigil:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2
 .army { color: color-mix(in srgb, var(--c) 65%, #fff); font-weight: 600; }
 
 .factions li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 4px; padding: 4px 0; }
+/* Each colour is a switch: turn a faction off and it comes off the map, so you
+   can see where two armies stand in relation to each other. */
+.factions button.swatch { cursor: pointer; border: 0; padding: 0; transition: box-shadow .15s, opacity .15s; }
+.factions button.swatch:hover { box-shadow: 0 0 0 2px var(--gold-2); }
+.factions button.swatch[aria-pressed="false"] { background: transparent; box-shadow: inset 0 0 0 2px var(--c); opacity: .75; }
+.factions li.off .name, .factions li.off .held { opacity: .45; }
+.factions li.off .meter { opacity: .25; }
 .factions .held { font: 700 15px var(--heading); color: var(--gold-2); }
 .factions .meter { grid-column: 2 / 4; height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--c) var(--w), #ffffff10 var(--w)); }
 .players li { padding: 5px 0; border-bottom: 1px dashed #ffffff0d; display: grid; grid-template-columns: auto 1fr auto; column-gap: 6px; align-items: baseline; }
