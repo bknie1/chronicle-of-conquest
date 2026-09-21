@@ -491,6 +491,10 @@ function renderRealmBar() {
 // Realms sit on a ring around the hub (the realm with the most gates), joined by their realmgates.
 function renderOverview() {
   const box = $('#realms-overview');
+  // The cosmology map sits behind the realm cards. Set here rather than in
+  // the stylesheet, which has no idea what the app is served from.
+  $('#viewport').style.setProperty('--realms-art',
+    C().setting.id === 'mortal-realms' ? `url('${asset('/maps/realms/mortal-realms.jpg')}')` : 'none');
   $('#viewport').classList.toggle('overview', state.overview);
   box.hidden = !state.overview;
   if (!state.overview) return;
@@ -731,9 +735,10 @@ function renderTopbar() {
   const picker = $('#setting-select');
   const opt = st => `<option value="${esc(st.id)}" ${st.id === v.setting ? 'selected' : ''}>${esc(st.name)}</option>`;
   const all = Object.values(SETTINGS);
+  const browsing = !state.session.user;   // signed in, you play; signed out, you look around
   picker.innerHTML = v.kind === 'campaign'
     ? `<optgroup label="${esc(v.name)}">${all.filter(st => v.settings.includes(st.id)).map(opt).join('')}</optgroup>
-       <optgroup label="Browse demos">${all.filter(st => !v.settings.includes(st.id)).map(opt).join('')}</optgroup>`
+       ${browsing ? `<optgroup label="Browse demos">${all.filter(st => !v.settings.includes(st.id)).map(opt).join('')}</optgroup>` : ''}`
     : all.map(opt).join('');
   picker.disabled = false;
   picker.title = v.kind === 'campaign' ? 'Switch between this campaign’s games' : 'Choose a setting';
@@ -1279,6 +1284,70 @@ $('#btn-report').addEventListener('click', () => openReport());
 $('#btn-challenge').addEventListener('click', () => openChallenge());
 $('#btn-account').addEventListener('click', openAccount);
 $('#btn-about').addEventListener('click', () => navigate('/about'));
+
+// --- finding a place by name ----------------------------------------------
+// Every point of the setting being looked at, matched as you type. A name is
+// scored on where the match falls: the start of the name beats the middle,
+// and a whole-word match beats part of one, so "hal" finds Hallowheart before
+// Valhalla. Ten results is enough to choose from without becoming a list.
+const finder = $('#finder');
+const findInput = $('#find-input');
+const findResults = $('#find-results');
+let findCursor = 0;
+
+function scoreName(name, q) {
+  const n = name.toLowerCase();
+  const i = n.indexOf(q);
+  if (i < 0) return -1;
+  if (i === 0) return 0;
+  return n[i - 1] === ' ' || n[i - 1] === "'" ? 1 : 2;
+}
+
+function findMatches(q) {
+  const query = q.trim().toLowerCase();
+  if (query.length < 2) return [];
+  const out = [];
+  NODES().forEach((n, i) => {
+    const score = scoreName(n.name, query);
+    if (score >= 0) out.push({ i, n, score });
+  });
+  return out.sort((a, b) => a.score - b.score || a.n.name.length - b.n.name.length).slice(0, 10);
+}
+
+function renderFind() {
+  const hits = findMatches(findInput.value);
+  findCursor = Math.min(findCursor, Math.max(hits.length - 1, 0));
+  findResults.innerHTML = hits.map((h, k) => `<li><button data-find="${h.i}" class="${k === findCursor ? 'on' : ''}">
+    ${esc(h.n.name)}<span class="where">${esc(multiMap() ? mapName(h.n.map) : (h.n.region ?? ''))}</span></button></li>`).join('');
+  return hits;
+}
+
+function openFinder(on) {
+  finder.hidden = !on;
+  if (on) { findInput.value = ''; findResults.innerHTML = ''; findCursor = 0; findInput.focus(); }
+}
+
+function goToPlace(i) {
+  openFinder(false);
+  if (!onCurrentMap(i)) showMap(NODES()[i].map);
+  select(i);
+  mapView.focusOn(i, true);
+}
+
+$('#find-toggle').addEventListener('click', () => openFinder(finder.hidden));
+findInput.addEventListener('input', renderFind);
+findInput.addEventListener('keydown', e => {
+  const hits = findMatches(findInput.value);
+  if (e.key === 'Escape') return openFinder(false);
+  if (e.key === 'ArrowDown') { findCursor = Math.min(findCursor + 1, hits.length - 1); renderFind(); e.preventDefault(); }
+  if (e.key === 'ArrowUp') { findCursor = Math.max(findCursor - 1, 0); renderFind(); e.preventDefault(); }
+  if (e.key === 'Enter' && hits[findCursor]) goToPlace(hits[findCursor].i);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !finder.contains(e.target) && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName) && !$('#modal').open) {
+    openFinder(true); e.preventDefault();
+  }
+});
 $('#campaign-select').addEventListener('change', e => {
   const v = e.target.value;
   renderTopbar(); // snap the select back; the action below decides where we go
@@ -1307,13 +1376,14 @@ const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-decree],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-find],[data-decree],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
   if ('peekClose' in d) return select(null);
   if (d.level) return setLevel(d.level);
   if (d.regionTab) { state.regionTab = d.regionTab; return renderPanel(); }
+  if (d.find) return goToPlace(Number(d.find));
   if (d.decree) return openDecree(Number(d.decree));
   if (d.undecree) return confirmAct('Revoke this decree? Its influence comes off the map.',
     () => act(() => campaignCall('DELETE', `/decrees/${d.undecree}`)));

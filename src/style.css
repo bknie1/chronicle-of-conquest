@@ -225,6 +225,27 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 .map-controls button { width: 34px; height: 34px; padding: 0; font-size: 18px; }
 #labels-toggle { font: 700 13px var(--heading); letter-spacing: .5px; }
 #sound-toggle { font: 700 15px var(--heading); }
+#find-toggle { font: 700 18px var(--heading); }
+.finder {
+  position: absolute; left: 50%; top: 14px; transform: translateX(-50%);
+  width: min(420px, calc(100% - 96px)); z-index: 4;
+}
+.finder[hidden] { display: none; }
+.finder input {
+  width: 100%; padding: 9px 12px; font: 400 15px var(--body);
+  background: #1c150ef2; color: var(--ink); border: 1px solid var(--gold); border-radius: 6px;
+  box-shadow: 0 8px 24px #000a;
+}
+.find-results { list-style: none; margin: 4px 0 0; padding: 0; max-height: 46vh; overflow: auto;
+  background: #1c150ef7; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 8px 24px #000a; }
+.find-results:empty { display: none; }
+.find-results li { padding: 0; }
+.find-results button {
+  display: block; width: 100%; text-align: left; padding: 7px 12px; background: none; border: 0;
+  color: var(--ink); font: 400 14px var(--body); cursor: pointer;
+}
+.find-results button:hover, .find-results button.on { background: #ffffff14; }
+.find-results .where { color: var(--muted); font-size: 12px; margin-left: 6px; }
 #sound-toggle.off { opacity: .5; text-decoration: line-through; }
 #labels-toggle.off { opacity: .5; text-decoration: line-through; }
 .back-btn { position: absolute; left: 12px; top: 12px; z-index: 3; }
@@ -360,7 +381,13 @@ dialog h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); marg
 .realm-bar button.active { border-color: var(--gold); color: var(--gold-2); }
 .realm-bar .bb { color: #ff9f7a; font-size: 12px; }
 .viewport.focused .realm-bar { display: none; }
-.viewport:has(.realms-overview:not([hidden])) { background: #0d0a07; }
+.viewport:has(.realms-overview:not([hidden])) {
+  background: #0d0a07 var(--realms-art, none) center / cover no-repeat;
+}
+.viewport:has(.realms-overview:not([hidden]))::after {
+  content: ''; position: absolute; inset: 0; background: radial-gradient(70% 60% at 50% 45%, #0d0a0733, #0d0a07cc 85%);
+  pointer-events: none;
+}
 .viewport.overview .map-controls { display: none; } /* nothing to zoom while every realm is shown */
 .back-btn { top: 12px; }
 

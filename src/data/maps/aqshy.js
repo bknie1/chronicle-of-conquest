@@ -29,7 +29,7 @@ export default {
     },
     {
       "id": "hallowhart",
-      "name": "Hallowhart",
+      "name": "Hallowheart",
       "kind": "city",
       "region": "Aqshy",
       "x": 920,
