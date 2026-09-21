@@ -40,7 +40,11 @@ export const LEVEL_HINTS = {
   codex: 'One entry per army, the usual choice.',
 };
 
-function defineSetting({ id, name, maps, alliances = [], factions, gates = [], defaultLevel = 'codex' }) {
+// `overview` is the view that shows every map at once: what to call it, and
+// the art behind it. "All realms" is right for the Mortal Realms and wrong
+// everywhere else — a galaxy has no realms in it.
+function defineSetting({ id, name, maps, alliances = [], factions, gates = [], defaultLevel = 'codex',
+  overview = {} }) {
   const nodes = maps.flatMap(map => map.nodes.map(n => ({ ...n, map: map.id })));
   const points = new Set();
   for (const n of nodes) {
@@ -97,6 +101,14 @@ function defineSetting({ id, name, maps, alliances = [], factions, gates = [], d
 
   return {
     id, name, maps, gates, nodes, alliances, factions: codex, levels, resolve, defaultLevel,
+    overview: {
+      name: overview.name ?? 'All maps',
+      image: overview.image ?? null,
+      // Where each map sits ON that art, as a fraction of it. With these the
+      // overview stops being a diagram and becomes the map itself.
+      art: overview.art ?? null,
+      spots: overview.spots ?? null,
+    },
     starts, startsOf, factionOfStart, allianceOf,
   };
 }

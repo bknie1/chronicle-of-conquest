@@ -12,6 +12,7 @@ export const WARHAMMER_40K = {
   gates: [
     ['armageddon', 'hive-infernus', 'Orbital descent'],
   ],
+  overview: { name: 'The whole galaxy' },
   // Simplest mode: the three great sides of the 41st millennium.
   alliances: [
     { id: 'imperium', name: 'The Imperium', color: '#c9a227', home: 'terra-40k' },

@@ -606,6 +606,9 @@ function renderOverview() {
     pairs.get(key).gates.push(g);
   }
 
+  // Where the cards sit on real art, they are markers on a map rather than a
+  // diagram of one.
+  const onArt = !!(C().setting.overview.spots && C().setting.overview.art);
   const render = cardW => {
     const cardH = cardW >= 140 ? cardW * 0.72 : cardW * 0.6;
     const cy = top + (H - top) / 2;
@@ -615,6 +618,20 @@ function renderOverview() {
       const a = -Math.PI / 2 + (k / ring.length) * Math.PI * 2;
       pos.set(m.id, [W / 2 + rx * Math.cos(a), cy + ry * Math.sin(a)]);
     });
+    // Where the setting says a map belongs on the overview art, put it there:
+    // the cosmology already draws each realm, so a realm's card should sit on
+    // its own sigil rather than at some point on an invented ring.
+    const { spots, art } = C().setting.overview;
+    if (spots && art) {
+      const [iw, ih] = art;
+      const s = Math.min(W / iw, H / ih);          // the art is drawn `contain`
+      const dw = iw * s, dh = ih * s;
+      const dx = (W - dw) / 2, dy = (H - dh) / 2;
+      for (const m of maps) {
+        const spot = spots[m.id];
+        if (spot) pos.set(m.id, [dx + spot[0] * dw, dy + spot[1] * dh]);
+      }
+    }
     const lines = [...pairs.values()].map(({ ma, mb, gates }) => {
       const owners = new Set(gates.flatMap(g => [state.influence[g.a].owner, state.influence[g.b].owner]));
       const holder = owners.size === 1 && [...owners][0] ? faction([...owners][0]) : null;
@@ -625,6 +642,7 @@ function renderOverview() {
     }).join('');
     box.style.setProperty('--card-w', `${cardW}px`);
     box.classList.toggle('compact', cardW < 140);
+    box.classList.toggle('on-art', onArt);
     box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="gate-lines">${lines}</svg>
       ${maps.map(m => {
         const [x, y] = pos.get(m.id);
@@ -651,9 +669,12 @@ function renderOverview() {
     }
     return false;
   };
-  let cardW = Math.max(80, Math.min(190, W / 5.2));
+  // Where the cards sit on real art, they are markers on a map and should not
+  // bury it: small enough that the realms are still visible behind them.
+  let cardW = onArt ? Math.max(62, Math.min(124, W / 9))
+                    : Math.max(80, Math.min(190, W / 5.2));
   render(cardW);
-  for (let tries = 0; tries < 8 && overlaps() && cardW > 56; tries++) render(cardW *= 0.88);
+  for (let tries = 0; tries < 8 && overlaps() && cardW > (onArt ? 46 : 56); tries++) render(cardW *= 0.9);
 }
 
 // Put one of the setting's maps under the camera (no redraw).

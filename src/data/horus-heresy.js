@@ -12,6 +12,7 @@ export const HORUS_HERESY = {
   ],
   // Simplest mode: which side of the Heresy you're on.
   // Loyalist or Traitor is the choice that matters most here.
+  overview: { name: 'The whole galaxy' },
   defaultLevel: 'alliance',
   alliances: [
     { id: 'hh-loyalist', name: 'Loyalists', color: '#0d47a1', home: 'terra' },

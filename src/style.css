@@ -463,19 +463,34 @@ dialog h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); marg
 .realm-bar button.active { border-color: var(--gold); color: var(--gold-2); }
 .realm-bar .bb { color: #ff9f7a; font-size: 12px; }
 .viewport.focused .realm-bar { display: none; }
+/* The cosmology map is the backdrop to the realm cards. `contain`, not
+   `cover`: the point is to see the whole orrery, and cropping it to fill a
+   wide viewport cut off the realms at both ends. */
 .viewport:has(.realms-overview:not([hidden])) {
-  background: #0d0a07 var(--realms-art, none) center / cover no-repeat;
+  background: #070a10 var(--realms-art, none) center / contain no-repeat;
 }
+/* Enough of a wash to keep the cards readable over it, and no more — it used
+   to be dark enough that the map underneath may as well not have been there. */
 .viewport:has(.realms-overview:not([hidden]))::after {
-  content: ''; position: absolute; inset: 0; background: radial-gradient(70% 60% at 50% 45%, #0d0a0733, #0d0a07cc 85%);
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(78% 68% at 50% 48%, #070a1000, #070a1033 80%, #070a1066 100%);
   pointer-events: none;
 }
 .viewport.overview .map-controls { display: none; } /* nothing to zoom while every realm is shown */
+/* While every realm is shown, the realm you were last looking at must not be:
+   the world layer sits above the viewport's own background, so leaving it up
+   painted the last map over the cosmology and made the backdrop look like
+   whichever realm you had just left. */
+.viewport.overview .world,
+.viewport.overview .back-btn,
+.viewport.overview .tooltip { display: none; }
 .back-btn { top: 12px; }
 
 .realms-overview {
   position: absolute; inset: 0; z-index: 2;
-  background: radial-gradient(ellipse at center, #2a2118f2, #0d0a07f7 75%);
+  /* Barely anything. This used to be all but opaque, which is why the map
+     behind it — the whole point of the view — could not be seen at all. */
+  background: radial-gradient(ellipse at center, #2a211833, #0d0a0777 78%);
 }
 .realms-overview[hidden] { display: none; }
 .gate-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -494,6 +509,16 @@ dialog h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); marg
 .realms-overview.compact .realm-card .thumb, .realms-overview.compact .realm-card .title,
 .realms-overview.compact .realm-card .meta { display: none; }
 .realms-overview.compact .realm-card .name { font-size: 13px; }
+/* On art, a card is a marker standing on its realm, so it takes only the room
+   its name needs and lets the map show around it. Clipping "Chamon" to
+   "Chamo" to hit a fixed width helps nobody. */
+.realms-overview.on-art .realm-card {
+  width: auto; min-width: var(--card-w, 120px); max-width: none;
+  padding: 0 0 6px; background: #14100bdd; backdrop-filter: blur(1px);
+}
+.realms-overview.on-art .realm-card .name { white-space: nowrap; padding: 4px 9px 0; }
+.realms-overview.on-art .realm-card .control-bar { margin: 5px 9px 2px; height: 5px; }
+.realms-overview.on-art .realm-card.hub { width: auto; }
 .realm-card .thumb { height: 64px; background-size: cover; background-position: center; filter: saturate(.85); }
 .realm-card .name { font: 700 15px var(--heading); color: var(--gold-2); padding: 6px 10px 0; }
 .realm-card .title { font-size: 13px; color: var(--muted); padding: 0 10px; }

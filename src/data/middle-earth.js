@@ -10,6 +10,7 @@ export const MIDDLE_EARTH = {
   name: 'Middle-earth',
   maps: [MAPS['middle-earth']],
   // Simplest mode: which side of the War of the Ring you're on.
+  overview: { name: 'All locations' },
   defaultLevel: 'alliance',
   alliances: [
     { id: 'me-good', name: 'The Free Peoples', color: '#2e7d32', home: 'minas-tirith' },

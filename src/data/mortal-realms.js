@@ -7,6 +7,20 @@ export const MORTAL_REALMS = {
   id: 'mortal-realms',
   name: 'Age of Sigmar',
   maps: ['aqshy', 'ghyran', 'ghur', 'shyish', 'chamon', 'ulgu', 'hysh', 'azyr', 'eightpoints', 'blight-city'].map(id => MAPS[id]),
+  // Every realm at once, over the cosmology: the eight realms, their moons and
+  // orbits, and the Varanspire in the Aetheric Void between them.
+  overview: {
+    name: 'All realms',
+    image: '/maps/realms/mortal-realms.jpg',
+    art: [2600, 1811],
+    // Each realm sits on its own sigil on the cosmology, read off the plate.
+    spots: {
+      azyr: [0.532, 0.147], hysh: [0.373, 0.208], ghyran: [0.698, 0.208],
+      ulgu: [0.248, 0.388], ghur: [0.820, 0.391], shyish: [0.293, 0.660],
+      aqshy: [0.533, 0.739], chamon: [0.770, 0.682],
+      eightpoints: [0.533, 0.373], 'blight-city': [0.727, 0.847],
+    },
+  },
   // Simplest mode: four Grand Alliances, one stronghold each.
   alliances: [
     { id: 'aos-order', name: 'Order', color: '#2f5bd8', home: 'azyrheim' },

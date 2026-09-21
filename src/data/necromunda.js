@@ -17,6 +17,7 @@ export const NECROMUNDA = {
   // Simplest mode: who you answer to. A hive's politics come down to the
   // nobility above the wall, the clans who work below it, and everyone the
   // hive would rather forget.
+  overview: { name: 'All locations' },
   defaultLevel: 'alliance',
   alliances: [
     { id: 'nec-noble', name: 'The Noble Houses', color: '#c9a227', home: 'hp-the-palatine' },
