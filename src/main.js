@@ -422,9 +422,7 @@ function renderRegion(panel, i) {
     </div>
     ${tab === 'lore'
       ? `<div class="lore">${lore
-          ? lore.split('
-
-').map(para => `<p>${esc(para)}</p>`).join('')
+          ? lore.split(PARAGRAPH).map(para => `<p>${esc(para)}</p>`).join('')
           : `<p class="muted">No lore written for ${esc(n.name)} yet.</p>`}</div>`
       : battle}`;
 }
@@ -905,6 +903,9 @@ function openModal(html, onSubmit) {
   form.querySelector('input:not([type=hidden]), select')?.focus();
   return form;
 }
+
+// A deep lore entry is several paragraphs, separated by a blank line.
+const PARAGRAPH = /\r?\n\s*\n/;
 
 const cancelRow = label => `<div class="row"><button value="cancel" formnovalidate>Cancel</button><button class="primary">${label}</button></div>`;
 
