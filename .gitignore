@@ -7,4 +7,5 @@ dist/
 # Agent scratch space and preview renders
 .scratch/
 .scratch2/
+.scratch-*/
 .pv-*.jpg
