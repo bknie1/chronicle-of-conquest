@@ -8,11 +8,20 @@ Where the map art comes from, and where to look for what's still missing.
 |---|---|---|
 | The Old World | `public/maps/old-world.jpg` | "The Old World" 7-colour fan map |
 | The Old World (alternative, not yet placed) | `public/maps/old-world-gitzman.jpg` | Gitzman Old World campaign map, gitzmansgallery.com |
-| Age of Sigmar, all realms and Blight City | `public/maps/realms/*.jpg` | Generated (`scripts/make-placeholder-realms.py`). Plain on purpose: the app draws its own labels |
+| Age of Sigmar — Aqshy | `public/maps/realms/aqshy.jpg` | **Real art**: Lexicanum *Great Parch Map 06*, 4764×3246, shipped at 2600 wide. Points placed off its own labels |
+| Age of Sigmar — the other realms and Blight City | `public/maps/realms/*.jpg` | **Generated placeholders** (`scripts/make-placeholder-realms.py`). The place names are real; the coastlines and positions are invented, so they do not match any published map |
 | Horus Heresy | `public/maps/heresy-galaxy.jpg` | 30k galaxy map (official art, labeled) |
 | Warhammer 40,000 | `public/maps/galaxy-40k.jpg` | Games Workshop's unlabeled "Interactive Map" header art, with its logo painted out and upscaled 1.4× |
 
-Unlabeled art works best: the app labels every point itself, so printed labels only compete with it. Aqshy used to be Jared Blando's *Great Parch*; it was swapped for a generated map so all realms match.
+Unlabeled art works best: the app labels every point itself, so printed labels only compete with it.
+
+**The realm maps are the weak point of this project.** No realm has a single
+published map of the whole realm — Games Workshop publishes *focal point* maps
+of regions instead, like the Great Parch in Aqshy. The nine still on generated
+art show invented geography under real names, which is worth knowing before
+anyone plans a campaign around them. Replacing one means dropping a focal
+point map into `public/maps/realms/`, pointing the realm's `image`, `width`
+and `height` at it, and re-placing its points off the new art's own labels.
 
 Official Games Workshop art is fine for private use in a store. Ask before publishing it anywhere public.
 

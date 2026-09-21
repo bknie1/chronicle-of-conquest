@@ -6,244 +6,245 @@ export default {
   "kind": "settlement",
   "title": "The Realm of Fire",
   "image": "/maps/realms/aqshy.jpg",
-  "width": 1600,
-  "height": 1100,
-  "maxEdge": 360,
-  "reach": 115,
+  "width": 2600,
+  "height": 1772,
+  "maxEdge": 520,
+  "reach": 190,
   "nodes": [
     {
       "id": "hammerhal-aqsha",
       "name": "Hammerhal Aqsha",
       "kind": "city",
       "region": "Aqshy",
-      "x": 685,
-      "y": 465
+      "x": 1447,
+      "y": 905
     },
     {
       "id": "anvilgard",
       "name": "Anvilgard",
       "kind": "city",
       "region": "Aqshy",
-      "x": 1330,
-      "y": 960
+      "x": 1135,
+      "y": 275
     },
     {
       "id": "hallowhart",
       "name": "Hallowhart",
       "kind": "city",
       "region": "Aqshy",
-      "x": 1128,
-      "y": 470
+      "x": 920,
+      "y": 700
     },
     {
       "id": "edassa",
       "name": "Edassa",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 861,
-      "y": 647
+      "x": 1332,
+      "y": 775
     },
     {
       "id": "anvalor",
       "name": "Anvalor",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 1126,
-      "y": 755
+      "x": 1378,
+      "y": 680
     },
     {
       "id": "aridian",
       "name": "Aridian",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 677,
-      "y": 946
+      "x": 1410,
+      "y": 600
     },
     {
       "id": "vostargi-mont",
       "name": "Vostargi Mont",
       "kind": "stronghold",
       "region": "Aqshy",
-      "x": 431,
-      "y": 645
+      "x": 1545,
+      "y": 655
     },
     {
       "id": "capilaria",
       "name": "Capilaria",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 740,
-      "y": 280
+      "x": 1600,
+      "y": 890
     },
     {
       "id": "ruins-of-ahramentia",
       "name": "Ruins of Ahramentia",
       "kind": "ruin",
       "region": "Aqshy",
-      "x": 1056,
-      "y": 288
+      "x": 1180,
+      "y": 670
     },
     {
       "id": "tempests-eye",
       "name": "Tempest's Eye",
       "kind": "city",
       "region": "Aqshy",
-      "x": 929,
-      "y": 423
+      "x": 1010,
+      "y": 1135
     },
     {
       "id": "steel-spike",
       "name": "Steel Spike",
       "kind": "stronghold",
       "region": "Aqshy",
-      "x": 642,
-      "y": 779
+      "x": 855,
+      "y": 1065
     },
     {
       "id": "khuls-ravage",
       "name": "Khul's Ravage",
       "kind": "fortress",
       "region": "Aqshy",
-      "x": 1272,
-      "y": 367
+      "x": 910,
+      "y": 1400
     },
     {
       "id": "brimstone-peninsula",
       "name": "Brimstone Peninsula",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 570,
-      "y": 334
+      "x": 1240,
+      "y": 1490
     },
     {
       "id": "mordacious-sound",
       "name": "Mordacious Sound",
       "kind": "fortress",
       "region": "Aqshy",
-      "x": 938,
-      "y": 828
+      "x": 1330,
+      "y": 1340
     },
     {
       "id": "the-eye",
       "name": "The Eye",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 500,
-      "y": 953
+      "x": 1840,
+      "y": 1215
     },
     {
       "id": "sulphuria",
       "name": "Sulphuria",
       "kind": "fortress",
       "region": "Aqshy",
-      "x": 1026,
-      "y": 606
+      "x": 2290,
+      "y": 1180
     },
     {
       "id": "hel-crown",
       "name": "Hel Crown",
       "kind": "fortress",
       "region": "Aqshy",
-      "x": 1221,
-      "y": 614
+      "x": 1930,
+      "y": 615
     },
     {
       "id": "thousand-eyes",
       "name": "Coast of a Thousand Eyes",
       "kind": "wilds",
       "region": "Aqshy",
-      "x": 1470,
-      "y": 902
+      "x": 2290,
+      "y": 500
     },
     {
       "id": "broken-keys",
       "name": "The Broken Keys",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 639,
-      "y": 593
+      "x": 2210,
+      "y": 130
     },
     {
       "id": "magmar-fjords",
       "name": "Magmar Fjords",
       "kind": "stronghold",
       "region": "Aqshy",
-      "x": 876,
-      "y": 270
+      "x": 1740,
+      "y": 355
     },
     {
       "id": "golvaria",
       "name": "Golvaria",
       "kind": "stronghold",
       "region": "Aqshy",
-      "x": 821,
-      "y": 514
+      "x": 1000,
+      "y": 270
     },
     {
       "id": "vitrolia",
       "name": "Vitrolia",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 507,
-      "y": 758
+      "x": 760,
+      "y": 880
     },
     {
       "id": "lumnos",
       "name": "Lumnos",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 773,
-      "y": 392
+      "x": 455,
+      "y": 1030
     },
     {
       "id": "brightspear",
       "name": "Brightspear",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 751,
-      "y": 643
+      "x": 300,
+      "y": 855
     },
     {
       "id": "aspiria",
       "name": "Aspiria",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 1160,
-      "y": 353
+      "x": 370,
+      "y": 1030
     },
     {
       "id": "bataar",
       "name": "Bataar",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 1018,
-      "y": 497
+      "x": 300,
+      "y": 700
     },
     {
       "id": "floating-city",
       "name": "The Floating City",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 1046,
-      "y": 394
+      "x": 150,
+      "y": 590
     },
     {
       "id": "cotha",
       "name": "Cotha",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 572,
-      "y": 857
+      "x": 480,
+      "y": 130
     },
     {
       "id": "the-gnaw",
       "name": "The Gnaw",
       "kind": "settlement",
       "region": "Aqshy",
-      "x": 962,
-      "y": 709
+      "x": 1880,
+      "y": 700
     }
   ],
-  "extraLinks": [],
+  "extraLinks": [
+    ["cotha", "golvaria"],],
   "blockedLinks": []
 };
