@@ -1475,7 +1475,13 @@ $('#campaign-select').addEventListener('change', e => {
 $('#setting-select').addEventListener('change', e => {
   const s = e.target.value;
   if (V().kind !== 'demo' && s === V().setting) return renderTopbar();
-  if (V().kind !== 'demo' && V().settings.includes(s)) { select(null); return setView(campaignView(V().payload, s), { keepDay: true }); }
+  if (V().kind !== 'demo' && V().settings.includes(s)) {
+    select(null);
+    setView(campaignView(V().payload, s), { keepDay: true });
+    // The address bar has to follow, or a reload drops back into whichever
+    // game the campaign was last looked at in.
+    return syncPlaceUrl(null);
+  }
   navigate(s === 'old-world' ? '/' : `/demo/${s}`);
 });
 window.addEventListener('popstate', route);

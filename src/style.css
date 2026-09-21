@@ -113,6 +113,25 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
   touch-action: none;
 }
 .viewport.dragging { cursor: grabbing; }
+/* A painted plate is a couple of megabytes; cover the frame until it is here,
+   so a map never appears as markers floating over nothing. */
+.map-loading {
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; align-items: center; justify-content: center;
+  background: #16100a;
+  opacity: 0; visibility: hidden;
+  transition: opacity .25s ease, visibility 0s linear .25s;
+}
+.viewport.loading .map-loading { opacity: 1; visibility: visible; transition-delay: 0s; }
+.map-loading .sigil {
+  font-size: 44px; color: var(--gold-2); opacity: .75;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: .35; transform: scale(.94); }
+  50%      { opacity: .85; transform: scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) { .map-loading .sigil { animation: none; opacity: .7; } }
 .world {
   position: absolute; left: 0; top: 0;
   transform-style: preserve-3d;
@@ -195,27 +214,47 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 .viewport.far .marker:not(.home, .has-events, .selected) .label { display: none; }
 .viewport.mid .marker.minor:not(.home, .has-events, .selected) .label { display: none; }
 .viewport.no-labels .marker:not(.selected) .label { display: none; }
-/* Markers say what a place is: a great city looms, a stronghold is a
-   diamond, a port a square, wilds a dashed ring, a village a small dot. */
-.marker[data-kind="hive"] .pin, .marker[data-kind="city"] .pin { width: 19px; height: 19px; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
-.marker[data-kind="stronghold"] .pin, .marker[data-kind="castle"] .pin { width: 15px; height: 15px; border-radius: 2px; transform: rotate(45deg); }
-.marker[data-kind="port"] .pin { border-radius: 2px; width: 15px; height: 12px; }
-.marker[data-kind="temple"] .pin { clip-path: polygon(50% 0, 100% 78%, 0 78%); border-radius: 0; width: 16px; height: 15px; }
-.marker[data-kind="town"] .pin { width: 12px; height: 12px; border-radius: 3px; }
-.marker[data-kind="settlement"] .pin { width: 11px; height: 11px; }
-.marker[data-kind="camp"] .pin, .marker[data-kind="warren"] .pin { clip-path: polygon(50% 100%, 100% 0, 0 0); border-radius: 0; width: 14px; height: 13px; }
-.marker[data-kind="glade"] .pin { border-radius: 50% 50% 50% 0; transform: rotate(-45deg); width: 13px; height: 13px; }
-.marker[data-kind="ruin"] .pin { border-radius: 2px; opacity: .8; width: 12px; height: 9px; }
-.marker[data-kind="wilds"] .pin { background: transparent; border: 2px dashed var(--faction); box-shadow: none; width: 13px; height: 13px; }
-.marker[data-kind="wilds"]:not(.owned) .pin { border-color: #d9ccb0; }
-.marker[data-kind="wilds"] .label { font-weight: 400; font-style: italic; opacity: .9; }
-.marker[data-kind="forge"] .pin { border-radius: 2px; }
-.marker[data-kind="fortress"] .pin { border-radius: 2px; transform: rotate(45deg); width: 12px; height: 12px; }
-.marker[data-kind="plant"] .pin { width: 10px; height: 10px; }
-.marker[data-kind="site"] .pin { clip-path: polygon(50% 0, 100% 100%, 0 100%); border-radius: 0; width: 14px; height: 13px; }
-.marker[data-kind="region"] .pin { background: transparent; border: 2px dashed var(--faction); box-shadow: none; }
-.marker[data-kind="region"]:not(.owned) .pin { border-color: #d9ccb0; }
-.marker[data-kind="region"] .label { font-weight: 400; font-style: italic; opacity: .9; }
+/* Markers say what a place is, in four closed shapes and nothing else. A star
+   is a faction's seat and can never fall; a square is built and garrisoned; a
+   triangle is a great city; a circle is everywhere smaller. Areas — regions,
+   wastes, wilds — are diamonds. No dashes, no outlines-only: at map scale an
+   open shape reads as a smudge. */
+/* Built and held: keeps, forges, works. */
+.marker[data-kind="fortress"] .pin, .marker[data-kind="stronghold"] .pin,
+.marker[data-kind="castle"] .pin, .marker[data-kind="forge"] .pin,
+.marker[data-kind="plant"] .pin, .marker[data-kind="mine"] .pin,
+.marker[data-kind="temple"] .pin, .marker[data-kind="port"] .pin {
+  width: 14px; height: 14px; border-radius: 2px; clip-path: none; transform: none;
+}
+/* Great cities. */
+.marker[data-kind="city"] .pin, .marker[data-kind="hive"] .pin {
+  width: 18px; height: 17px; border-radius: 0; transform: none;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+/* Everywhere smaller is a circle; the default already is one. */
+.marker[data-kind="town"] .pin { width: 13px; height: 13px; }
+.marker[data-kind="settlement"] .pin, .marker[data-kind="camp"] .pin,
+.marker[data-kind="warren"] .pin, .marker[data-kind="site"] .pin,
+.marker[data-kind="glade"] .pin, .marker[data-kind="ruin"] .pin {
+  width: 11px; height: 11px; border-radius: 50%; clip-path: none; transform: none;
+}
+.marker[data-kind="ruin"] .pin { opacity: .85; }
+/* An area rather than a place. */
+.marker[data-kind="region"] .pin, .marker[data-kind="wilds"] .pin {
+  width: 15px; height: 15px; border-radius: 0; transform: none;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.marker[data-kind="region"] .label, .marker[data-kind="wilds"] .label {
+  font-weight: 400; font-style: italic; opacity: .9;
+}
+
+/* A faction's seat, whatever sort of place it is. It can never fall, so it
+   gets the one shape nothing else uses. */
+.marker.home .pin {
+  width: 22px; height: 22px; border-radius: 0; transform: none;
+  clip-path: polygon(50% 0%, 61% 34%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 34%);
+  box-shadow: 0 0 0 2px #f3e6c8, 0 0 12px var(--faction);
+}
 .viewport.far .marker:not(.home, .selected) .banner { width: 14px; height: 20px; }
 .banner { width: 20px; height: 28px; display: none; margin-bottom: -4px; filter: drop-shadow(0 2px 2px #0009); }
 .banner .pole { stroke: #2b1d10; stroke-width: 2; }

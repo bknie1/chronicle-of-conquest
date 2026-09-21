@@ -46,7 +46,16 @@ export class MapView {
     this.saved = null;
     this.world.style.width = `${map.width}px`;
     this.world.style.height = `${map.height}px`;
-    this.img.src = import.meta.env.BASE_URL + map.image.replace(/^\//, ''); // '/' locally, '/<repo>/' on Pages
+    const src = import.meta.env.BASE_URL + map.image.replace(/^\//, ''); // '/' locally, '/<repo>/' on Pages
+    if (this.img.getAttribute('src') !== src) {
+      this.viewport.classList.add('loading');
+      const done = () => this.viewport.classList.remove('loading');
+      this.img.addEventListener('load', done, { once: true });
+      this.img.addEventListener('error', done, { once: true });
+      this.img.src = src;
+      if (this.img.complete) done();   // already in the cache
+    }
+    this.img.alt = `Map of ${map.name}`;
     this.svg.replaceChildren();
     this.overlay.replaceChildren();
     this.buildSvg();
