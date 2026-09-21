@@ -59,7 +59,7 @@ export default {
     {"id": "slicston", "name": "Slicston", "kind": "town", "region": "Thyria", "x": 893, "y": 1005},
     {"id": "futilia-wood", "name": "Futilia Wood", "kind": "wilds", "region": "Thyria", "x": 763, "y": 1010},
     {"id": "heartwound-lake", "name": "Heartwound Lake", "kind": "region", "region": "Thyria", "x": 375, "y": 1020},
-    {"id": "dearth-coast", "name": "Dearth Coast", "kind": "region", "region": "Thyria", "x": 935, "y": 1032},
+    {"id": "dearth-coast", "name": "Dearth Coast", "kind": "region", "region": "Thyria", "x": 920, "y": 1018},
     {"id": "kernelstone", "name": "Kernelstone (Ruined)", "kind": "ruin", "region": "Thyria", "x": 672, "y": 1035},
 
     // --- The Squelchlobe Nations --------------------------------------------
@@ -87,7 +87,7 @@ export default {
     {"id": "verdigris", "name": "Verdigris", "kind": "town", "region": "Verdia", "x": 1645, "y": 400},
     {"id": "slithid-jutt", "name": "Slithid Jutt", "kind": "region", "region": "Verdia", "x": 1765, "y": 415},
     {"id": "the-neck", "name": "The Neck", "kind": "region", "region": "Verdia", "x": 1396, "y": 420},
-    {"id": "nailthwaites-crossing", "name": "Nailthwaite's Crossing (Ruined)", "kind": "ruin", "region": "Verdia", "x": 1557, "y": 458},
+    {"id": "naithwaites-crossing", "name": "Naithwaite's Crossing (Ruined)", "kind": "ruin", "region": "Verdia", "x": 1560, "y": 462},
     {"id": "the-pale-gorge", "name": "The Pale Gorge", "kind": "region", "region": "Verdia", "x": 1163, "y": 466},
     {"id": "verdia", "name": "Verdia", "kind": "region", "region": "Verdia", "x": 1450, "y": 500},
     {"id": "lestermere-realmgate", "name": "Lestermere Realmgate", "kind": "site", "region": "Verdia", "x": 1085, "y": 508},
@@ -197,7 +197,7 @@ export default {
     {"id": "shimmerfalls-of-gloriphus", "name": "The Shimmerfalls of Gloriphus", "kind": "site", "region": "Humidia", "x": 1002, "y": 1262},
     {"id": "threadwyrm-river", "name": "Threadwyrm River", "kind": "region", "region": "Humidia", "x": 965, "y": 1300},
     {"id": "humidia", "name": "Humidia", "kind": "region", "region": "Humidia", "x": 1010, "y": 1310},
-    {"id": "behemath-gnaw", "name": "Behemath Gnaw", "kind": "region", "region": "Humidia", "x": 945, "y": 1462},
+    {"id": "behemates-gnaw", "name": "Behemate's Gnaw", "kind": "region", "region": "Humidia", "x": 945, "y": 1462},
 
     // --- Yska ----------------------------------------------------------------
     {"id": "hardship", "name": "Hardship (Ruined)", "kind": "ruin", "region": "Yska", "x": 880, "y": 1068},
@@ -214,9 +214,9 @@ export default {
 
     // --- Decrepita and the western isles -------------------------------------
     {"id": "slaughters-haven", "name": "Slaughter's Haven", "kind": "region", "region": "Decrepita", "x": 340, "y": 1150},
-    {"id": "naiad-archipelago", "name": "Naiad Archipelago", "kind": "region", "region": "Decrepita", "x": 255, "y": 1185},
+    {"id": "naiad-archipelago", "name": "Naiad Archipelago", "kind": "region", "region": "Decrepita", "x": 245, "y": 1170},
     {"id": "decrepita", "name": "Decrepita", "kind": "region", "region": "Decrepita", "x": 35, "y": 1250},
-    {"id": "sanctum-isle", "name": "Sanctum Isle", "kind": "region", "region": "Decrepita", "x": 455, "y": 1310},
+    {"id": "sanctum-isle", "name": "Sanctum Isle", "kind": "region", "region": "Decrepita", "x": 465, "y": 1288},
     {"id": "mortis-isles", "name": "Mortis Isles", "kind": "region", "region": "Decrepita", "x": 40, "y": 1440},
     {"id": "tendril-sea", "name": "Tendril Sea", "kind": "region", "region": "Decrepita", "x": 415, "y": 1445},
 
@@ -264,7 +264,7 @@ export default {
     ["tendril-sea", "sanctum-isle"],
     ["tendril-sea", "tendril-reach"],
     ["the-southern-seas", "tendril-reach"],
-    ["behemath-gnaw", "tendril-reach"],
+    ["behemates-gnaw", "tendril-reach"],
     ["amnios-sea", "ellipsis-isles"],
     ["amnios-sea", "ochre-cliffs"],
     ["the-fleeing-siblings", "ellipsis-isles"],
@@ -272,7 +272,7 @@ export default {
     ["ymbolqui-lakes", "amnios-sea"],
     ["ymbolqui-lakes", "wintercoast"],
     ["pensids-gamble", "amnios-sea"],
-    ["wintercoast", "behemath-gnaw"],
+    ["wintercoast", "behemates-gnaw"],
     ["electria-sea", "aquia"],
     ["slidecrown-isle", "battle-of-the-white-krakens"],
     ["epiglot-point", "the-pale-gorge"],
