@@ -317,3 +317,25 @@ test('a gamemaster can freeze a campaign and put influence on the map by decree'
   r = await gm.del(`/campaigns/${code}/decrees/${r.body.decrees?.[0]?.id ?? 1}`);
   assert.equal(r.body.decrees.length, 0);
 });
+
+
+test('the five-army limit is per game, not per campaign', async () => {
+  const org = await signup('limit_org');
+  const { code } = (await org.post('/campaigns', { name: 'Two Games', setting: 'old-world' })).body;
+  await org.post(`/campaigns/${code}/settings`, { settings: ['warhammer-40k'] });
+
+  const factions = ['empire', 'bretonnia', 'dwarfs', 'kislev', 'orcs'];
+  for (const [i, faction] of factions.entries()) {
+    const r = await org.post(`/campaigns/${code}/armies`, { faction, name: `Old World ${i}` });
+    assert.equal(r.status, 201, `${faction} should muster`);
+  }
+  // A sixth in the same game is refused...
+  const sixth = await org.post(`/campaigns/${code}/armies`, { faction: 'chaos', name: 'One too many' });
+  assert.equal(sixth.status, 400);
+  assert.match(sixth.body.error, /The Old World/, 'the message names the game that is full');
+
+  // ...but the other game the campaign spans has its own five.
+  const r = await org.post(`/campaigns/${code}/armies`, { faction: 'space-marines', name: 'Fresh start', setting: 'warhammer-40k' });
+  assert.equal(r.status, 201);
+  assert.equal(r.body.armies.filter(a => a.setting === 'warhammer-40k').length, 1);
+});

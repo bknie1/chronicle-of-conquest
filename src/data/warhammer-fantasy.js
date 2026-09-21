@@ -97,7 +97,17 @@ export const WARHAMMER_FANTASY = {
         { id: 'wf-lybaras', name: 'Court of Lybaras', home: 'fw-lybaras' },
       ],
     },
-    { id: 'wf-chaos-warriors', name: 'Warriors of Chaos', color: '#c4102a', home: 'fw-chaos-wastes-north', alliance: 'wf-chaos' },
+    { id: 'wf-chaos-warriors', name: 'Warriors of Chaos', color: '#c4102a', home: 'fw-chaos-wastes-north', alliance: 'wf-chaos',
+      // The Norscan tribes march under the same banner here as in the Old
+      // World: a marauder host begins among its own people, not in the Wastes.
+      subfactions: [
+        { id: 'wf-bjornlings', name: 'The Bjornlings', color: '#c4102a', home: 'fw-norsca-west' },
+        { id: 'wf-skaelings', name: 'The Skaelings', color: '#c4102a', home: 'fw-norsca-heart' },
+        { id: 'wf-sarls', name: 'The Sarls', color: '#c4102a', home: 'fw-trollheim-mountains' },
+        { id: 'wf-aeslings', name: 'The Aeslings', color: '#c4102a', home: 'fw-norsca-east' },
+        { id: 'wf-vargs', name: 'The Vargs', color: '#c4102a', home: 'fw-cold-mires' },
+        { id: 'wf-kurgan', name: 'The Kurgan', color: '#c4102a', home: 'fw-shard-lands' },
+      ] },
     { id: 'wf-daemons', name: 'Daemons of Chaos', color: '#c2185b', home: 'fw-chaos-wastes-south', alliance: 'wf-chaos' },
     { id: 'wf-beastmen', name: 'Beastmen Brayherds', color: '#5d4037', home: 'fw-drakwald', alliance: 'wf-chaos' },
     { id: 'wf-chaos-dwarfs', name: 'Chaos Dwarfs', color: '#455a64', home: 'fw-zharr-naggrund', alliance: 'wf-chaos' },

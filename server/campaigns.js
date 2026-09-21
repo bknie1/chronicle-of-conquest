@@ -5,7 +5,7 @@ import { HttpError, id, requireUser, text } from './util.js';
 
 export const AUTO_CONFIRM_MS = 48 * 3600e3;
 const DAY_MS = 86400e3;
-const MAX_ACTIVE_ARMIES = 5;
+const MAX_ACTIVE_ARMIES = 5;   // per game a campaign spans, not per campaign
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O or 1/I
 
 function newCode() {
@@ -40,7 +40,8 @@ export function campaignRoutes(db) {
       WHERE m.campaign_id = ? ORDER BY m.joined_at`),
     armies: db.prepare(`SELECT a.*, u.display_name FROM armies a JOIN users u ON u.id = a.user_id WHERE a.campaign_id = ? ORDER BY a.created_at`),
     army: db.prepare('SELECT * FROM armies WHERE id = ? AND campaign_id = ?'),
-    activeArmyCount: db.prepare('SELECT COUNT(*) n FROM armies WHERE campaign_id = ? AND user_id = ? AND retired_at IS NULL'),
+    activeArmyCount: db.prepare(`SELECT COUNT(*) n FROM armies
+      WHERE campaign_id = ? AND user_id = ? AND retired_at IS NULL AND COALESCE(setting, ?) = ?`),
     insertArmy: db.prepare('INSERT INTO armies (campaign_id, user_id, faction, start, name, created_at, setting) VALUES (?, ?, ?, ?, ?, ?, ?)'),
     retireArmy: db.prepare('UPDATE armies SET retired_at = ? WHERE id = ?'),
     games: db.prepare('SELECT * FROM games WHERE campaign_id = ? ORDER BY played_at, id'),
@@ -291,8 +292,10 @@ export function campaignRoutes(db) {
     const start = starts.find(s => s.id === req.body.start) ?? starts[0];
     if (!start) throw new HttpError(400, 'Pick where that army begins.');
     const name = text(req.body.name, 'Army name', { min: 2, max: 40 });
-    if (q.activeArmyCount.get(c.id, user.id).n >= MAX_ACTIVE_ARMIES) {
-      throw new HttpError(400, `You can field at most ${MAX_ACTIVE_ARMIES} armies at once. Retire one first.`);
+    // The limit is per game: a campaign spanning the Old World and 40,000
+    // should not make someone choose between them.
+    if (q.activeArmyCount.get(c.id, user.id, c.setting, settingId).n >= MAX_ACTIVE_ARMIES) {
+      throw new HttpError(400, `You can field at most ${MAX_ACTIVE_ARMIES} armies at once in ${setting.name}. Retire one first.`);
     }
     q.insertArmy.run(c.id, user.id, faction.id, start.id, name, Date.now(), settingId);
     res.status(201).json(payload(c, user));
