@@ -76,6 +76,7 @@ const state = {
   levelChoice: null, // a level the viewer picked, which outlives a refresh
   regionTab: 'battle', // which tab a place's panel is showing: battle | lore
   hiddenFactions: new Set(), // switched off in the standings, so off the map too
+  overviewMode: 'report',    // how every-map-at-once is drawn: report | pins
   at: 0,            // the day being shown; < view.today while replaying
   selected: null,   // setting-wide point index
   influence: null,
@@ -647,11 +648,24 @@ function renderOverview() {
     box.style.setProperty('--card-w', `${cardW}px`);
     box.classList.toggle('compact', cardW < 140);
     box.classList.toggle('on-art', onArt);
-    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="gate-lines">${lines}</svg>
+    const pins = state.overviewMode === 'pins';
+    box.classList.toggle('pins', pins);
+    const modes = `<div class="overview-modes" style="top:${top}px">
+      <button data-overview-mode="report" class="${pins ? '' : 'on'}" aria-pressed="${!pins}">Report</button>
+      <button data-overview-mode="pins" class="${pins ? 'on' : ''}" aria-pressed="${pins}">Places</button>
+    </div>`;
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="gate-lines">${lines}</svg>${modes}
       ${maps.map(m => {
         const [x, y] = pos.get(m.id);
         const { held, total, battles } = realmStats(m.id);
         const claimed = held.reduce((s, [, n]) => s + n, 0);
+        if (pins) {
+          const lead = held[0] && faction(held[0][0]);
+          return `<button class="realm-pin${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px"
+            title="${esc(m.name)}${lead ? ` — ${esc(lead.name)} lead` : ' — unclaimed'}${battles ? ` · ${battles} battle${battles > 1 ? 's' : ''} tonight` : ''}">
+            <span class="dot" style="--c:${lead ? lead.color : '#d9ccb0'}"></span>
+            <span class="name">${esc(m.name)}</span>${battles ? `<span class="bb">⚔${battles}</span>` : ''}</button>`;
+        }
         return `<button class="realm-card${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px">
           <span class="thumb" style="background-image:url('${asset(m.image)}')"></span>
           <span class="name">${esc(m.name)}</span>
@@ -678,7 +692,10 @@ function renderOverview() {
   let cardW = onArt ? Math.max(62, Math.min(124, W / 9))
                     : Math.max(80, Math.min(190, W / 5.2));
   render(cardW);
-  for (let tries = 0; tries < 8 && overlaps() && cardW > (onArt ? 46 : 56); tries++) render(cardW *= 0.9);
+  // Places mode is already as small as it gets; only the report cards shrink.
+  if (state.overviewMode !== 'pins') {
+    for (let tries = 0; tries < 8 && overlaps() && cardW > (onArt ? 46 : 56); tries++) render(cardW *= 0.9);
+  }
 }
 
 // Put one of the setting's maps under the camera (no redraw).
@@ -1421,6 +1438,9 @@ $('#zoom-out').addEventListener('click', () => mapView.zoomBy(1 / 1.3));
 $('#zoom-fit').addEventListener('click', () => { select(null); mapView.fit(true, true); });
 // Place names can be switched off for a cleaner look; the choice is remembered.
 const labelsBtn = $('#labels-toggle');
+try { state.overviewMode = localStorage.getItem('overview-mode') === 'pins' ? 'pins' : 'report'; }
+catch { /* private mode */ }
+
 let labelsOn = true;
 try { labelsOn = localStorage.getItem('labels') !== 'off'; } catch { /* private mode */ }
 const applyLabels = () => { mapView.setLabels(labelsOn); labelsBtn.setAttribute('aria-pressed', String(labelsOn)); labelsBtn.classList.toggle('off', !labelsOn); };
@@ -1546,7 +1566,7 @@ const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-find],[data-show-faction],[data-decree],[data-edit-place],[data-remove-place],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-find],[data-overview-mode],[data-show-faction],[data-decree],[data-edit-place],[data-remove-place],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
@@ -1554,6 +1574,11 @@ document.addEventListener('click', e => {
   if (d.level) return setLevel(d.level);
   if (d.regionTab) { state.regionTab = d.regionTab; return renderPanel(); }
   if (d.find) return goToPlace(Number(d.find));
+  if (d.overviewMode) {
+    state.overviewMode = d.overviewMode;
+    try { localStorage.setItem('overview-mode', d.overviewMode); } catch { /* private mode */ }
+    return renderOverview();
+  }
   if (d.showFaction) {
     const hidden = state.hiddenFactions;
     if (hidden.has(d.showFaction)) hidden.delete(d.showFaction); else hidden.add(d.showFaction);

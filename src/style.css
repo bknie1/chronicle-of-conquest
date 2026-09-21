@@ -512,6 +512,29 @@ dialog h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); marg
   transition: transform .2s, border-color .2s;
 }
 .realm-card:hover { transform: translate(-50%, -50%) scale(1.06); border-color: var(--gold); }
+/* Every map at once, drawn two ways: the full standing of each, or just where
+   they are, so the shape of the whole thing and its gates stay visible. */
+.overview-modes {
+  position: absolute; right: 10px; z-index: 3; display: flex; gap: 2px;  /* `top` comes from the script: below the realm bar, which wraps */
+  background: #14100bcc; border: 1px solid var(--line); border-radius: 8px; padding: 2px;
+}
+.overview-modes button {
+  background: none; border: 0; border-radius: 6px; cursor: pointer;
+  font: 600 12px var(--heading); color: var(--muted); padding: 3px 9px;
+}
+.overview-modes button.on { background: var(--gold-2); color: #1b120a; }
+.realm-pin {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 5px; white-space: nowrap;
+  background: #14100bcc; border: 1px solid var(--line); border-radius: 999px;
+  padding: 3px 9px 3px 6px; cursor: pointer;
+  font: 700 12px var(--heading); color: #f3e6c8;
+  transition: transform .15s, border-color .15s;
+}
+.realm-pin:hover { transform: translate(-50%, -50%) scale(1.08); border-color: var(--gold); }
+.realm-pin.hub { border-color: #8a3a2a; box-shadow: 0 0 14px #8a3a2a55; }
+.realm-pin .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px #0009; }
+.realm-pin .bb { color: #ff9f7a; font-size: 11px; }
 .realm-card.hub { width: calc(var(--card-w, 172px) * 1.3); border-color: #8a3a2a; box-shadow: 0 0 24px #8a3a2a66, 0 6px 20px #000a; }
 .realms-overview.compact .realm-card .thumb, .realms-overview.compact .realm-card .title,
 .realms-overview.compact .realm-card .meta { display: none; }
