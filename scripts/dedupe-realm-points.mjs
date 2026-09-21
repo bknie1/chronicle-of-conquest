@@ -62,6 +62,15 @@ if (!renames.length) {
       }
       fs.writeFileSync(file, text);
       console.log(`rewrote ${file}`);
+      // A realm's lore is keyed by the same ids, so it has to follow.
+      const realm = path.basename(file, '.js');
+      const loreFile = path.join('src/data/lore/realms', `${realm}.js`);
+      if (fs.existsSync(loreFile)) {
+        let lore = fs.readFileSync(loreFile, 'utf8');
+        for (const r of list) lore = lore.replace(new RegExp(`'${r.id}':`, 'g'), `'${r.to}':`);
+        fs.writeFileSync(loreFile, lore);
+        console.log(`rewrote ${loreFile}`);
+      }
     }
   } else {
     console.log('\nrun again with --write to apply');

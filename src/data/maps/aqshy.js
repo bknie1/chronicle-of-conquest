@@ -21,7 +21,7 @@ export default {
     {"id": "cotha", "name": "Cotha", "kind": "region", "region": "Cotha", "x": 425, "y": 210},
     {"id": "armadas-bane", "name": "Armada's Bane", "kind": "site", "region": "Ocean of Swords", "x": 35, "y": 390},
     {"id": "betrayer-fjords", "name": "Betrayer Fjords", "kind": "region", "region": "Cotha", "x": 490, "y": 365},
-    {"id": "cape-knife", "name": "Cape Knife", "kind": "site", "region": "Cotha", "x": 693, "y": 333},
+    {"id": "cape-knife", "name": "Cape Knife", "kind": "site", "region": "Cotha", "x": 700, "y": 322},
     {"id": "crackling-coast", "name": "Crackling Coast", "kind": "region", "region": "Cotha", "x": 650, "y": 380},
     {"id": "isle-of-trysts", "name": "Isle of Trysts", "kind": "site", "region": "Cotha", "x": 648, "y": 470},
 
@@ -93,7 +93,7 @@ export default {
     {"id": "duardinia", "name": "Duardinia", "kind": "region", "region": "Khul's Ravage", "x": 1100, "y": 1300},
     {"id": "fort-ignis", "name": "Fort Ignis", "kind": "fortress", "region": "Khul's Ravage", "x": 1140, "y": 1382},
     {"id": "igneous-delta", "name": "Igneous Delta", "kind": "region", "region": "Khul's Ravage", "x": 1093, "y": 1400},
-    {"id": "brimstone-peninsula", "name": "Brimstone Peninsula", "kind": "region", "region": "The Vitriol Sea", "x": 1192, "y": 1445},
+    {"id": "brimstone-peninsula", "name": "Brimstone Peninsula", "kind": "region", "region": "The Vitriol Sea", "x": 1180, "y": 1450},
     {"id": "mordacious-sound", "name": "Mordacious Sound", "kind": "region", "region": "The Vitriol Sea", "x": 1230, "y": 1295},
     {"id": "vitriolus-reach", "name": "Vitriolus Reach", "kind": "region", "region": "The Vitriol Sea", "x": 1070, "y": 1505},
     {"id": "sigmars-bootprints", "name": "Sigmar's Bootprints", "kind": "site", "region": "The Vitriol Sea", "x": 1225, "y": 1520},

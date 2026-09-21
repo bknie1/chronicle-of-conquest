@@ -456,7 +456,7 @@ It lies on the direct line from the canals to the falls, which is the only reaso
 
 Its value is positional: it is the midpoint of the open ground between the two, and open ground in Ymetrica is rare enough to be worth naming.`,
 
-  'contrarian-river': `A river in northern Ymetrica that runs the wrong way — which is presumably how it got the name — down from the Saroir Aftermath to the sea. The plate follows it in a long ungainly curve.
+  'hysh-contrarian-river': `A river in northern Ymetrica that runs the wrong way — which is presumably how it got the name — down from the Saroir Aftermath to the sea. The plate follows it in a long ungainly curve.
 
 Rivers that behave unexpectedly are a supply officer’s problem and a guide’s livelihood. This one crosses every east–west route in the region.`,
 
