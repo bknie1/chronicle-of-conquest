@@ -20,11 +20,25 @@ import { TERRA_LORE } from './terra.js';
 import { NECROMUNDA_LORE } from './necromunda.js';
 import { WARHAMMER_40K_LORE } from './warhammer-40k.js';
 import { MIDDLE_EARTH_LORE } from './middle-earth.js';
+// A realm rebuilt on published cartography carries hundreds of places, so each
+// keeps its own file rather than swelling one.
+import { AQSHY_LORE } from './realms/aqshy.js';
+import { GHYRAN_LORE } from './realms/ghyran.js';
+import { GHUR_LORE } from './realms/ghur.js';
+import { CHAMON_LORE } from './realms/chamon.js';
+import { ULGU_LORE } from './realms/ulgu.js';
+import { HYSH_LORE } from './realms/hysh.js';
 
 const LORE = {
   'old-world': OLD_WORLD_LORE,
   'warhammer-fantasy': WARHAMMER_FANTASY_LORE,
-  'mortal-realms': MORTAL_REALMS_LORE,
+  // The realm files come last: where a realm was rebuilt from published art,
+  // its own entry is the one that describes the place actually on the map.
+  'mortal-realms': {
+    ...MORTAL_REALMS_LORE,
+    ...AQSHY_LORE, ...GHYRAN_LORE, ...GHUR_LORE,
+    ...CHAMON_LORE, ...ULGU_LORE, ...HYSH_LORE,
+  },
   // Both ages of darkness share the galaxy map and Terra's surface, so they
   // share their lore too.
   'horus-heresy': { ...AGE_OF_DARKNESS_LORE, ...TERRA_LORE },
