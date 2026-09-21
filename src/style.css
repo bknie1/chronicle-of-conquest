@@ -470,35 +470,29 @@ dialog h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); marg
 .realm-bar button.active { border-color: var(--gold); color: var(--gold-2); }
 .realm-bar .bb { color: #ff9f7a; font-size: 12px; }
 .viewport.focused .realm-bar { display: none; }
-/* The cosmology map is the backdrop to the realm cards. `contain`, not
-   `cover`: the point is to see the whole orrery, and cropping it to fill a
-   wide viewport cut off the realms at both ends. */
-.viewport:has(.realms-overview:not([hidden])) {
-  background: #070a10 var(--realms-art, none) center / contain no-repeat;
+/* The every-map-at-once plate is a map now: it lives in the world layer and
+   goes under the same camera as any other. The viewport paints nothing. */
+.viewport.overview .back-btn, .viewport.overview .tooltip { display: none; }
+/* The overview box is chrome only — the mode switch. Everything you can see
+   and move is in the world underneath it. */
+.realms-overview { pointer-events: none; }
+.realms-overview > * { pointer-events: auto; }
+/* A map standing on the plate. It counter-scales like any other marker, so
+   zooming spreads the maps apart without swelling their labels. */
+.realm-marker {
+  position: absolute; transform: translate(-50%, -50%) scale(calc(1 / var(--k, 1)));
+  transform-origin: 50% 50%; transform-style: preserve-3d;
 }
-/* Enough of a wash to keep the cards readable over it, and no more — it used
-   to be dark enough that the map underneath may as well not have been there. */
-.viewport:has(.realms-overview:not([hidden]))::after {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(78% 68% at 50% 48%, #070a1000, #070a1033 80%, #070a1066 100%);
-  pointer-events: none;
+.realm-marker .standee {
+  display: block; pointer-events: auto;
+  transform: rotate(calc(var(--spin, 0deg) * -1)) rotateX(calc(var(--tilt, 0deg) * -1));
+  transform-origin: 50% 50%;
 }
-.viewport.overview .map-controls { display: none; } /* nothing to zoom while every realm is shown */
-/* While every realm is shown, the realm you were last looking at must not be:
-   the world layer sits above the viewport's own background, so leaving it up
-   painted the last map over the cosmology and made the backdrop look like
-   whichever realm you had just left. */
-.viewport.overview .world,
-.viewport.overview .back-btn,
-.viewport.overview .tooltip { display: none; }
+.realm-marker .realm-card, .realm-marker .realm-pin { position: static; transform: none; }
+.realm-marker .realm-card:hover, .realm-marker .realm-pin:hover { transform: scale(1.06); }
 .back-btn { top: 12px; }
 
-.realms-overview {
-  position: absolute; inset: 0; z-index: 2;
-  /* Barely anything. This used to be all but opaque, which is why the map
-     behind it — the whole point of the view — could not be seen at all. */
-  background: radial-gradient(ellipse at center, #2a211833, #0d0a0777 78%);
-}
+.realms-overview { position: absolute; inset: 0; z-index: 4; background: none; }
 .realms-overview[hidden] { display: none; }
 .gate-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
 .gate-lines line { stroke: #d8b06155; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; stroke-linecap: round; }

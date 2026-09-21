@@ -39,6 +39,39 @@ export class MapView {
     }).observe(viewport);
   }
 
+  // Show a plate with no points of its own — the every-map-at-once view, whose
+  // markers the app positions itself. It is a map like any other as far as the
+  // camera is concerned, which is the whole reason for doing it this way.
+  showArt({ image, width, height, name }) {
+    const same = this.map?.id === '__overview' && this.map.image === image
+      && this.map.width === width && this.map.height === height;
+    if (same) return;
+    this.map = { id: '__overview', name, image, width, height, nodes: [] };
+    this.graph = null;
+    this.focus = null;
+    this.saved = null;
+    this.cells = [];
+    this.markers = [];
+    this.world.style.width = `${width}px`;
+    this.world.style.height = `${height}px`;
+    const src = image ? import.meta.env.BASE_URL + image.replace(/^\//, '') : '';
+    if (this.img.getAttribute('src') !== src) {
+      if (src) {
+        this.viewport.classList.add('loading');
+        const done = () => this.viewport.classList.remove('loading');
+        this.img.addEventListener('load', done, { once: true });
+        this.img.addEventListener('error', done, { once: true });
+      }
+      this.img.src = src;
+      if (!src || this.img.complete) this.viewport.classList.remove('loading');
+    }
+    this.img.alt = name ? `Map of ${name}` : '';
+    this.svg.replaceChildren();
+    this.svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    this.overlay.replaceChildren();
+    this.fit(false, true);
+  }
+
   // gates: [{ local, label, title }], the realmgates on this map, labelled with where they lead.
   load(map, graph, factions, gates = []) {
     Object.assign(this, { map, graph, factionById: new Map(factions.map(f => [f.id, f])) });
@@ -330,7 +363,7 @@ export class MapView {
     let drag = null;
     let pinch = null;
     // While the all-realms overview is showing, the map underneath ignores input.
-    const active = () => this.map && !vp.classList.contains('overview');
+    const active = () => !!this.map;
     const chrome = '.tooltip, .realm-bar, .realms-overview, .map-controls, .back-btn, .peek';
     const local = e => { const r = vp.getBoundingClientRect(); return [e.x - r.left, e.y - r.top]; };
     const twoFingers = () => {

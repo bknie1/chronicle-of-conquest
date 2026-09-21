@@ -583,119 +583,95 @@ function renderRealmBar() {
   }).join('')}`;
 }
 
-// Realms sit on a ring around the hub (the realm with the most gates), joined by their realmgates.
+// Every map at once — and it is a map in its own right, not a diagram of one.
+// The plate goes under the same camera as any other map, so it zooms, tilts
+// and resets the same way, and each map stands on it as a marker.
+const OVERVIEW_CANVAS = [1600, 1000];   // for settings with no cosmology of their own
+
 function renderOverview() {
   const box = $('#realms-overview');
-  // The cosmology map sits behind the realm cards. Set here rather than in
-  // the stylesheet, which has no idea what the app is served from.
-  $('#viewport').style.setProperty('--realms-art',
-    C().setting.id === 'mortal-realms' ? `url('${asset('/maps/realms/mortal-realms.jpg')}')` : 'none');
   $('#viewport').classList.toggle('overview', state.overview);
   box.hidden = !state.overview;
   if (!state.overview) return;
+
   const maps = mapsShown();
+  const { image, art, spots, name: viewName } = C().setting.overview;
+  const [CW, CH] = art ?? OVERVIEW_CANVAS;
+  mapView.showArt({ image, width: CW, height: CH, name: viewName });
+
   const gateCount = id => C().graph.gates.filter(g => NODES()[g.a].map === id || NODES()[g.b].map === id).length;
   const hub = maps.reduce((best, m) => (gateCount(m.id) > gateCount(best.id) ? m : best), maps[0]);
   const ring = maps.filter(m => m !== hub);
-  // The overview covers the whole map; the ring sits below the realm tab bar,
-  // which wraps to several rows on a phone.
-  const { width: W, height: H } = box.getBoundingClientRect();
-  const top = $('#realm-bar').offsetTop + $('#realm-bar').offsetHeight + 8;
 
-  // One line per pair of realms; coloured when a single faction holds both ends of every gate on it.
+  // Where each map stands, in the plate's own pixels. A setting that says
+  // where its maps belong on its art wins; otherwise they ring the hub.
+  const pos = new Map([[hub.id, [CW / 2, CH / 2]]]);
+  const rx = CW * 0.36, ry = CH * 0.34;
+  ring.forEach((m, k) => {
+    const a = -Math.PI / 2 + (k / ring.length) * Math.PI * 2;
+    pos.set(m.id, [CW / 2 + rx * Math.cos(a), CH / 2 + ry * Math.sin(a)]);
+  });
+  if (spots) for (const m of maps) if (spots[m.id]) pos.set(m.id, [spots[m.id][0] * CW, spots[m.id][1] * CH]);
+
+  // One line per pair of maps; coloured when a single faction holds both ends
+  // of every gate on it.
   const pairs = new Map();
   for (const g of C().graph.gates) {
     const [ma, mb] = [NODES()[g.a].map, NODES()[g.b].map];
+    if (!pos.has(ma) || !pos.has(mb)) continue;
     const key = [ma, mb].sort().join('|');
     if (!pairs.has(key)) pairs.set(key, { ma, mb, gates: [] });
     pairs.get(key).gates.push(g);
   }
-
-  // Where the cards sit on real art, they are markers on a map rather than a
-  // diagram of one.
-  const onArt = !!(C().setting.overview.spots && C().setting.overview.art);
-  const render = cardW => {
-    const cardH = cardW >= 140 ? cardW * 0.72 : cardW * 0.6;
-    const cy = top + (H - top) / 2;
-    const rx = Math.max(0, W / 2 - cardW / 2 - 10), ry = Math.max(0, (H - top) / 2 - cardH / 2 - 10);
-    const pos = new Map([[hub.id, [W / 2, cy]]]);
-    ring.forEach((m, k) => {
-      const a = -Math.PI / 2 + (k / ring.length) * Math.PI * 2;
-      pos.set(m.id, [W / 2 + rx * Math.cos(a), cy + ry * Math.sin(a)]);
-    });
-    // Where the setting says a map belongs on the overview art, put it there:
-    // the cosmology already draws each realm, so a realm's card should sit on
-    // its own sigil rather than at some point on an invented ring.
-    const { spots, art } = C().setting.overview;
-    if (spots && art) {
-      const [iw, ih] = art;
-      const s = Math.min(W / iw, H / ih);          // the art is drawn `contain`
-      const dw = iw * s, dh = ih * s;
-      const dx = (W - dw) / 2, dy = (H - dh) / 2;
-      for (const m of maps) {
-        const spot = spots[m.id];
-        if (spot) pos.set(m.id, [dx + spot[0] * dw, dy + spot[1] * dh]);
-      }
-    }
-    const lines = [...pairs.values()].map(({ ma, mb, gates }) => {
-      const owners = new Set(gates.flatMap(g => [state.influence[g.a].owner, state.influence[g.b].owner]));
-      const holder = owners.size === 1 && [...owners][0] ? faction([...owners][0]) : null;
-      const [x1, y1] = pos.get(ma), [x2, y2] = pos.get(mb);
-      const title = gates.map(g => `${g.name}: ${NODES()[g.a].name} ↔ ${NODES()[g.b].name}`).join('\n');
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="${holder ? `stroke:${holder.color}` : ''}"
-        class="${holder ? 'held' : ''}" stroke-width="${1.5 + gates.length}"><title>${esc(title)}${holder ? `\nHeld by ${esc(holder.name)}` : ''}</title></line>`;
-    }).join('');
-    box.style.setProperty('--card-w', `${cardW}px`);
-    box.classList.toggle('compact', cardW < 140);
-    box.classList.toggle('on-art', onArt);
-    const pins = state.overviewMode === 'pins';
-    box.classList.toggle('pins', pins);
-    const modes = `<div class="overview-modes" style="top:${top}px">
-      <button data-overview-mode="report" class="${pins ? '' : 'on'}" aria-pressed="${!pins}">Report</button>
-      <button data-overview-mode="pins" class="${pins ? 'on' : ''}" aria-pressed="${pins}">Places</button>
-    </div>`;
-    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="gate-lines">${lines}</svg>${modes}
-      ${maps.map(m => {
-        const [x, y] = pos.get(m.id);
-        const { held, total, battles } = realmStats(m.id);
-        const claimed = held.reduce((s, [, n]) => s + n, 0);
-        if (pins) {
-          const lead = held[0] && faction(held[0][0]);
-          return `<button class="realm-pin${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px"
-            title="${esc(m.name)}${lead ? ` — ${esc(lead.name)} lead` : ' — unclaimed'}${battles ? ` · ${battles} battle${battles > 1 ? 's' : ''} tonight` : ''}">
-            <span class="dot" style="--c:${lead ? lead.color : '#d9ccb0'}"></span>
-            <span class="name">${esc(m.name)}</span>${battles ? `<span class="bb">⚔${battles}</span>` : ''}</button>`;
-        }
-        return `<button class="realm-card${m === hub ? ' hub' : ''}" data-realm="${m.id}" style="left:${x}px;top:${y}px">
-          <span class="thumb" style="background-image:url('${asset(m.image)}')"></span>
-          <span class="name">${esc(m.name)}</span>
-          <span class="title">${esc(m.title ?? '')}</span>
-          <span class="control-bar">${held.map(([f, n]) => `<i style="--c:${faction(f).color};flex:${n}" title="${esc(faction(f).name)}: ${n}"></i>`).join('')}<i class="unclaimed" style="flex:${total - claimed}"></i></span>
-          <span class="meta">${held[0] ? `${esc(faction(held[0][0]).name)} lead` : 'Unclaimed'}${battles ? ` · ⚔${battles}` : ''}</span>
-        </button>`;
-      }).join('')}`;
-  };
-
-  // Lay out, then measure: shrink the cards until none overlap or spill past the bar.
-  const overlaps = () => {
-    const r = [...box.querySelectorAll('.realm-card')].map(c => c.getBoundingClientRect());
-    const boxTop = box.getBoundingClientRect().top + top - 4;
-    if (r.some(c => c.top < boxTop)) return true;
-    for (let i = 0; i < r.length; i++) for (let j = i + 1; j < r.length; j++) {
-      const a = r[i], b = r[j];
-      if (a.left < b.right - 2 && b.left < a.right - 2 && a.top < b.bottom - 2 && b.top < a.bottom - 2) return true;
-    }
-    return false;
-  };
-  // Where the cards sit on real art, they are markers on a map and should not
-  // bury it: small enough that the realms are still visible behind them.
-  let cardW = onArt ? Math.max(62, Math.min(124, W / 9))
-                    : Math.max(80, Math.min(190, W / 5.2));
-  render(cardW);
-  // Places mode is already as small as it gets; only the report cards shrink.
-  if (state.overviewMode !== 'pins') {
-    for (let tries = 0; tries < 8 && overlaps() && cardW > (onArt ? 46 : 56); tries++) render(cardW *= 0.9);
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const lines = document.createElementNS(svgNS, 'g');
+  lines.setAttribute('class', 'gate-lines');
+  for (const { ma, mb, gates } of pairs.values()) {
+    const owners = new Set(gates.flatMap(g => [state.influence[g.a].owner, state.influence[g.b].owner]));
+    const holder = owners.size === 1 && [...owners][0] ? faction([...owners][0]) : null;
+    const [x1, y1] = pos.get(ma), [x2, y2] = pos.get(mb);
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke-width', 1.5 + gates.length);
+    if (holder) { line.style.stroke = holder.color; line.setAttribute('class', 'held'); }
+    const title = document.createElementNS(svgNS, 'title');
+    const lead = holder ? [`Held by ${holder.name}`] : [];
+    title.textContent = [...gates.map(g => `${g.name}: ${NODES()[g.a].name} ↔ ${NODES()[g.b].name}`), ...lead]
+      .join('\n');
+    line.append(title);
+    lines.append(line);
   }
+  mapView.svg.replaceChildren(lines);
+
+  // The maps themselves, as markers standing on the plate.
+  const pins = state.overviewMode === 'pins';
+  const cards = maps.map(m => {
+    const [x, y] = pos.get(m.id);
+    const { held, total, battles } = realmStats(m.id);
+    const claimed = held.reduce((s, [, n]) => s + n, 0);
+    const lead = held[0] && faction(held[0][0]);
+    const body = pins
+      ? `<button class="realm-pin${m === hub ? ' hub' : ''}" data-realm="${esc(m.id)}"
+           title="${esc(m.name)}${lead ? ` — ${esc(lead.name)} lead` : ' — unclaimed'}">
+           <span class="dot" style="--c:${lead ? lead.color : '#d9ccb0'}"></span>
+           <span class="name">${esc(m.name)}</span>${battles ? `<span class="bb">⚔${battles}</span>` : ''}</button>`
+      : `<button class="realm-card${m === hub ? ' hub' : ''}" data-realm="${esc(m.id)}">
+           <span class="thumb" style="background-image:url('${asset(m.image)}')"></span>
+           <span class="name">${esc(m.name)}</span>
+           <span class="title">${esc(m.title ?? '')}</span>
+           <span class="control-bar">${held.map(([f, n]) => `<i style="--c:${faction(f).color};flex:${n}" title="${esc(faction(f).name)}: ${n}"></i>`).join('')}<i class="unclaimed" style="flex:${total - claimed}"></i></span>
+           <span class="meta">${held[0] ? `${esc(faction(held[0][0]).name)} lead` : 'Unclaimed'}${battles ? ` · ⚔${battles}` : ''}</span>
+         </button>`;
+    return `<div class="realm-marker" style="left:${x}px;top:${y}px"><div class="standee">${body}</div></div>`;
+  }).join('');
+  mapView.overlay.innerHTML = cards;
+
+  // The chrome stays out of the camera: it is not part of the map.
+  box.innerHTML = `<div class="overview-modes" style="top:${$('#realm-bar').offsetTop + $('#realm-bar').offsetHeight + 8}px">
+    <button data-overview-mode="report" class="${pins ? '' : 'on'}" aria-pressed="${!pins}">Report</button>
+    <button data-overview-mode="pins" class="${pins ? 'on' : ''}" aria-pressed="${pins}">Places</button>
+  </div>`;
 }
 
 // Put one of the setting's maps under the camera (no redraw).
@@ -717,7 +693,11 @@ function loadMap(mapId) {
 }
 
 function showMap(mapId) {
+  const wasOverview = state.overview;
   state.overview = false;
+  // The overview had the world; loadMap short-circuits when the id matches, so
+  // say plainly that nothing is loaded.
+  if (wasOverview) state.mapId = null;
   loadMap(mapId);
   draw();
 }
@@ -843,8 +823,12 @@ function asShown(s) {
 function draw() {
   recompute();
   tipFor = null; // the numbers may have changed; rebuild the tooltip on the next move
-  const cur = current();
-  mapView.render(state.influence.slice(cur.offset, cur.offset + cur.map.nodes.length).map(asShown), eventsByNode());
+  // While every map is shown at once, the world holds that view rather than a
+  // realm, so there are no cells or markers of its own to draw into.
+  if (!state.overview) {
+    const cur = current();
+    mapView.render(state.influence.slice(cur.offset, cur.offset + cur.map.nodes.length).map(asShown), eventsByNode());
+  }
   renderRealmBar();
   renderOverview();
   renderPanel();
