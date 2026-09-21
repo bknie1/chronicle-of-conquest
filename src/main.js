@@ -421,7 +421,11 @@ function renderRegion(panel, i) {
       <button type="button" class="link place-link" data-copy="${esc(linkToPlace(i))}" title="Copy a link that opens this place">Copy link</button>
     </div>
     ${tab === 'lore'
-      ? `<div class="lore">${lore ? `<p>${esc(lore)}</p>` : `<p class="muted">No lore written for ${esc(n.name)} yet.</p>`}</div>`
+      ? `<div class="lore">${lore
+          ? lore.split('
+
+').map(para => `<p>${esc(para)}</p>`).join('')
+          : `<p class="muted">No lore written for ${esc(n.name)} yet.</p>`}</div>`
       : battle}`;
 }
 
