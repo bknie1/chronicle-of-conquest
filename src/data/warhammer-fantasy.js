@@ -73,7 +73,7 @@ export const WARHAMMER_FANTASY = {
         { id: 'wf-eastern-oblast', name: 'The Eastern Oblast', color: '#49c3ef', home: 'fw-eastern-oblast' },
       ] },
     {
-      id: 'wf-cathay', name: 'Grand Cathay', color: '#ad1457', home: 'fw-wei-jin', alliance: 'wf-order',
+      id: 'wf-cathay', name: 'Grand Cathay', color: '#1b7a5a', home: 'fw-wei-jin', alliance: 'wf-order',
       subfactions: [
         { id: 'wf-cathay-north', name: 'The Northern Provinces', home: 'fw-nan-gau' },
         { id: 'wf-cathay-west', name: 'The Western Provinces', home: 'fw-shang-yang' },

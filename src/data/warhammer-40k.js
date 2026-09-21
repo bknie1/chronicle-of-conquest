@@ -32,7 +32,7 @@ export const WARHAMMER_40K = {
         { id: 'forge-world-ryza', name: 'Forge World Ryza', home: 'ryza', color: '#c62828' },
         { id: 'forge-world-stygies-viii', name: 'Forge World Stygies VIII', home: 'stygies-viii', color: '#5d4037' },
       ] },
-    { id: 'grey-knights', name: 'Grey Knights', color: '#78909c', home: 'titan', alliance: 'imperium' },
+    { id: 'grey-knights', name: 'Grey Knights', color: '#aebfcf', home: 'titan', alliance: 'imperium' },
     { id: 'space-marines', name: 'Space Marines', color: '#1565c0', home: 'macragge-40k', alliance: 'imperium',
       subfactions: [
         { id: 'ultramarines', name: 'Ultramarines', home: 'calth' },

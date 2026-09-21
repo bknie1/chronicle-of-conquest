@@ -58,12 +58,12 @@ export const LEGIONS_IMPERIALIS = {
         { id: 'li-house-vyronii', name: 'House Vyronii', color: '#26a69a', home: 'lastrati' },
         { id: 'li-house-makabius', name: 'House Makabius', color: '#5e35b1', home: 'sulis' },
       ] },
-    { id: 'li-knights-traitoris', name: 'Questoris Traitoris', color: '#8d6e63', home: 'goth', alliance: 'li-traitor',
+    { id: 'li-knights-traitoris', name: 'Questoris Traitoris', color: '#7b2d26', home: 'goth', alliance: 'li-traitor',
       subfactions: [
-        { id: 'li-house-malinax', name: 'House Malinax', color: '#8d6e63', home: 'goth' },
+        { id: 'li-house-malinax', name: 'House Malinax', color: '#7b2d26', home: 'goth' },
       ] },
     { id: 'li-auxilia', name: 'Solar Auxilia', color: '#8d6e63', home: 'tallarn', alliance: 'li-loyalist' },
-    { id: 'li-mechanicum', name: 'Mechanicum Taghmata', color: '#bf360c', home: 'mars', alliance: 'li-traitor' },
+    { id: 'li-mechanicum', name: 'Mechanicum Taghmata', color: '#8d3d8a', home: 'mars', alliance: 'li-traitor' },
     { id: 'li-militia', name: 'Imperialis Militia', color: '#6d7b3a', home: 'necromunda', alliance: 'li-loyalist' },
   ],
 };
