@@ -11,7 +11,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const ART = {
   'old-world': ['real', 'A fan-made 7-colour map of the Old World, with Norsca drawn from a dedicated regional map.'],
   'warhammer-fantasy': ['real', 'The Warhammer world map, with every point read off its own labelled edition.'],
-  'mortal-realms': ['mixed', 'Aqshy is the published Great Parch. The other realms are drawn by a script — real place names on invented coastlines — until published focal-point maps replace them.'],
+  'mortal-realms': ['mixed', 'Seven realms are read off published cartography — the Great Parch, the Everspring Swathe, the Ghurish Heartlands, the Spiral Crux, the Shadrac Convergence, the Ymetrican Geosegment and the Prime Innerlands. Azyr and Blight City have never been mapped by anyone, so they are drawn here.'],
   'legions-imperialis': ['real', 'The Age of Darkness galaxy, and Terra’s own surface read off a labelled techno-barbarian chart.'],
   'horus-heresy': ['real', 'The Age of Darkness galaxy, and Terra’s own surface read off a labelled techno-barbarian chart.'],
   'middle-earth': ['real', 'A chart of the Third Age, with every point read off its own labelled edition of the same drawing.'],

@@ -31,6 +31,18 @@ export const NECROMUNDA_LORE = {
   'helmawrs-grasp': 'The southeastern territory held directly in the name of House Helmawr, and policed accordingly. Being within the Grasp is protection and a leash in the same measure.',
   'necromunda': 'A world turned entirely over to production: a hundred billion people stacked into a handful of hives, working a tithe that has not been reduced in ten thousand years. Everything outside the hives is ash, and everything inside them is somebody’s territory.',
 
+  // --- What the full cartograph shows that the old crop could not ---------
+  'mynerva-cluster': 'A cluster of hives in the southern reach of the western hemisphere, far enough from the Palatine to be governed at arm’s length and to resent it. Distance is the whole of its politics.',
+  'quinspirus-cluster': 'The northeastern cluster, worked out towards the Worldsump and the ocean beyond it. Being the far side of the world from Primus has made it self-sufficient, and being self-sufficient has made it watched.',
+  'ceres': 'A hive standing alone in the Great Equatorial Waste, hundreds of kilometres from anywhere, kept alive by the Ash Road and by nothing else. When the storms close the road, Ceres finds out how much it had stockpiled.',
+  'vlantia': 'A hive at the edge of the Ash Pole, built for cold rather than heat, which on this world makes it an oddity. Its people trade in what the polar ice preserves.',
+  'ash-pole': 'The southern polar waste, ash and ice together, where the storms that cross the equator go to die. Only a handful of hives sit on its rim, and nothing at all sits in its middle.',
+  'worldsump-ocean': 'The great eastern ocean, or what industry has left of one — a body of chemical run-off deep enough to still be called a sea. Everything the eastern hives discard ends up in it.',
+  'song-cracks': 'A fault system on the far face of the world, named for the noise the ground makes as it shifts. Prospectors work the cracks for what the shifting brings up, and count themselves lucky to leave.',
+  'slag-coasts': 'The shores of the Slag Sea, tailings piled into something that is almost land. Port Blackwater sits on them because there is nowhere better, not because there is anywhere good.',
+  'gothruls-needle': 'A hive in Helmawr’s Graveyard, tall and thin even by Necromundan standards, the sort of structure that should not stand and has stood for ten thousand years anyway.',
+  'great-seismic-basin': 'A vast sunken plain in the southeast where the crust gave way under the weight of what was built on it. The Administratum calls it a geological feature; the hives that fell into it are not listed.',
+
   // --- Hive Primus, top to bottom ----------------------------------------
   'hp-the-palatine': `The crown of the Spire and the seat of Lord Helmawr himself, so far above the ash that its residents can go a lifetime without seeing it. The air up here is imported, filtered and — by the standards of anywhere else on this world — clean.
 

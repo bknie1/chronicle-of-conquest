@@ -28,6 +28,7 @@ import { GHUR_LORE } from './realms/ghur.js';
 import { CHAMON_LORE } from './realms/chamon.js';
 import { ULGU_LORE } from './realms/ulgu.js';
 import { HYSH_LORE } from './realms/hysh.js';
+import { SHYISH_LORE } from './realms/shyish.js';
 
 const LORE = {
   'old-world': OLD_WORLD_LORE,
@@ -37,7 +38,7 @@ const LORE = {
   'mortal-realms': {
     ...MORTAL_REALMS_LORE,
     ...AQSHY_LORE, ...GHYRAN_LORE, ...GHUR_LORE,
-    ...CHAMON_LORE, ...ULGU_LORE, ...HYSH_LORE,
+    ...CHAMON_LORE, ...ULGU_LORE, ...HYSH_LORE, ...SHYISH_LORE,
   },
   // Both ages of darkness share the galaxy map and Terra's surface, so they
   // share their lore too.
