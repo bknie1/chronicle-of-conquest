@@ -38,6 +38,10 @@ export function campaignRoutes(db) {
       WHERE id = ? AND campaign_id = ?`),
     deletePlace: db.prepare('DELETE FROM places WHERE id = ? AND campaign_id = ?'),
     setOptions: db.prepare('UPDATE campaigns SET name = ?, level = ?, reset_days = ?, maps = ?, settings = ? WHERE id = ?'),
+    setHomeSetting: db.prepare('UPDATE campaigns SET setting = ? WHERE id = ?'),
+    fixArmySettings: db.prepare('UPDATE armies SET setting = ? WHERE campaign_id = ? AND setting IS NULL'),
+    setMemberRole: db.prepare('UPDATE members SET role = ? WHERE campaign_id = ? AND user_id = ?'),
+    organizerCount: db.prepare("SELECT COUNT(*) n FROM members WHERE campaign_id = ? AND role = 'organizer'"),
     myCampaigns: db.prepare(`SELECT c.code, c.name, c.setting, c.level, m.role FROM members m JOIN campaigns c ON c.id = m.campaign_id
       WHERE m.user_id = ? ORDER BY m.joined_at DESC`),
     member: db.prepare('SELECT role FROM members WHERE campaign_id = ? AND user_id = ?'),
@@ -223,16 +227,46 @@ export function campaignRoutes(db) {
       if (!chosen.length) throw new HttpError(400, 'A campaign needs at least one map.');
       maps = chosen.length === known.length ? null : JSON.stringify(chosen);
     }
-    // Which games the campaign spans. The first is its home setting.
+    // Which games the campaign spans, including the one it started in — a
+    // campaign is allowed to change its mind about that. Dropped games keep
+    // their armies, results and territory; they are simply not offered.
     let settings = c.settings;
+    let home = c.setting;
     if (Array.isArray(req.body.settings)) {
       const chosen = req.body.settings.filter(id => SETTINGS[id]);
       if (!chosen.length) throw new HttpError(400, 'A campaign needs at least one game.');
-      if (!chosen.includes(c.setting)) chosen.unshift(c.setting);
-      settings = chosen.length === 1 ? null : JSON.stringify(chosen);
+      if (!chosen.includes(c.setting)) {
+        // Armies recorded before games were written down fall back to the
+        // campaign's own. Write that down now, so moving the home game cannot
+        // quietly move an existing army into a different one.
+        q.fixArmySettings.run(c.setting, c.id);
+        home = chosen[0];
+        maps = null;  // which maps are shown belongs to the home game
+      }
+      settings = chosen.length === 1 && chosen[0] === home ? null : JSON.stringify(chosen);
     }
+    if (home !== c.setting) q.setHomeSetting.run(home, c.id);
     q.setOptions.run(name, level, resetDays || null, maps, settings, c.id);
     res.json(payload(q.campaignByCode.get(c.code), user));
+  });
+
+  // Running a campaign alone gets old. An organizer can hand the job to
+  // anyone who has joined, and step back down again — as long as somebody is
+  // still holding it.
+  router.post('/campaigns/:code/members/:userId/role', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    const target = id(req.params.userId, 'Member');
+    const role = req.body.role === 'organizer' ? 'organizer' : 'player';
+    const member = q.members.all(c.id).find(m => m.user_id === target);
+    if (!member) throw new HttpError(404, 'They have not joined this campaign.');
+    if (member.role === role) return res.json(payload(c, user));
+    if (role === 'player' && q.organizerCount.get(c.id).n <= 1) {
+      throw new HttpError(400, 'A campaign needs at least one organizer.');
+    }
+    q.setMemberRole.run(role, c.id, target);
+    res.json(payload(c, user));
   });
 
   // Gamemaster: pause the campaign without hiding it.

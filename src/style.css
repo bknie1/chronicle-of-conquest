@@ -155,7 +155,14 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 /* The piece has thickness. The depth is drawn on the wrapper rather than the
    pin, so a pin that is a rotated diamond still throws its side downwards —
    and so hover and home can keep overriding the pin's own box-shadow. */
-.plinth { line-height: 0; filter: drop-shadow(0 1px 0 #241708) drop-shadow(0 2px 0 #1b120aaa) drop-shadow(0 3px 3px #000a); }
+/* A filter clips what it draws to its own region, and several pins are
+   rotated or clipped to a shape that reaches past the wrapper's box — so the
+   wrapper is given room, or the corners of every diamond are shaved off. */
+.plinth {
+  display: flex; align-items: center; justify-content: center;
+  line-height: 0; padding: 7px;
+  filter: drop-shadow(0 1px 0 #241708) drop-shadow(0 2px 0 #1b120aaa) drop-shadow(0 3px 3px #000a);
+}
 .viewport.tilted .plinth { filter: drop-shadow(0 2px 0 #241708) drop-shadow(0 4px 0 #1b120aaa) drop-shadow(0 6px 5px #000a); }
 .pin {
   pointer-events: auto;

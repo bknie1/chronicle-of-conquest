@@ -251,8 +251,8 @@ test('a campaign can span several games, each with its own armies and battles', 
   // Not yet part of the campaign, so no mustering there.
   assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Early', setting: 'old-world' })).status, 400);
 
-  let r = await org.post(`/campaigns/${code}/settings`, { name: 'Store Nights', settings: ['old-world', 'warhammer-40k'] });
-  assert.deepEqual(r.body.campaign.settings, ['mortal-realms', 'old-world', 'warhammer-40k'], 'the home setting stays first');
+  let r = await org.post(`/campaigns/${code}/settings`, { name: 'Store Nights', settings: ['mortal-realms', 'old-world', 'warhammer-40k'] });
+  assert.deepEqual(r.body.campaign.settings, ['mortal-realms', 'old-world', 'warhammer-40k']);
 
   const reik = (await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Reiksguard', setting: 'old-world' })).body.armies.at(-1);
   assert.equal(reik.setting, 'old-world');
@@ -265,11 +265,46 @@ test('a campaign can span several games, each with its own armies and battles', 
   assert.equal((await org.post(`/campaigns/${code}/games`, { winner: reik.id, loser: orcs.id, node: 'hammerhal-ghyra' })).status, 400);
   assert.equal((await org.post(`/campaigns/${code}/games`, { winner: reik.id, loser: orcs.id, node: 'altdorf' })).status, 201);
 
-  // Switching a game off hides it without losing anything; it cannot drop the home setting.
+  // Switching a game off hides it without losing anything — including the one
+  // the campaign started in, which a store is allowed to change its mind about.
   r = await org.post(`/campaigns/${code}/settings`, { settings: ['warhammer-40k'] });
-  assert.deepEqual(r.body.campaign.settings, ['mortal-realms', 'warhammer-40k']);
+  assert.deepEqual(r.body.campaign.settings, ['warhammer-40k'], 'the home game can be dropped');
+  assert.equal(r.body.campaign.setting, 'warhammer-40k', 'and the campaign moves home');
   assert.equal(r.body.armies.filter(a => a.setting === 'old-world').length, 2, 'hidden game keeps its armies');
+  assert.equal(r.body.armies.filter(a => a.setting === 'mortal-realms').length, 1,
+    'an army that never named its game is not dragged into the new home');
   assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Late', setting: 'old-world' })).status, 400);
+
+  // Switching it back on restores everything that was hidden.
+  r = await org.post(`/campaigns/${code}/settings`, { settings: ['warhammer-40k', 'old-world', 'mortal-realms'] });
+  assert.equal(r.body.games.length, 1, 'the result played in the Old World is still there');
+  assert.equal((await org.post(`/campaigns/${code}/armies`, { faction: 'empire', name: 'Late', setting: 'old-world' })).status, 201);
+});
+
+test('an organizer can share the job, but not leave a campaign without one', async () => {
+  const org = await signup('share_org');
+  const mate = await signup('share_mate');
+  const outsider = await signup('share_outsider');
+  const { code } = (await org.post('/campaigns', { name: 'Shared', setting: 'old-world' })).body;
+  await mate.post(`/campaigns/${code}/join`);
+  const mateId = (await org.get(`/campaigns/${code}`)).body.members.find(m => m.displayName === 'share_mate').userId;
+
+  // A player cannot promote themselves, and only members can be promoted.
+  assert.equal((await mate.post(`/campaigns/${code}/members/${mateId}/role`, { role: 'organizer' })).status, 403);
+  assert.equal((await org.post(`/campaigns/${code}/members/999999/role`, { role: 'organizer' })).status, 404);
+
+  let r = await org.post(`/campaigns/${code}/members/${mateId}/role`, { role: 'organizer' });
+  assert.equal(r.body.members.find(m => m.userId === mateId).role, 'organizer');
+  // And now they can do an organizer's work.
+  assert.equal((await mate.post(`/campaigns/${code}/freeze`, { frozen: true })).status, 200);
+  assert.equal((await outsider.post(`/campaigns/${code}/freeze`, { frozen: false })).status, 403);
+
+  // The first organizer can step down, now that somebody else holds it.
+  const orgId = r.body.members.find(m => m.displayName === 'share_org').userId;
+  r = await mate.post(`/campaigns/${code}/members/${orgId}/role`, { role: 'player' });
+  assert.equal(r.body.members.find(m => m.userId === orgId).role, 'player');
+  // But the last one cannot.
+  assert.equal((await mate.post(`/campaigns/${code}/members/${mateId}/role`, { role: 'player' })).status, 400);
 });
 
 test('a campaign link can name the game and the place being fought over', async () => {
@@ -322,7 +357,7 @@ test('a gamemaster can freeze a campaign and put influence on the map by decree'
 test('the five-army limit is per game, not per campaign', async () => {
   const org = await signup('limit_org');
   const { code } = (await org.post('/campaigns', { name: 'Two Games', setting: 'old-world' })).body;
-  await org.post(`/campaigns/${code}/settings`, { settings: ['warhammer-40k'] });
+  await org.post(`/campaigns/${code}/settings`, { settings: ['old-world', 'warhammer-40k'] });
 
   const factions = ['empire', 'bretonnia', 'dwarfs', 'kislev', 'orcs'];
   for (const [i, faction] of factions.entries()) {

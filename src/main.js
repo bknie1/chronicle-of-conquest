@@ -1183,20 +1183,32 @@ function openSettings() {
     <label>New season every<select name="resetDays">${[0, 30, 60, 90, 180, 365].map(d =>
       `<option value="${d}" ${d === (v.resetDays ?? 0) ? 'selected' : ''}>${d ? `${d} days` : 'Never, I reset it myself'}</option>`).join('')}</select></label>
     <fieldset class="maps"><legend>Games in play</legend>${Object.values(SETTINGS).map(s =>
-      `<label class="check"><input type="checkbox" name="settings" value="${esc(s.id)}" ${v.settings.includes(s.id) ? 'checked' : ''} ${s.id === v.settings[0] ? 'disabled' : ''}> ${esc(s.name)}</label>`).join('')}
-      <span class="hint">Each game gets its own tab, with its own armies and territory. Switching one off hides it; nothing is lost.</span></fieldset>
+      `<label class="check"><input type="checkbox" name="settings" value="${esc(s.id)}" ${v.settings.includes(s.id) ? 'checked' : ''}> ${esc(s.name)}</label>`).join('')}
+      <span class="hint">Each game gets its own tab, with its own armies and territory. Switching one off hides it — its armies, results and territory
+      are all still there if you switch it back on. Keep at least one.</span></fieldset>
     ${C().setting.maps.length > 1 ? `<fieldset class="maps"><legend>Maps in play for ${esc(C().setting.name)}</legend>${C().setting.maps.map(m =>
       `<label class="check"><input type="checkbox" name="maps" value="${esc(m.id)}" ${mapsShown().some(x => x.id === m.id) ? 'checked' : ''}> ${esc(m.name)}</label>`).join('')}
       <span class="hint">A map switched off keeps its games and territory; it is just not shown until it is switched back on.</span></fieldset>` : ''}
+    ${v.payload.members?.length > 1 ? `<fieldset class="maps"><legend>Who runs this campaign</legend>${v.payload.members.map(m =>
+      `<label class="check"><input type="checkbox" name="organizers" value="${m.userId}"
+        ${m.role === 'organizer' ? 'checked' : ''}> ${esc(m.displayName)}</label>`).join('')}
+      <span class="hint">An organizer can report for anyone, decree influence, add places and change these settings. A campaign needs at least one.</span></fieldset>` : ''}
     <p class="muted small">A new season clears the map and everyone starts from their homelands again. The chronicle keeps every game.</p>
     <div class="row"><button type="button" class="ghost" data-act="reset">Start a new season now</button>
       <button type="button" class="ghost" data-act="freeze">${v.frozen ? 'Thaw the campaign' : 'Freeze the campaign'}</button></div>
     <p class="muted small">Freezing pauses results, challenges and mustering. Everyone can still read the map; nothing is hidden.</p>
     ${cancelRow('Save settings')}`,
   async data => {
+    // Who runs it, before the rest: a demotion has to be refused while the
+    // person doing it is still an organizer.
+    const wanted = new Set(data.getAll('organizers').map(Number));
+    for (const m of v.payload.members ?? []) {
+      const role = wanted.has(m.userId) ? 'organizer' : 'player';
+      if (role !== m.role) await campaignCall('POST', `/members/${m.userId}/role`, { role });
+    }
     await campaignCall('POST', '/settings', {
       name: data.get('name'), level: data.get('level'), resetDays: Number(data.get('resetDays')),
-      settings: [v.settings[0], ...data.getAll('settings')],
+      settings: data.getAll('settings'),
       ...(C().setting.maps.length > 1 ? { maps: data.getAll('maps') } : {}),
     });
     toast('Campaign settings saved.');
