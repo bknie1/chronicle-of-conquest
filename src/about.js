@@ -59,10 +59,12 @@ export function aboutPage() {
       return `<li><span class="art-tag ${kind}">${kind === 'real' ? 'published art' : kind === 'mixed' ? 'part drawn' : 'drawn here'}</span>
         <b>${esc(s.name)}</b> <span class="muted">${esc(note)}</span></li>`;
     }).join('')}</ul>
-    <p>Where a map is marked <b>drawn here</b>, a script in this repository generated the landmass from a
-      random seed and scattered real place names across it. The names are right; the geography is not.
-      Azyr is the clearest case — no published map of it exists at all — so its coastline is noise and
-      Azyrheim sits near Sigmaron for no reason. Those maps are being replaced as published art is found.</p>
+    <p>Where a map is marked <b>drawn here</b>, no published chart of that place exists, so this project
+      drew one. Two remain: Azyr, which Games Workshop has never mapped, and Blight City, which is not the
+      sort of thing anyone surveys. Neither invents geography any more — Azyr is drawn as sky, a starfield
+      holding the few known holds with the Sigmarabulum ringing the world-core, and Blight City as what it
+      is, a cavern network gnawed out beneath the realms with holes chewed through into four of them. The
+      names are real; the arrangement is ours.</p>
 
     <h3>The art</h3>
     <p>The maps are Games Workshop's, or fan cartographers'. They are used here to run a campaign in one shop.
