@@ -47,6 +47,9 @@ export function campaignView(payload, setting = payload.campaign.setting) {
     settings: payload.campaign.settings ?? [payload.campaign.setting],
     frozen: !!payload.campaign.frozen,
     decrees: (payload.decrees ?? []).filter(d => d.setting === setting),
+    // Places this campaign's gamemaster added to its maps, folded into the
+    // graph alongside the printed ones.
+    places: (payload.places ?? []).filter(pl => pl.setting === setting),
     payload,
     level: payload.campaign.level ?? 'codex',
     resetDays: payload.campaign.resetDays ?? 0,

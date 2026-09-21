@@ -15,7 +15,8 @@ const ART = {
   'legions-imperialis': ['real', 'The Age of Darkness galaxy, and Terra’s own surface read off a labelled techno-barbarian chart.'],
   'horus-heresy': ['real', 'The Age of Darkness galaxy, and Terra’s own surface read off a labelled techno-barbarian chart.'],
   'middle-earth': ['real', 'A chart of the Third Age, with every point read off its own labelled edition of the same drawing.'],
-  'warhammer-40k': ['real', "Games Workshop's galaxy art, plus the Armageddon and Necromunda surface maps."],
+  'warhammer-40k': ['real', "Games Workshop's galaxy art, plus the Armageddon surface map."],
+  'necromunda': ['real', 'The Adeptus Terra cartograph of the hive world, and the surveyor’s cutaway of Hive Primus. A cutaway records depth, not ground, so the hive’s places sit at the level they belong to — and a gamemaster can add the rest.'],
 };
 
 export function aboutPage() {
@@ -47,6 +48,9 @@ export function aboutPage() {
     <p>An organizer can freeze a campaign, so nothing can be recorded while the shop is shut, without hiding it.
       They choose which games and which maps are in play, and they can put influence on the map by decree —
       an invasion, a landing, a WAAAGH!, or simply a correction — which holds until it is revoked.</p>
+    <p>They can also add places of their own. No shipped map can itemise a hive city or an ash waste, so a
+      campaign can put down the dome, the tunnel or the holding it actually fights over, write its lore, and
+      have it fought over like anywhere else on the map.</p>
 
     <h3>About the maps</h3>
     <p>Worth knowing before you plan a campaign around one:</p>

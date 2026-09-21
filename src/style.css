@@ -146,6 +146,12 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 }
 .viewport.orbiting .standee, .viewport.orbiting .world { transition: none; }
 .viewport.orbiting { cursor: grabbing; }
+/* Waiting to be told where a new place goes. */
+.viewport.placing { cursor: crosshair; }
+.viewport.placing .pin { pointer-events: none; }
+.map-controls button.on { background: var(--gold-2); color: #1b120a; border-color: var(--gold-2); }
+/* A place the gamemaster added, so it is clear which are theirs. */
+.marker.added .pin { border-style: dashed; }
 /* The piece has thickness. The depth is drawn on the wrapper rather than the
    pin, so a pin that is a rotated diamond still throws its side downwards —
    and so hover and home can keep overriding the pin's own box-shadow. */

@@ -25,20 +25,45 @@ const urlFor = path => BASE + path.replace(/^\//, '');
 // Everything derived from a setting (its maps, the graph across them, lookups).
 // Point indices are setting-wide; each map's points occupy [offset, offset + count).
 const contexts = new Map();
-function contextFor(id) {
-  if (!contexts.has(id)) {
-    const setting = SETTINGS[id];
+
+// A campaign may have added places of its own. They are not part of the
+// shipped map, so the setting is rebuilt with them folded in — after that they
+// are ordinary points, and the graph, the territory and the influence never
+// need to know the difference.
+function withPlaces(setting, places) {
+  if (!places?.length) return setting;
+  const byMap = new Map();
+  for (const p of places) {
+    if (!byMap.has(p.map)) byMap.set(p.map, []);
+    byMap.get(p.map).push({ id: p.id, name: p.name, kind: p.kind, region: p.region || 'Added by the gamemaster', x: p.x, y: p.y, added: true });
+  }
+  const maps = setting.maps.map(m => (byMap.has(m.id) ? { ...m, nodes: [...m.nodes, ...byMap.get(m.id)] } : m));
+  const nodes = maps.flatMap(m => m.nodes.map(n => ({ ...n, map: m.id })));
+  return { ...setting, maps, nodes };
+}
+
+// Places are keyed into the cache by what they are, so editing one rebuilds
+// the graph and nothing else does.
+const placesKey = places => (places ?? []).map(p => `${p.id}@${p.map}:${p.x},${p.y}`).sort().join('|');
+
+function contextFor(id, places) {
+  const key = places?.length ? `${id}#${placesKey(places)}` : id;
+  if (!contexts.has(key)) {
+    const setting = withPlaces(SETTINGS[id], places);
     const graph = buildSettingGraph(setting);
-    contexts.set(id, {
+    contexts.set(key, {
       setting,
       graph,
       nodes: setting.nodes,
       nodeIndex: graph.index,
       factionById: new Map(setting.factions.map(f => [f.id, f])), // army books, whatever the level
       mapById: new Map(setting.maps.map(m => [m.id, m])),
+      addedLore: new Map((places ?? []).filter(p => p.lore).map(p => [p.id, p.lore])),
     });
+    // Only the current shape of each campaign's map is worth keeping.
+    if (contexts.size > 24) contexts.delete([...contexts.keys()].find(k => k !== key));
   }
-  return contexts.get(id);
+  return contexts.get(key);
 }
 
 const state = {
@@ -100,11 +125,17 @@ const toLocal = i => i - current().offset;
 const playerById = id => V().players.find(p => p.id === id);
 const isToday = () => state.at >= V().today;
 const sameDay = (a, b) => Math.floor(a) === Math.floor(b);
-const confirmed = () => V().games.filter(g => g.status === 'confirmed');
+// A place can leave the map — a game dropped from the campaign, or one of the
+// gamemaster's own places removed. The chronicle keeps those results, but
+// nothing can be drawn at a place that is no longer there.
+const onMap = r => idx(r.node) != null;
+const confirmed = () => V().games.filter(g => g.status === 'confirmed' && onMap(g));
 const gamesSoFar = () => confirmed().filter(g => g.day <= state.at);
-const upcoming = () => (isToday() ? V().events : []);
+const upcoming = () => (isToday() ? V().events.filter(onMap) : []);
 const myArmies = () => (V().me ? V().players.filter(p => V().me.armyIds.has(p.id)) : []);
 const isOrganizer = () => V().me?.role === 'organizer';
+// One of the gamemaster's own places, rather than one the map came with.
+const addedPlace = nodeId => (V().places ?? []).find(p => p.id === nodeId) ?? null;
 const canAct = () => V().kind === 'demo' || myArmies().length > 0;
 
 // Realmgates touching point i: [{ gate, other }] where other is the far end.
@@ -393,12 +424,63 @@ function openDecree(i) {
   });
 }
 
+const KINDS = [
+  ['settlement', 'Settlement'], ['town', 'Town'], ['city', 'City'], ['hive', 'Hive'],
+  ['stronghold', 'Stronghold'], ['fortress', 'Fortress'], ['castle', 'Castle'], ['port', 'Port'],
+  ['temple', 'Temple'], ['forge', 'Forge'], ['plant', 'Plant'], ['mine', 'Mine'],
+  ['camp', 'Camp'], ['warren', 'Warren'], ['glade', 'Glade'], ['ruin', 'Ruin'],
+  ['site', 'Site'], ['wilds', 'Wilds'], ['region', 'Region'],
+];
+
+// A place of the gamemaster's own. The shipped maps cannot itemise a hive city
+// or an ash waste, so a campaign adds the ground it actually fights over.
+function openPlace(where, existing) {
+  const map = state.ctx.mapById.get(state.mapId);
+  openModal(`
+    <h2>${existing ? `Edit ${esc(existing.name)}` : 'A place of your own'}</h2>
+    <p class="muted">${existing ? 'Yours to change or remove.'
+      : `On ${esc(map.name)}, at ${Math.round(where.x)}, ${Math.round(where.y)}. It joins the map like any other place:
+         it can be fought over, held and contested.`}</p>
+    <label>Name<input name="name" required maxlength="60" autocomplete="off"
+      value="${esc(existing?.name ?? '')}" placeholder="The Sunken Dome"></label>
+    <label>What sort of place<select name="kind">${KINDS.map(([id, name]) =>
+      `<option value="${id}"${(existing?.kind ?? 'settlement') === id ? ' selected' : ''}>${name}</option>`).join('')}</select></label>
+    <label>Region <span class="muted">(optional)</span><input name="region" maxlength="60"
+      value="${esc(existing?.region ?? '')}" placeholder="The Underhive"></label>
+    <label>Lore <span class="muted">(optional)</span><textarea name="lore" rows="4" maxlength="2000"
+      placeholder="What it is, and why anyone would fight over it.">${esc(existing?.lore ?? '')}</textarea></label>
+    ${cancelRow(existing ? 'Save it' : 'Put it on the map')}`,
+  async data => {
+    const body = {
+      setting: V().setting, map: existing?.map ?? state.mapId,
+      name: data.get('name'), kind: data.get('kind'),
+      region: data.get('region'), lore: data.get('lore'),
+      x: existing ? existing.x : Math.round(where.x), y: existing ? existing.y : Math.round(where.y),
+    };
+    if (existing) await campaignCall('PATCH', `/places/${existing.placeId}`, body);
+    else await campaignCall('POST', '/places', body);
+    toast(`<b>${esc(data.get('name'))}</b> is on the map.`);
+  });
+}
+
+// Waiting for the gamemaster to say where. The next click on the map is the spot.
+function placeHere() {
+  state.placing = true;
+  $('#viewport').classList.add('placing');
+  toast('Click the map where the place goes. Press Escape to stop.');
+}
+
+function stopPlacing() {
+  state.placing = false;
+  $('#viewport').classList.remove('placing');
+}
+
 function renderRegion(panel, i) {
   const n = NODES()[i];
   const s = state.influence[i];
   const events = upcoming().filter(e => e.node === n.id);
   const history = gamesSoFar().filter(g => g.node === n.id).slice(-8).reverse();
-  const lore = loreFor(V().setting, n.id);
+  const lore = loreOf(n.id);
   const tab = state.regionTab;
   const battle = `
     <h3>Influence</h3>
@@ -406,7 +488,9 @@ function renderRegion(panel, i) {
     ${isToday() && !V().frozen ? `<div class="row">
       <button data-challenge="${i}">⚔ Challenge for ${esc(n.name)}</button>
       <button class="primary" data-report="${i}">Report a result here</button></div>` : ''}
-    ${isOrganizer() ? `<div class="row"><button class="small ghost" data-decree="${i}">Decree influence here</button></div>` : ''}
+    ${isOrganizer() ? `<div class="row"><button class="small ghost" data-decree="${i}">Decree influence here</button>
+      ${addedPlace(n.id) ? `<button class="small ghost" data-edit-place="${esc(n.id)}">Edit this place</button>
+        <button class="small ghost" data-remove-place="${esc(n.id)}">Remove it</button>` : ''}</div>` : ''}
     ${decreeLines(i)}
     ${gateLines(i)}
     ${events.length ? `<h3>Battles here</h3><ul class="events">${events.map(e => eventLine(e, false)).join('')}</ul>` : ''}
@@ -477,6 +561,12 @@ function realmStats(mapId) {
 }
 
 function renderRealmBar() {
+  // Adding places is a gamemaster's business, and only on a real map.
+  const add = $('#add-place');
+  add.hidden = !(V().kind === 'campaign' && isOrganizer() && !state.overview);
+  if (add.hidden && state.placing) stopPlacing();
+  add.setAttribute('aria-pressed', String(!!state.placing));
+  add.classList.toggle('on', !!state.placing);
   const bar = $('#realm-bar');
   bar.hidden = !multiMap();
   if (!multiMap()) return;
@@ -785,13 +875,15 @@ function setLevel(level) {
 function setView(view, { keepDay = false } = {}) {
   const wasToday = !state.view || isToday();
   const settingChanged = state.view?.setting !== view.setting;
+  // A gamemaster adding or moving a place changes the map itself.
+  const placesChanged = placesKey(state.view?.places) !== placesKey(view.places);
   state.view = view;
   if (settingChanged) state.levelChoice = null;
   const wanted = state.levelChoice ?? view.level ?? 'codex';
   const levelChanged = state.level !== wanted;
   state.level = wanted;
-  if (settingChanged || levelChanged) {
-    if (settingChanged) state.ctx = contextFor(view.setting);
+  if (settingChanged || levelChanged || placesChanged) {
+    if (settingChanged || placesChanged) state.ctx = contextFor(view.setting, view.places);
     rebuildFactions();
   }
   if (settingChanged) {
@@ -815,6 +907,9 @@ async function loadCampaign(code, opts) {
 }
 
 const demoFor = id => { const ctx = contextFor(id); return demoView(ctx.setting, ctx.graph); };
+// Lore for a place: the setting's own, or what the gamemaster wrote for one
+// of theirs.
+const loreOf = nodeId => loreFor(V().setting, nodeId) ?? state.ctx?.addedLore?.get(nodeId) ?? null;
 
 async function route() {
   stopPlayback();
@@ -1246,6 +1341,13 @@ const mapView = new MapView({
   onHover: (local, e) => showTooltip(local == null ? null : toGlobal(local), e),
   onSelect: local => select(local == null ? null : toGlobal(local)),
   onGate: k => select(state.gateTargets[k]),
+  // While a gamemaster is putting a place down, a click on the map is the spot.
+  onGround: (x, y) => {
+    if (!state.placing) return false;
+    stopPlacing();
+    openPlace({ x, y });
+    return true;
+  },
 });
 if (import.meta.env.DEV) window.__map = mapView; // for poking at the camera from devtools
 
@@ -1256,6 +1358,7 @@ $('#scrub').addEventListener('input', e => {
   draw();
 });
 $('#play').addEventListener('click', play);
+$('#add-place').addEventListener('click', () => (state.placing ? stopPlacing() : placeHere()));
 $('#zoom-in').addEventListener('click', () => mapView.zoomBy(1.3));
 $('#zoom-out').addEventListener('click', () => mapView.zoomBy(1 / 1.3));
 $('#zoom-fit').addEventListener('click', () => { select(null); mapView.fit(true, true); });
@@ -1369,14 +1472,18 @@ if (firstVisit() && !state.session.user && appPath() === '/') {
   history.replaceState(null, '', urlFor('/about'));
 }
 window.addEventListener('resize', () => { if (state.overview) renderOverview(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.selected != null && !$('#modal').open) select(null); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || $('#modal').open) return;
+  if (state.placing) return stopPlacing();
+  if (state.selected != null) select(null);
+});
 
 const confirmAct = (question, fn) => { if (window.confirm(question)) fn(); };
 const act = fn => fn().catch(e => toast(esc(e.message)));
 
 // Buttons inside the panel, tooltip, modals, realm bar and overview.
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-find],[data-decree],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
+  const t = e.target.closest('[data-find],[data-decree],[data-edit-place],[data-remove-place],[data-undecree],[data-level],[data-region-tab],[data-peek-close],[data-peek-details],[data-node],[data-report],[data-challenge],[data-report-event],[data-cancel-event],[data-act],[data-confirm],[data-dispute],[data-withdraw],[data-void],[data-retire],[data-copy],[data-go],[data-realm],#panel-back');
   if (!t) return;
   const d = t.dataset;
   if (t.id === 'panel-back') return select(null);
@@ -1385,6 +1492,12 @@ document.addEventListener('click', e => {
   if (d.regionTab) { state.regionTab = d.regionTab; return renderPanel(); }
   if (d.find) return goToPlace(Number(d.find));
   if (d.decree) return openDecree(Number(d.decree));
+  if (d.editPlace) return openPlace(null, addedPlace(d.editPlace));
+  if (d.removePlace) {
+    const place = addedPlace(d.removePlace);
+    return confirmAct(`Remove ${place.name} from the map? Any games played there stay in the chronicle.`,
+      () => act(() => campaignCall('DELETE', `/places/${place.placeId}`)));
+  }
   if (d.undecree) return confirmAct('Revoke this decree? Its influence comes off the map.',
     () => act(() => campaignCall('DELETE', `/decrees/${d.undecree}`)));
   if ('peekDetails' in d) return narrow() ? setSheet('full') : $('#panel').scrollIntoView({ behavior: 'smooth' });

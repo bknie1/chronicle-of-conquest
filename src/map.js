@@ -134,6 +134,7 @@ export class MapView {
       // What sort of place it is decides its marker, and how soon its label shows.
       if (n.kind) m.dataset.kind = n.kind;
       m.classList.toggle('minor', isMinor(n));
+      m.classList.toggle('added', !!n.added);  // one of the gamemaster's own
       m.style.left = `${n.x}px`;
       m.style.top = `${n.y}px`;
       const portals = gatesAt.get(i) || [];
@@ -415,6 +416,8 @@ export class MapView {
       drag = null;
       vp.classList.remove('dragging');
       if (!wasClick || e.target.closest('button')) return;
+      // Somebody may be waiting to be told where on the map this was.
+      if (this.onGround?.(...this.toWorld(e.clientX, e.clientY))) return;
       if (this.focus != null) { this.onSelect(null); return; }
       const i = this.nodeAt(e.clientX, e.clientY);
       if (i != null) this.onSelect(i);

@@ -31,6 +31,12 @@ export function campaignRoutes(db) {
     insertDecree: db.prepare(`INSERT INTO decrees (campaign_id, setting, node, faction, amount, reason, created_at, created_by)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`),
     deleteDecree: db.prepare('DELETE FROM decrees WHERE id = ? AND campaign_id = ?'),
+    places: db.prepare('SELECT * FROM places WHERE campaign_id = ? ORDER BY created_at, id'),
+    insertPlace: db.prepare(`INSERT INTO places (campaign_id, setting, map, name, kind, region, x, y, lore, created_at, created_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+    updatePlace: db.prepare(`UPDATE places SET name = ?, kind = ?, region = ?, x = ?, y = ?, lore = ?
+      WHERE id = ? AND campaign_id = ?`),
+    deletePlace: db.prepare('DELETE FROM places WHERE id = ? AND campaign_id = ?'),
     setOptions: db.prepare('UPDATE campaigns SET name = ?, level = ?, reset_days = ?, maps = ?, settings = ? WHERE id = ?'),
     myCampaigns: db.prepare(`SELECT c.code, c.name, c.setting, c.level, m.role FROM members m JOIN campaigns c ON c.id = m.campaign_id
       WHERE m.user_id = ? ORDER BY m.joined_at DESC`),
@@ -132,6 +138,10 @@ export function campaignRoutes(db) {
       decrees: q.decrees.all(c.id).map(d => ({
         id: d.id, setting: d.setting, node: d.node, faction: d.faction,
         amount: d.amount, reason: d.reason, createdAt: d.created_at,
+      })),
+      places: q.places.all(c.id).map(p => ({
+        id: `gm-${p.id}`, placeId: p.id, setting: p.setting, map: p.map, name: p.name,
+        kind: p.kind, region: p.region, x: p.x, y: p.y, lore: p.lore,
       })),
       members: q.members.all(c.id).map(m => ({ userId: m.user_id, displayName: m.display_name, role: m.role, joinedAt: m.joined_at })),
       armies: q.armies.all(c.id).map(a => ({
@@ -264,6 +274,65 @@ export function campaignRoutes(db) {
     const c = load(req);
     requireOrganizer(c, user);
     q.deleteDecree.run(id(req.params.id, 'Decree'), c.id);
+    res.json(payload(c, user));
+  });
+
+  // Gamemaster: places of their own. A shipped map cannot itemise a hive city
+  // or an ash waste, so a campaign can add the domes, tunnels and holdings it
+  // actually fights over. They join the graph like any other place.
+  const KINDS = new Set(['hive', 'city', 'stronghold', 'castle', 'port', 'temple', 'town', 'settlement',
+    'camp', 'warren', 'glade', 'ruin', 'wilds', 'forge', 'fortress', 'plant', 'site', 'mine', 'region']);
+
+  const placeFrom = (req, c) => {
+    const settingId = req.body.setting ?? c.setting;
+    if (!settingsOf(c).includes(settingId)) throw new HttpError(400, 'That game is not part of this campaign.');
+    const setting = SETTINGS[settingId];
+    const map = setting.maps.find(m => m.id === req.body.map);
+    if (!map) throw new HttpError(400, 'Pick one of this campaign’s maps.');
+    const x = Number(req.body.x), y = Number(req.body.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || y < 0 || x > map.width || y > map.height) {
+      throw new HttpError(400, 'Put the place on the map.');
+    }
+    const name = text(req.body.name, 'Name', { min: 2, max: 60 });
+    if (setting.nodes.some(n => n.name.toLowerCase() === name.toLowerCase())) {
+      throw new HttpError(400, `${name} is already on this map.`);
+    }
+    const kind = KINDS.has(req.body.kind) ? req.body.kind : 'settlement';
+    return {
+      settingId, mapId: map.id, name, kind,
+      region: text(req.body.region ?? '', 'Region', { min: 0, max: 60 }),
+      lore: text(req.body.lore ?? '', 'Lore', { min: 0, max: 2000 }),
+      x: Math.round(x), y: Math.round(y),
+    };
+  };
+
+  router.post('/campaigns/:code/places', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    const p = placeFrom(req, c);
+    q.insertPlace.run(c.id, p.settingId, p.mapId, p.name, p.kind, p.region, p.x, p.y, p.lore, Date.now(), user.id);
+    res.status(201).json(payload(c, user));
+  });
+
+  router.patch('/campaigns/:code/places/:id', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    const placeId = id(req.params.id, 'Place');
+    const existing = q.places.all(c.id).find(row => row.id === placeId);
+    if (!existing) throw new HttpError(404, 'No such place.');
+    const body = { ...req.body, setting: req.body.setting ?? existing.setting, map: req.body.map ?? existing.map };
+    const p = placeFrom({ ...req, body }, c);
+    q.updatePlace.run(p.name, p.kind, p.region, p.x, p.y, p.lore, placeId, c.id);
+    res.json(payload(c, user));
+  });
+
+  router.delete('/campaigns/:code/places/:id', (req, res) => {
+    const user = requireUser(req);
+    const c = load(req);
+    requireOrganizer(c, user);
+    q.deletePlace.run(id(req.params.id, 'Place'), c.id);
     res.json(payload(c, user));
   });
 

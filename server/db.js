@@ -82,6 +82,24 @@ CREATE TABLE IF NOT EXISTS decrees (
   created_at INTEGER NOT NULL,
   created_by INTEGER NOT NULL REFERENCES users(id)
 );
+-- Places a gamemaster added to one of this campaign's maps. The shipped maps
+-- are the same for everyone; these belong to the campaign that made them, and
+-- are folded into its graph alongside the printed ones.
+CREATE TABLE IF NOT EXISTS places (
+  id INTEGER PRIMARY KEY,
+  campaign_id INTEGER NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  setting TEXT NOT NULL,
+  map TEXT NOT NULL,
+  name TEXT NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'settlement',
+  region TEXT NOT NULL DEFAULT '',
+  x REAL NOT NULL,
+  y REAL NOT NULL,
+  lore TEXT NOT NULL DEFAULT '',
+  created_at INTEGER NOT NULL,
+  created_by INTEGER NOT NULL REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS places_campaign ON places(campaign_id);
 CREATE INDEX IF NOT EXISTS decrees_campaign ON decrees(campaign_id);
 CREATE INDEX IF NOT EXISTS armies_campaign ON armies(campaign_id);
 `;
