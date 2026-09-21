@@ -575,7 +575,7 @@ function renderRealmBar() {
   const bar = $('#realm-bar');
   bar.hidden = !multiMap();
   if (!multiMap()) return;
-  bar.innerHTML = `<button class="${state.overview ? 'active' : ''}" data-realm="__all">All realms</button>${mapsShown().map(m => {
+  bar.innerHTML = `<button class="${state.overview ? 'active' : ''}" data-realm="__all">${esc(C().setting.overview.name)}</button>${mapsShown().map(m => {
     const { held, battles } = realmStats(m.id);
     const lead = held[0] && faction(held[0][0]);
     return `<button class="${!state.overview && m.id === state.mapId ? 'active' : ''}" data-realm="${m.id}">
@@ -970,11 +970,17 @@ async function route() {
   }
   const m = path.match(/^\/c\/([A-Za-z0-9-]{6,7})(?:\/([a-z0-9-]+))?(?:\/([a-z0-9-]+))?\/?$/);
   if (!m) {
-    // Signed in with a campaign of your own, the front door is that campaign.
-    // It used to be the demo, which is how signed-in players kept ending up in
-    // a made-up store they never asked for.
+    // '/' is the front door and means nothing more specific than that: your
+    // own campaign if you have one, the demo if you do not. Anywhere that
+    // means the demo says /demo/<game> instead, because a path that means two
+    // different things depending on who is asking is how picking "Demo
+    // Campaign" used to land a signed-in player back in their own.
     const mine = state.session.campaigns;
-    if (state.session.user && mine.length) return loadCampaign(mine[0].code);
+    if (state.session.user && mine.length) {
+      // Say where we ended up, so a reload or a Back does the same thing.
+      history.replaceState(null, '', urlFor(`/c/${mine[0].code}`));
+      return loadCampaign(mine[0].code);
+    }
     return setView(demoFor('old-world'));
   }
   if (STATIC) {
@@ -1003,7 +1009,7 @@ async function route() {
 function syncPlaceUrl(i) {
   if (STATIC && V()?.kind === 'campaign') return;
   const want = i == null
-    ? (V().kind === 'demo' ? (V().setting === 'old-world' ? '/' : `/demo/${V().setting}`)
+    ? (V().kind === 'demo' ? `/demo/${V().setting}`
                            : (V().settings?.length > 1 ? `/c/${V().code}/${V().setting}` : `/c/${V().code}`))
     : linkToPlace(i).slice(location.origin.length + BASE.length - 1);
   if (appPath() !== want) history.replaceState(null, '', urlFor(want));
@@ -1539,7 +1545,7 @@ $('#campaign-select').addEventListener('change', e => {
   renderTopbar(); // snap the select back; the action below decides where we go
   if (v === '__join') return openJoin();
   if (v === '__create') return openCreate();
-  navigate(v === 'demo' ? (V().setting === 'old-world' ? '/' : `/demo/${V().setting}`) : `/c/${v}`);
+  navigate(v === 'demo' ? `/demo/${V().kind === 'demo' ? V().setting : 'old-world'}` : `/c/${v}`);
 });
 // A campaign is fixed to its setting, so picking another one here opens that
 // setting's demo to look around; the campaign picker brings you back.
@@ -1553,7 +1559,7 @@ $('#setting-select').addEventListener('change', e => {
     // game the campaign was last looked at in.
     return syncPlaceUrl(null);
   }
-  navigate(s === 'old-world' ? '/' : `/demo/${s}`);
+  navigate(`/demo/${s}`);
 });
 window.addEventListener('popstate', route);
 // A first visit, signed out, opens on the page that explains the app.
@@ -1628,7 +1634,7 @@ document.addEventListener('click', e => {
   if (d.act === 'muster') return openMuster();
   if (d.act === 'auth') return openAuth();
   if (d.act === 'settings') return openSettings();
-  if (d.act === 'about-close') return navigate(V()?.kind === 'demo' && V().setting !== 'old-world' ? `/demo/${V().setting}` : '/');
+  if (d.act === 'about-close') return navigate(V()?.kind === 'demo' ? `/demo/${V().setting}` : '/');
   if (d.act === 'freeze') {
     const on = !V().frozen;
     return confirmAct(on ? 'Freeze the campaign? Nothing can be recorded until it is thawed.' : 'Thaw the campaign?',
