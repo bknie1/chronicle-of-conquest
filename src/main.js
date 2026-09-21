@@ -3,6 +3,7 @@ import { buildSettingGraph, computeInfluence, rollUp, RULES } from './engine.js'
 import { MapView } from './map.js';
 import { loreFor } from './data/lore/index.js';
 import { play as sfx, setSound, soundOn, soundForPlace } from './audio.js';
+import { aboutPage } from './about.js';
 import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
@@ -811,6 +812,8 @@ async function route() {
   stopPlayback();
   if (state.selected != null) select(null);
   const path = appPath();
+  if (path === '/about' || path === '/about/') return showAbout(true);
+  showAbout(false);
   // A link can name a place, so one can be sent to whoever you are fighting:
   //   /demo/<setting>/<place>   /c/<code>/<place>   /c/<code>/<game>/<place>
   const demo = path.match(/^\/demo\/([a-z0-9-]+)(?:\/([a-z0-9-]+))?\/?$/);
@@ -868,6 +871,20 @@ function linkToPlace(i) {
     ? `/demo/${v.setting}/${id}`
     : (v.settings.length > 1 ? `/c/${v.code}/${v.setting}/${id}` : `/c/${v.code}/${id}`);
   return location.origin + urlFor(path);
+}
+
+// The page explaining what this is. Shown once on a first visit, and from
+// the header whenever anyone wants it again.
+function showAbout(on) {
+  const page = $('#about-page');
+  if (on && !page.innerHTML) page.innerHTML = aboutPage();
+  page.hidden = !on;
+  document.body.classList.toggle('reading', on);
+  if (on) try { localStorage.setItem('seen-about', '1'); } catch { /* ignore */ }
+}
+
+function firstVisit() {
+  try { return localStorage.getItem('seen-about') !== '1'; } catch { return false; }
 }
 
 function navigate(path) {
@@ -1258,6 +1275,7 @@ $('#back-btn').addEventListener('click', () => select(null));
 $('#btn-report').addEventListener('click', () => openReport());
 $('#btn-challenge').addEventListener('click', () => openChallenge());
 $('#btn-account').addEventListener('click', openAccount);
+$('#btn-about').addEventListener('click', () => navigate('/about'));
 $('#campaign-select').addEventListener('change', e => {
   const v = e.target.value;
   renderTopbar(); // snap the select back; the action below decides where we go
@@ -1274,6 +1292,10 @@ $('#setting-select').addEventListener('change', e => {
   navigate(s === 'old-world' ? '/' : `/demo/${s}`);
 });
 window.addEventListener('popstate', route);
+// A first visit, signed out, opens on the page that explains the app.
+if (firstVisit() && !state.session.user && appPath() === '/') {
+  history.replaceState(null, '', urlFor('/about'));
+}
 window.addEventListener('resize', () => { if (state.overview) renderOverview(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.selected != null && !$('#modal').open) select(null); });
 
@@ -1321,6 +1343,7 @@ document.addEventListener('click', e => {
   if (d.act === 'muster') return openMuster();
   if (d.act === 'auth') return openAuth();
   if (d.act === 'settings') return openSettings();
+  if (d.act === 'about-close') return navigate(V()?.kind === 'demo' && V().setting !== 'old-world' ? `/demo/${V().setting}` : '/');
   if (d.act === 'freeze') {
     const on = !V().frozen;
     return confirmAct(on ? 'Freeze the campaign? Nothing can be recorded until it is thawed.' : 'Thaw the campaign?',

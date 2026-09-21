@@ -432,3 +432,32 @@ dialog h3 { font-size: 13px; text-transform: uppercase; color: var(--gold); marg
 .levels { display: flex; gap: 4px; margin: 10px 0; flex-wrap: wrap; }
 .levels button { font-size: 13px; padding: 3px 9px; }
 .levels button.active { border-color: var(--gold); color: var(--gold-2); }
+
+
+/* --- the page that explains the app ------------------------------------- */
+.about-page {
+  grid-column: 1 / -1; overflow: auto; padding: 40px 24px 64px;
+  background: radial-gradient(120% 90% at 50% 0%, #241a10 0%, var(--bg) 70%);
+}
+body.reading .viewport, body.reading .sheet, body.reading .timeline { display: none; }
+body.reading .actions #btn-challenge, body.reading .actions #btn-report { display: none; }
+/* The page is about the app, not about any one campaign. */
+body.reading .campaign-select, body.reading .settings { display: none; }
+.about { max-width: 720px; margin: 0 auto; }
+.about h2 { font: 700 30px/1.2 var(--heading); color: var(--gold-2); margin: 0 0 6px; }
+.about h3 { font: 700 17px var(--heading); color: var(--gold-2); margin: 26px 0 6px; }
+.about p, .about li { line-height: 1.6; }
+.about .lead { font-size: 17px; }
+.about ol, .about ul { padding-left: 20px; margin: 8px 0; }
+.about ol li { margin: 4px 0; }
+.about .settings-list, .about .art-list { list-style: none; padding: 0; }
+.about .settings-list li, .about .art-list li { padding: 6px 0; border-bottom: 1px solid #ffffff12; }
+.about .art-tag {
+  display: inline-block; min-width: 96px; margin-right: 8px; padding: 1px 7px;
+  border-radius: 3px; font: 600 11px var(--heading); text-transform: uppercase; letter-spacing: .4px;
+}
+.about .art-tag.real { background: #24401f; color: #b7e3ab; }
+.about .art-tag.mixed { background: #46381a; color: #e8cf8f; }
+.about .art-tag.drawn { background: #48221f; color: #f0b3ac; }
+.about .row { margin-top: 28px; }
+@media (max-width: 720px) { .about-page { padding: 24px 16px 48px; } .about h2 { font-size: 24px; } }
