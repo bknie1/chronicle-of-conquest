@@ -4,7 +4,7 @@ import { MapView } from './map.js';
 import { loreFor } from './data/lore/index.js';
 import { play as sfx, setSound, soundOn, soundForPlace } from './audio.js';
 import { aboutPage } from './about.js';
-import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
+import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint, familyOf } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
 
@@ -864,11 +864,12 @@ function renderTopbar() {
   $('#btn-account').hidden = STATIC;
   const mine = state.session.campaigns;
   const currentValue = v.kind === 'campaign' ? v.code : 'demo';
-  // The demo is for people who have not signed in yet. Once someone has a
-  // campaign of their own, offering them a made-up store is just noise.
-  const showDemo = !state.session.user || !mine.length || V().kind === 'demo';
+  // The demo is for people who have not signed in yet. Once you are signed in
+  // it is not on offer at all — only listed while you are actually looking at
+  // one, so the dropdown still says where you are.
+  const showDemo = !state.session.user || V().kind === 'demo';
   const options = [
-    ...(showDemo ? [['demo', 'Demo store campaign']] : []),
+    ...(showDemo ? [['demo', 'Demo Campaign']] : []),
     ...mine.map(c => [c.code, c.name]),
     ...(v.kind === 'campaign' && !mine.some(c => c.code === v.code) ? [[v.code, v.name]] : []),
   ];
@@ -881,10 +882,14 @@ function renderTopbar() {
   const opt = st => `<option value="${esc(st.id)}" ${st.id === v.setting ? 'selected' : ''}>${esc(st.name)}</option>`;
   const all = Object.values(SETTINGS);
   const browsing = !state.session.user;   // signed in, you play; signed out, you look around
+  // Warhammer and everything else are ruled apart rather than run together.
+  const byFamily = list => [...new Set(list.map(st => familyOf(st.id)))]
+    .map(fam => `<optgroup label="${esc(fam)}">${list.filter(st => familyOf(st.id) === fam).map(opt).join('')}</optgroup>`)
+    .join('');
   picker.innerHTML = v.kind === 'campaign'
     ? `<optgroup label="${esc(v.name)}">${all.filter(st => v.settings.includes(st.id)).map(opt).join('')}</optgroup>
-       ${browsing ? `<optgroup label="Browse demos">${all.filter(st => !v.settings.includes(st.id)).map(opt).join('')}</optgroup>` : ''}`
-    : all.map(opt).join('');
+       ${browsing ? byFamily(all.filter(st => !v.settings.includes(st.id))) : ''}`
+    : byFamily(all);
   picker.disabled = false;
   picker.title = v.kind === 'campaign' ? 'Switch between this campaign’s games' : 'Choose a setting';
   document.title = v.kind === 'demo' ? 'Chronicle of Conquest' : `${v.name} · Chronicle of Conquest`;
@@ -980,7 +985,14 @@ async function route() {
     return selectById(demo[2]);
   }
   const m = path.match(/^\/c\/([A-Za-z0-9-]{6,7})(?:\/([a-z0-9-]+))?(?:\/([a-z0-9-]+))?\/?$/);
-  if (!m) return setView(demoFor('old-world'));
+  if (!m) {
+    // Signed in with a campaign of your own, the front door is that campaign.
+    // It used to be the demo, which is how signed-in players kept ending up in
+    // a made-up store they never asked for.
+    const mine = state.session.campaigns;
+    if (state.session.user && mine.length) return loadCampaign(mine[0].code);
+    return setView(demoFor('old-world'));
+  }
   if (STATIC) {
     history.replaceState(null, '', urlFor('/'));
     setView(demoFor('old-world'));
@@ -1416,7 +1428,11 @@ const mapView = new MapView({
     return true;
   },
 });
-if (import.meta.env.DEV) window.__map = mapView; // for poking at the camera from devtools
+if (import.meta.env.DEV) {
+  window.__map = mapView;       // for poking at the camera from devtools
+  window.__state = state;       // and at the session, without signing in to check
+  window.__draw = () => { renderTopbar(); draw(); };
+}
 
 $('#scrub').addEventListener('input', e => {
   stopPlayback();
@@ -1430,6 +1446,12 @@ $('#play').addEventListener('click', play);
 $('#btn-home').addEventListener('click', () => {
   if (state.placing) stopPlacing();
   select(null);
+  // Home is your own campaign if you have one, the page that explains the app
+  // if you are signed out, and the demo only as a last resort. It used to send
+  // signed-in players to '/', which is the demo — the one place they had not
+  // asked to go.
+  const mine = state.session.campaigns;
+  if (state.session.user && mine.length) return navigate(`/c/${mine[0].code}`);
   navigate(state.session.user ? '/' : '/about');
 });
 $('#add-place').addEventListener('click', () => (state.placing ? stopPlacing() : placeHere()));

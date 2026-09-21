@@ -113,7 +113,8 @@ function defineSetting({ id, name, maps, alliances = [], factions, gates = [], d
   };
 }
 
-// Listed in the order they appear in the setting picker.
+// Listed in the order they appear in the setting picker: Warhammer first, in
+// its own chronology, then everything that is not Warhammer.
 export const SETTINGS = {
   'old-world': defineSetting(OLD_WORLD),
   'warhammer-fantasy': defineSetting(WARHAMMER_FANTASY),
@@ -121,9 +122,19 @@ export const SETTINGS = {
   'legions-imperialis': defineSetting(LEGIONS_IMPERIALIS),
   'horus-heresy': defineSetting(HORUS_HERESY),
   'warhammer-40k': defineSetting(WARHAMMER_40K),
-  'middle-earth': defineSetting(MIDDLE_EARTH),
   'necromunda': defineSetting(NECROMUNDA),
+  'middle-earth': defineSetting(MIDDLE_EARTH),
 };
+
+// Which family a setting belongs to, so the picker can rule a line between
+// Warhammer and everything else rather than running them together.
+export const FAMILY = {
+  'old-world': 'Warhammer', 'warhammer-fantasy': 'Warhammer', 'mortal-realms': 'Warhammer',
+  'legions-imperialis': 'Warhammer', 'horus-heresy': 'Warhammer', 'warhammer-40k': 'Warhammer',
+  'necromunda': 'Warhammer',
+  'middle-earth': 'Other worlds',
+};
+export const familyOf = id => FAMILY[id] ?? 'Other worlds';
 
 // The list a campaign plays with, at its chosen level of detail.
 export const factionsFor = (setting, level) => setting.levels[level] ?? setting.levels.codex;

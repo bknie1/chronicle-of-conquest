@@ -83,7 +83,7 @@ Order patrols ride out to the spire, count the pilgrims camped around it, and ri
 
   'lake-reflux': `A wide shallow lake on the Thyrian border that empties and refills on no schedule anyone has worked out, leaving its bed exposed for weeks at a time. Armies use the dry seasons as a road; the lake has drowned more than one column that misjudged them.`,
 
-  'morbidus-warren': `The skaven undercity beneath Thyria, held by Clan Morbidus, whose plague-priests were driven out of the Hollow Forest when the Living City was grown over it. They did not go far. The warren is marked on the plate as full, which is a surveyor’s way of saying the diggings below are at capacity and something is going to have to come up.
+  'morbidus-warren': `The skaven undercity beneath Thyria, held by Clan Morbidus, whose plague-priests were driven out of the Hollow Forest when the Living City was grown over it. They did not go far, and the diggings below the city are reckoned to run further than anyone has cared to survey.
 
 Clan Morbidus breeds and brews rather than fights in the open, and the warren’s output goes into the wells and grain-stores of every settlement within a week’s tunnelling. Taking it would mean a campaign underground that no Freeguild has the stomach to begin, so instead the surface powers watch the entrances and burn what comes out.`,
 

@@ -48,7 +48,7 @@ export default {
     {"id": "lake-innis", "name": "Lake Innis", "kind": "region", "region": "Thyria", "x": 700, "y": 727},
     {"id": "lake-reflux", "name": "Lake Reflux", "kind": "region", "region": "Thyria", "x": 530, "y": 745},
     {"id": "silverwyr-gates", "name": "Silverwyr Gates", "kind": "site", "region": "Thyria", "x": 825, "y": 762},
-    {"id": "morbidus-warren", "name": "Morbidus Warren (Full)", "kind": "warren", "region": "Thyria", "x": 678, "y": 775},
+    {"id": "morbidus-warren", "name": "Morbidus Warren", "kind": "warren", "region": "Thyria", "x": 678, "y": 775},
     {"id": "vindpool", "name": "Vindpool", "kind": "region", "region": "Thyria", "x": 750, "y": 828},
     {"id": "thyria", "name": "Thyria", "kind": "region", "region": "Thyria", "x": 495, "y": 827},
     {"id": "living-city", "name": "The Living City", "kind": "city", "region": "Thyria", "x": 868, "y": 855},
