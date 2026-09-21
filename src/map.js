@@ -11,7 +11,9 @@ const el = (tag, attrs = {}, parent) => {
 };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 
-const TILT_DEG = 42;
+const TILT_DEG = 42;      // the tilt a focused place is shown at
+const MAX_TILT = 62;      // any further and the far edge of the map folds away
+const ORBIT_SPEED = 0.35; // degrees per pixel dragged
 const FOCUS_ZOOM = 3.2; // relative to the fit-to-screen zoom
 // Kinds whose labels only appear once you are fairly close in. Maps that do
 // not say what a point is get a guess from its name: a range or a forest is
@@ -23,7 +25,7 @@ const isMinor = n => (n.kind ? MINOR_KINDS.has(n.kind) : SCENERY.test(n.name));
 export class MapView {
   constructor({ viewport, onHover, onSelect, onGate }) {
     Object.assign(this, { viewport, onHover, onSelect, onGate });
-    this.view = { k: 1, x: 0, y: 0 };
+    this.view = { k: 1, x: 0, y: 0, tilt: 0, spin: 0 };
     this.focus = null;
     this.map = null;
     this.world = viewport.querySelector('.world');
@@ -49,7 +51,7 @@ export class MapView {
     this.overlay.replaceChildren();
     this.buildSvg();
     this.buildMarkers(gates);
-    this.fit();
+    this.fit(false, true);   // a new map arrives seen from overhead
   }
 
   buildSvg() {
@@ -140,7 +142,7 @@ export class MapView {
         <div class="standee">
           <div class="battle-badge"></div>
           <svg class="banner" viewBox="0 0 24 34"><path d="M3 1v32" class="pole"/><path d="M4 3h17l-4 6 4 6H4z" class="flag"/></svg>
-          <button class="pin" aria-label="${esc(n.name)}"></button>
+          <div class="plinth"><button class="pin" aria-label="${esc(n.name)}"></button></div>
           <div class="label">${esc(n.name)}</div>
           ${portals.map(g => `<button class="portal" data-gate="${g.k}" title="${esc(g.title)}">⟁ ${esc(g.label)}</button>`).join('')}
         </div>`;
@@ -210,15 +212,25 @@ export class MapView {
   apply(animate) {
     if (this.frame) { cancelAnimationFrame(this.frame); this.frame = null; }
     const { k, x, y } = this.view;
-    const f = this.focus != null ? this.map.nodes[this.focus] : { x: 0, y: 0 };
-    const tilt = this.focus != null ? TILT_DEG : 0;
-    // Rotate about the focused point while keeping the same screen mapping.
+    // Focusing a place tilts to look at it; otherwise the camera is wherever
+    // it was left, and zooming does not disturb it.
+    const tilt = this.focus != null ? TILT_DEG : this.view.tilt;
+    const spin = this.focus != null ? 0 : this.view.spin;
+    // The camera swings around the place being looked at — a focused one, or
+    // else whatever the middle of the screen is currently over. Pivoting on
+    // the map's corner instead would hurl its near edge into the lens.
+    const r = this.viewport.getBoundingClientRect();
+    const f = this.focus != null ? this.map.nodes[this.focus]
+      : { x: (r.width / 2 - x) / k, y: (r.height / 2 - y) / k };
+    // Rotate about that point while keeping the same screen mapping.
     this.world.style.transformOrigin = `${f.x}px ${f.y}px`;
     this.world.classList.toggle('animating', !!animate);
     this.world.style.transform =
-      `translate(${x + (k - 1) * f.x}px, ${y + (k - 1) * f.y}px) scale(${k}) rotateX(${tilt}deg)`;
+      `translate(${x + (k - 1) * f.x}px, ${y + (k - 1) * f.y}px) scale(${k}) rotateX(${tilt}deg) rotate(${spin}deg)`;
     this.world.style.setProperty('--k', k);
     this.world.style.setProperty('--tilt', `${tilt}deg`);
+    this.world.style.setProperty('--spin', `${spin}deg`);
+    this.viewport.classList.toggle('tilted', tilt > 4);
     this.viewport.classList.toggle('focused', this.focus != null);
     // Labels come in as you zoom past the fit-to-screen scale, later on dense
     // maps: homes first, then the towns, then the lesser sites.
@@ -233,16 +245,20 @@ export class MapView {
     this.viewport.classList.toggle('no-labels', !on);
   }
 
-  fit(animate) {
+  // Frames the whole map. `level` also puts the camera back overhead, which is
+  // what the reset button is for — a window resize reframes but leaves the
+  // camera where the player put it.
+  fit(animate, level = false) {
     const r = this.viewport.getBoundingClientRect();
     // Not laid out yet (a route change mid-load): try again next frame rather
     // than fitting to a zero-sized box.
-    if (!r.width || !r.height) { requestAnimationFrame(() => this.fit(animate)); return; }
+    if (!r.width || !r.height) { requestAnimationFrame(() => this.fit(animate, level)); return; }
     const k = Math.min(r.width / this.map.width, r.height / this.map.height);
     this.minK = k * 0.9;
     this.fitK = k;
     this.focus = null;
-    this.view = { k, x: (r.width - this.map.width * k) / 2, y: (r.height - this.map.height * k) / 2 };
+    const { tilt, spin } = level ? { tilt: 0, spin: 0 } : this.view;
+    this.view = { k, x: (r.width - this.map.width * k) / 2, y: (r.height - this.map.height * k) / 2, tilt, spin };
     this.apply(animate);
     this.markers?.forEach(m => m.classList.remove('selected'));
   }
@@ -253,7 +269,7 @@ export class MapView {
     if (this.focus == null) this.saved = { ...this.view };
     this.focus = i;
     const k = FOCUS_ZOOM * Math.min(r.width / this.map.width, r.height / this.map.height);
-    this.view = { k, x: r.width / 2 - k * n.x, y: r.height * 0.58 - k * n.y };
+    this.view = { ...this.view, k, x: r.width / 2 - k * n.x, y: r.height * 0.58 - k * n.y };
     this.apply(animate);
     this.markers.forEach((m, j) => m.classList.toggle('selected', j === i));
     this.litRoads(i);
@@ -280,7 +296,8 @@ export class MapView {
     cx ??= r.width / 2; cy ??= r.height / 2;
     const { k, x, y } = this.view;
     const k2 = Math.max(this.minK, Math.min(4, k * factor));
-    this.view = { k: k2, x: cx - (cx - x) * (k2 / k), y: cy - (cy - y) * (k2 / k) };
+    // Zooming keeps the camera where it was: only the reset levels it.
+    this.view = { ...this.view, k: k2, x: cx - (cx - x) * (k2 / k), y: cy - (cy - y) * (k2 / k) };
     this.applySoon();
   }
 
@@ -318,7 +335,19 @@ export class MapView {
       this.zoomBy(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
     }, { passive: false });
 
+    // Middle mouse moves the camera rather than the map: drag up and down to
+    // tilt towards the horizon, left and right to swing around.
+    let orbit = null;
     vp.addEventListener('pointerdown', e => {
+      if (active() && e.pointerType === 'mouse' && e.button === 1 && !e.target.closest(chrome)) {
+        e.preventDefault();
+        if (this.focus != null) this.unfocus();
+        orbit = { x: e.clientX, y: e.clientY, tilt: this.view.tilt, spin: this.view.spin };
+        try { vp.setPointerCapture(e.pointerId); } catch { /* the drag is tracked on window anyway */ }
+        vp.classList.add('orbiting');
+        this.onHover(null);
+        return;
+      }
       if (!active() || (e.pointerType === 'mouse' && e.button !== 0) || e.target.closest(`button, ${chrome}`)) return;
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pointers.size === 2) {
@@ -336,6 +365,12 @@ export class MapView {
     });
 
     window.addEventListener('pointermove', e => {
+      if (orbit) {
+        this.view.tilt = Math.max(0, Math.min(MAX_TILT, orbit.tilt + (e.clientY - orbit.y) * ORBIT_SPEED));
+        this.view.spin = orbit.spin + (e.clientX - orbit.x) * ORBIT_SPEED;
+        this.apply();
+        return;
+      }
       if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pinch && pointers.size >= 2) {
         const { dist, mid } = twoFingers();
@@ -344,7 +379,7 @@ export class MapView {
         const k = Math.max(this.minK, Math.min(4, v.k * dist / pinch.dist));
         // Keep the map point that started under the fingers under them as they move.
         const wx = (pinch.mx - v.x) / v.k, wy = (pinch.my - v.y) / v.k;
-        this.view = { k, x: mx - wx * k, y: my - wy * k };
+        this.view = { ...this.view, k, x: mx - wx * k, y: my - wy * k };
         this.applySoon();
         return;
       }
@@ -384,7 +419,9 @@ export class MapView {
       const i = this.nodeAt(e.clientX, e.clientY);
       if (i != null) this.onSelect(i);
     };
-    window.addEventListener('pointerup', release);
+    const endOrbit = () => { if (orbit) { orbit = null; vp.classList.remove('orbiting'); } };
+    window.addEventListener('pointerup', e => { endOrbit(); release(e); });
+    vp.addEventListener('auxclick', e => { if (e.button === 1) e.preventDefault(); });
     window.addEventListener('pointercancel', release);
     vp.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') this.onHover(null); });
   }

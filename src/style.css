@@ -139,16 +139,37 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 .standee {
   display: flex; flex-direction: column; align-items: center;
   transform-origin: 50% 100%;
-  transform: rotateX(calc(var(--tilt, 0deg) * -1));
+  /* Undo the camera so a marker stands upright on the map and reads face-on,
+     whatever the tilt and whichever way the map has been swung around. */
+  transform: rotate(calc(var(--spin, 0deg) * -1)) rotateX(calc(var(--tilt, 0deg) * -1));
   transition: transform .9s cubic-bezier(.3, .7, .2, 1);
 }
+.viewport.orbiting .standee, .viewport.orbiting .world { transition: none; }
+.viewport.orbiting { cursor: grabbing; }
+/* The piece has thickness. The depth is drawn on the wrapper rather than the
+   pin, so a pin that is a rotated diamond still throws its side downwards —
+   and so hover and home can keep overriding the pin's own box-shadow. */
+.plinth { line-height: 0; filter: drop-shadow(0 1px 0 #241708) drop-shadow(0 2px 0 #1b120aaa) drop-shadow(0 3px 3px #000a); }
+.viewport.tilted .plinth { filter: drop-shadow(0 2px 0 #241708) drop-shadow(0 4px 0 #1b120aaa) drop-shadow(0 6px 5px #000a); }
 .pin {
   pointer-events: auto;
   width: 14px; height: 14px; padding: 0; border-radius: 50%;
-  background: var(--faction); border: 2px solid #1b120a;
+  /* Lit from the upper left, like a painted model. */
+  background:
+    linear-gradient(155deg, #ffffff3d 0%, #ffffff12 38%, #00000000 55%, #00000038 100%),
+    var(--faction);
+  border: 2px solid #1b120a;
   box-shadow: 0 0 0 2px #f3e6c8aa;
 }
-.marker:not(.owned) .pin { background: #d9ccb0; }
+/* A shadow cast on the map itself, which stays flat while the piece stands up. */
+.marker::after {
+  content: ''; position: absolute; left: 50%; bottom: -3px;
+  width: 16px; height: 7px; margin-left: -8px; border-radius: 50%;
+  background: #00000055; filter: blur(2px);
+  opacity: 0; transition: opacity .4s;
+}
+.viewport.tilted .marker::after { opacity: 1; }
+.marker:not(.owned) .pin { --faction: #d9ccb0; }   /* unclaimed, but still a piece on the board */
 .marker.home .pin { width: 20px; height: 20px; border-radius: 3px; transform: rotate(45deg); box-shadow: 0 0 0 2px #f3e6c8, 0 0 12px var(--faction); }
 .pin:hover, .marker.selected .pin { box-shadow: 0 0 0 3px var(--gold-2), 0 0 14px var(--gold-2); }
 .label {

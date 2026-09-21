@@ -1258,7 +1258,7 @@ $('#scrub').addEventListener('input', e => {
 $('#play').addEventListener('click', play);
 $('#zoom-in').addEventListener('click', () => mapView.zoomBy(1.3));
 $('#zoom-out').addEventListener('click', () => mapView.zoomBy(1 / 1.3));
-$('#zoom-fit').addEventListener('click', () => { select(null); mapView.fit(true); });
+$('#zoom-fit').addEventListener('click', () => { select(null); mapView.fit(true, true); });
 // Place names can be switched off for a cleaner look; the choice is remembered.
 const labelsBtn = $('#labels-toggle');
 let labelsOn = true;
