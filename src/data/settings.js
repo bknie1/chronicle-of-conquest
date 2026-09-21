@@ -28,6 +28,7 @@ import { HORUS_HERESY } from './horus-heresy.js';
 import { LEGIONS_IMPERIALIS } from './legions-imperialis.js';
 import { WARHAMMER_40K } from './warhammer-40k.js';
 import { MIDDLE_EARTH } from './middle-earth.js';
+import { NECROMUNDA } from './necromunda.js';
 
 export const LEVELS = ['alliance', 'codex'];
 export const LEVEL_NAMES = {
@@ -109,6 +110,7 @@ export const SETTINGS = {
   'horus-heresy': defineSetting(HORUS_HERESY),
   'warhammer-40k': defineSetting(WARHAMMER_40K),
   'middle-earth': defineSetting(MIDDLE_EARTH),
+  'necromunda': defineSetting(NECROMUNDA),
 };
 
 // The list a campaign plays with, at its chosen level of detail.

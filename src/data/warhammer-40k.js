@@ -6,12 +6,11 @@ import { MAPS } from './maps/index.js';
 export const WARHAMMER_40K = {
   id: 'warhammer-40k',
   name: 'Warhammer 40,000',
-  maps: [MAPS['galaxy-40k'], MAPS['armageddon'], MAPS['necromunda']],
+  maps: [MAPS['galaxy-40k'], MAPS['armageddon']],
   // Armageddon is drawn twice: as a world on the galaxy map, and as its own
   // surface. Landing there from orbit puts you at Hive Infernus.
   gates: [
     ['armageddon', 'hive-infernus', 'Orbital descent'],
-    ['necromunda-40k', 'hive-primus', 'Orbital descent'],
   ],
   // Simplest mode: the three great sides of the 41st millennium.
   alliances: [

@@ -19,7 +19,8 @@ import necromunda from './necromunda.js';
 import fantasyWorld from './fantasy-world.js';
 import middleEarth from './middle-earth.js';
 import terra from './terra.js';
+import hivePrimus from './hive-primus.js';
 
 export const MAPS = Object.fromEntries(
-  [oldWorld, aqshy, ghyran, ghur, shyish, chamon, ulgu, hysh, azyr, eightpoints, blightCity, heresyGalaxy, galaxy40k, armageddon, necromunda, fantasyWorld, middleEarth, terra].map(m => [m.id, m]),
+  [oldWorld, aqshy, ghyran, ghur, shyish, chamon, ulgu, hysh, azyr, eightpoints, blightCity, heresyGalaxy, galaxy40k, armageddon, necromunda, fantasyWorld, middleEarth, terra, hivePrimus].map(m => [m.id, m]),
 );

@@ -17,6 +17,7 @@ import { WARHAMMER_FANTASY_LORE } from './warhammer-fantasy.js';
 import { MORTAL_REALMS_LORE } from './mortal-realms.js';
 import { AGE_OF_DARKNESS_LORE } from './age-of-darkness.js';
 import { TERRA_LORE } from './terra.js';
+import { NECROMUNDA_LORE } from './necromunda.js';
 import { WARHAMMER_40K_LORE } from './warhammer-40k.js';
 import { MIDDLE_EARTH_LORE } from './middle-earth.js';
 
@@ -29,6 +30,7 @@ const LORE = {
   'horus-heresy': { ...AGE_OF_DARKNESS_LORE, ...TERRA_LORE },
   'legions-imperialis': { ...AGE_OF_DARKNESS_LORE, ...TERRA_LORE },
   'warhammer-40k': WARHAMMER_40K_LORE,
+  'necromunda': NECROMUNDA_LORE,
   'middle-earth': MIDDLE_EARTH_LORE,
 };
 
