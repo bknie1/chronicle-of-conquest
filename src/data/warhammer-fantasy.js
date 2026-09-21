@@ -49,7 +49,13 @@ export const WARHAMMER_FANTASY = {
         { id: 'wf-caledor', name: 'Caledor', home: 'fw-caledor' },
       ],
     },
-    { id: 'wf-wood-elves', name: 'Wood Elf Realms', color: '#2e7d32', home: 'fw-athel-loren', alliance: 'wf-order' },
+    { id: 'wf-wood-elves', name: 'Wood Elf Realms', color: '#2e7d32', home: 'fw-athel-loren', alliance: 'wf-order',
+      // The glades of Athel Loren, as the Old World knows them.
+      subfactions: [
+        { id: 'wf-torgovann', name: 'Torgovann', color: '#2e7d32', home: 'fw-torgovann' },
+        { id: 'wf-wydrioth', name: 'Wydrioth', color: '#2e7d32', home: 'fw-wydrioth' },
+        { id: 'wf-talsyn', name: 'Talsyn', color: '#2e7d32', home: 'fw-talsyn' },
+      ] },
     {
       id: 'wf-lizardmen', name: 'Lizardmen', color: '#26a69a', home: 'fw-itza', alliance: 'wf-order',
       subfactions: [
@@ -58,7 +64,14 @@ export const WARHAMMER_FANTASY = {
         { id: 'wf-tlaxtlan-city', name: 'Tlaxtlan', home: 'fw-tlaxtlan' },
       ],
     },
-    { id: 'wf-kislev', name: 'Kislev', color: '#49c3ef', home: 'fw-kislev-city', alliance: 'wf-order' },
+    { id: 'wf-kislev', name: 'Kislev', color: '#49c3ef', home: 'fw-kislev-city', alliance: 'wf-order',
+      // Kislev's cities and the oblasts they watch over.
+      subfactions: [
+        { id: 'wf-erengrad', name: 'Erengrad', color: '#49c3ef', home: 'fw-erengrad' },
+        { id: 'wf-praag', name: 'Praag', color: '#49c3ef', home: 'fw-praag' },
+        { id: 'wf-southern-oblast', name: 'The Southern Oblast', color: '#49c3ef', home: 'fw-southern-oblast' },
+        { id: 'wf-eastern-oblast', name: 'The Eastern Oblast', color: '#49c3ef', home: 'fw-eastern-oblast' },
+      ] },
     {
       id: 'wf-cathay', name: 'Grand Cathay', color: '#ad1457', home: 'fw-wei-jin', alliance: 'wf-order',
       subfactions: [
@@ -108,11 +121,45 @@ export const WARHAMMER_FANTASY = {
         { id: 'wf-vargs', name: 'The Vargs', color: '#c4102a', home: 'fw-cold-mires' },
         { id: 'wf-kurgan', name: 'The Kurgan', color: '#c4102a', home: 'fw-shard-lands' },
       ] },
-    { id: 'wf-daemons', name: 'Daemons of Chaos', color: '#c2185b', home: 'fw-chaos-wastes-south', alliance: 'wf-chaos' },
-    { id: 'wf-beastmen', name: 'Beastmen Brayherds', color: '#5d4037', home: 'fw-drakwald', alliance: 'wf-chaos' },
-    { id: 'wf-chaos-dwarfs', name: 'Chaos Dwarfs', color: '#455a64', home: 'fw-zharr-naggrund', alliance: 'wf-chaos' },
-    { id: 'wf-ogres', name: 'Ogre Kingdoms', color: '#e65100', home: 'fw-mountains-of-mourn', alliance: 'wf-destruction' },
-    { id: 'wf-orcs', name: 'Orc & Goblin Tribes', color: '#7cb342', home: 'fw-black-crag', alliance: 'wf-destruction' },
-    { id: 'wf-araby', name: 'Araby', color: '#a1662f', home: 'fw-al-haikk', alliance: 'wf-order' },
+    { id: 'wf-daemons', name: 'Daemons of Chaos', color: '#c2185b', home: 'fw-chaos-wastes-south', alliance: 'wf-chaos',
+      // Where the veil is thinnest, an age before the Old World's rifts.
+      subfactions: [
+        { id: 'wf-bloodfire-falls', name: 'Bloodfire Falls', color: '#c2185b', home: 'fw-bloodfire-falls' },
+        { id: 'wf-blood-marshes', name: 'The Blood Marshes', color: '#c2185b', home: 'fw-blood-marshes' },
+      ] },
+    { id: 'wf-beastmen', name: 'Beastmen Brayherds', color: '#5d4037', home: 'fw-drakwald', alliance: 'wf-chaos',
+      // Brayherds keep to the deep forests in either age.
+      subfactions: [
+        { id: 'wf-arden-herds', name: 'The Arden Herds', color: '#5d4037', home: 'fw-forest-of-arden' },
+        { id: 'wf-chalons-herds', name: 'The Chalons Herds', color: '#5d4037', home: 'fw-forest-of-chalons' },
+        { id: 'wf-loren-herds', name: 'The Wild Herds', color: '#5d4037', home: 'fw-athel-loren' },
+      ] },
+    { id: 'wf-chaos-dwarfs', name: 'Chaos Dwarfs', color: '#455a64', home: 'fw-zharr-naggrund', alliance: 'wf-chaos',
+      // Zharr's other holdings, as the Old World has them.
+      subfactions: [
+        { id: 'wf-uzkulak', name: 'Uzkulak', color: '#455a64', home: 'fw-uzkulak' },
+        { id: 'wf-zorn-uzkul', name: 'Zorn Uzkul', color: '#455a64', home: 'fw-zorn-uzkul' },
+        { id: 'wf-zharrduk', name: 'The Plain of Zharrduk', color: '#455a64', home: 'fw-plain-of-zharrduk' },
+      ] },
+    { id: 'wf-ogres', name: 'Ogre Kingdoms', color: '#e65100', home: 'fw-mountains-of-mourn', alliance: 'wf-destruction',
+      // The Mawtribes' roads and the gnoblar country beneath them.
+      subfactions: [
+        { id: 'wf-ivory-road', name: 'The Ivory Road', color: '#e65100', home: 'fw-ivory-road' },
+        { id: 'wf-gnoblar-country', name: 'Gnoblar Country', color: '#e65100', home: 'fw-gnoblar-country' },
+      ] },
+    { id: 'wf-orcs', name: 'Orc & Goblin Tribes', color: '#7cb342', home: 'fw-black-crag', alliance: 'wf-destruction',
+      // The greenskin holds of the Badlands, as in the Old World.
+      subfactions: [
+        { id: 'wf-eastern-badlands', name: 'The Eastern Badlands', color: '#7cb342', home: 'fw-eastern-badlands' },
+        { id: 'wf-western-badlands', name: 'The Western Badlands', color: '#7cb342', home: 'fw-western-badlands' },
+        { id: 'wf-death-pass', name: 'Death Pass', color: '#7cb342', home: 'fw-death-pass' },
+      ] },
+    { id: 'wf-araby', name: 'Araby', color: '#a1662f', home: 'fw-al-haikk', alliance: 'wf-order',
+      // Araby's ports, each its own power.
+      subfactions: [
+        { id: 'wf-lashiek', name: 'Lashiek', color: '#a1662f', home: 'fw-lashiek' },
+        { id: 'wf-copher', name: 'Copher', color: '#a1662f', home: 'fw-copher' },
+        { id: 'wf-martek', name: 'Martek', color: '#a1662f', home: 'fw-martek' },
+      ] },
   ],
 };
