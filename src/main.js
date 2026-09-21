@@ -1370,6 +1370,13 @@ $('#scrub').addEventListener('input', e => {
   draw();
 });
 $('#play').addEventListener('click', play);
+// The sigil goes home: to the page that explains the app if you are signed
+// out, and to your own map if you are not.
+$('#btn-home').addEventListener('click', () => {
+  if (state.placing) stopPlacing();
+  select(null);
+  navigate(state.session.user ? '/' : '/about');
+});
 $('#add-place').addEventListener('click', () => (state.placing ? stopPlacing() : placeHere()));
 $('#zoom-in').addEventListener('click', () => mapView.zoomBy(1.3));
 $('#zoom-out').addEventListener('click', () => mapView.zoomBy(1 / 1.3));

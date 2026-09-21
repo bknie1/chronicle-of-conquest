@@ -34,7 +34,14 @@ def convert(src, out, width=2600):
     # Some of these plates are published in colour and some as pale line
     # drawings. A painted one keeps its own colour — it is already the best
     # version of itself — and only gets graded so it sits with the others.
+    g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     sat = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[..., 1].mean()
+    # Some plates are published almost black — a night rendition rather than a
+    # painting. Graded as if painted they come out as harsh monochrome, so they
+    # get the blacks lifted and the whites pulled back instead. The drawing is
+    # not altered, only the exposure it was printed at.
+    if np.percentile(g, 50) < 90:
+        return finish(soften(img), src, out, w, h, width, 'dark plate')
     if sat > 28:
         out_img = grade(img)
         return finish(out_img, src, out, w, h, width, 'painted')
@@ -59,6 +66,25 @@ def convert(src, out, width=2600):
     out_img = np.clip(out_img + rng.normal(0, 2.6, (h, w, 1)), 0, 255).astype(np.uint8)
 
     return finish(out_img, src, out, w, h, width, 'toned')
+
+
+def soften(img):
+    """Bring a near-black plate back onto the page.
+
+    Everything is squeezed into a narrower, warmer band so it sits beside the
+    parchment maps instead of punching a hole in the page, and the extremes are
+    rolled off rather than clipped so the linework keeps its detail.
+    """
+    x = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
+    lo, hi = np.percentile(x, 1), np.percentile(x, 99)
+    x = np.clip((x - lo) / max(hi - lo, 1e-6), 0, 1)
+    x = x ** 0.78                                   # open the shadows
+    x = 0.20 + 0.66 * x                             # and keep off both ends
+    dark = np.array([46, 44, 52], np.float32)       # BGR: cold shadow, faintly violet
+    light = np.array([188, 196, 206], np.float32)   # BGR: pale, not white
+    out = dark + (light - dark) * x[..., None]
+    rng = np.random.default_rng(23)
+    return np.clip(out + rng.normal(0, 2.4, (*x.shape, 1)), 0, 255).astype(np.uint8)
 
 
 def grade(img):

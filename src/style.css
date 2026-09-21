@@ -52,6 +52,15 @@ button.link { background: none; border: 0; padding: 0; color: var(--gold-2); tex
 }
 .brand { display: flex; align-items: center; gap: 12px; }
 .sigil { font-size: 30px; color: var(--gold); }
+/* The sigil is the way home: the intro if you have not signed in, the map if
+   you have. */
+button.sigil {
+  background: none; border: 0; padding: 0 4px; cursor: pointer;
+  line-height: 1; border-radius: 6px;
+  transition: color .2s, transform .2s;
+}
+button.sigil:hover { color: var(--gold-2); transform: scale(1.08); }
+button.sigil:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; }
 .brand h1 { font-size: 21px; color: var(--gold-2); }
 .campaign { color: var(--muted); font-size: 15px; }
 .badge { font: 700 11px var(--heading); color: #1a1208; background: var(--gold); border-radius: 3px; padding: 1px 6px; margin-left: 4px; }

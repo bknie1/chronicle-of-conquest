@@ -4,7 +4,7 @@
 // position of a city icon, a lake, the middle of a named region — not estimated
 // off a shrunk overview. Spellings are the plate's own.
 //
-// The plate is one geosegment, not the whole realm. Six of the Ten Paradises
+// The plate is one geosegment, not the whole realm. Most of the Ten Paradises
 // are not on it; the great nations that do not appear (Syar, Alumnia, Helon)
 // and the Mirrorlight Peaks are pinned to the map edge in the direction the
 // frame runs out, and are marked as such in the lore.
@@ -14,8 +14,8 @@ export default {
   "title": "The Realm of Light",
   "image": "/maps/realms/hysh.jpg",
   "width": 2600, "height": 1706,
-  // Nearest-neighbour distance across the 182 points: median 93px, quartiles
-  // 74 / 121. maxEdge is 2.7x that median, reach is 1x.
+  // Nearest-neighbour distance across the 182 points: median 96px, quartiles
+  // 74 / 122. maxEdge is 2.7x that median, reach is 1x.
   "maxEdge": 250, "reach": 95,
   "nodes": [
     // --- Xintil and the coreward north-west --------------------------------
@@ -29,7 +29,7 @@ export default {
     {"id": "the-xintil-breach", "name": "The Xintil Breach", "kind": "site", "region": "Xintil", "x": 16, "y": 333},
     {"id": "utmost-lack", "name": "Utmost Lack", "kind": "settlement", "region": "Xintil", "x": 530, "y": 22},
     {"id": "morns-lantern", "name": "Morn's Lantern", "kind": "settlement", "region": "Xintil", "x": 497, "y": 138},
-    {"id": "varours-lesson", "name": "Varour's Lesson", "kind": "site", "region": "Xintil", "x": 512, "y": 230},
+    {"id": "varours-lesson", "name": "Varour's Lesson", "kind": "site", "region": "Xintil", "x": 500, "y": 232},
     {"id": "spectacular-falls", "name": "Spectacular Falls", "kind": "site", "region": "Xintil", "x": 468, "y": 286},
     {"id": "lacois-triumph", "name": "Lacoi's Triumph", "kind": "site", "region": "Xintil", "x": 395, "y": 352},
     {"id": "arch-of-men", "name": "Arch of Men", "kind": "site", "region": "Xintil", "x": 308, "y": 458},
@@ -40,7 +40,7 @@ export default {
     {"id": "the-crescense", "name": "The Crescense", "kind": "region", "region": "Xintil", "x": 65, "y": 757},
     {"id": "tourmaline-spires", "name": "Tourmaline Spires", "kind": "settlement", "region": "Xintil", "x": 196, "y": 729},
     {"id": "hel-clash", "name": "Hel Clash", "kind": "site", "region": "Xintil", "x": 285, "y": 722},
-    {"id": "settlers-gain", "name": "Settler's Gain", "kind": "city", "region": "Xintil", "x": 318, "y": 772},
+    {"id": "settlers-gain", "name": "Settler's Gain", "kind": "city", "region": "Xintil", "x": 336, "y": 765},
     {"id": "sivejrs-rest", "name": "Sivejr's Rest", "kind": "settlement", "region": "Xintil", "x": 192, "y": 867},
     {"id": "concession", "name": "Concession", "kind": "settlement", "region": "Xintil", "x": 440, "y": 628},
     {"id": "the-pillar-of-truth", "name": "The Pillar of Truth", "kind": "site", "region": "Xintil", "x": 461, "y": 713},
@@ -52,7 +52,7 @@ export default {
     {"id": "extrapolated-spur", "name": "Extrapolated Spur", "kind": "region", "region": "The Girdlesea", "x": 601, "y": 119},
     {"id": "coast-of-lucid-dreams", "name": "Coast of Lucid Dreams", "kind": "region", "region": "The Girdlesea", "x": 792, "y": 161},
     {"id": "breaking-point", "name": "Breaking Point", "kind": "region", "region": "The Girdlesea", "x": 718, "y": 277},
-    {"id": "tor-qulian", "name": "Tor Qulian", "kind": "port", "region": "The Girdlesea", "x": 867, "y": 275},
+    {"id": "tor-qulian", "name": "Tor Qulian", "kind": "port", "region": "The Girdlesea", "x": 872, "y": 295},
     {"id": "fractal-fjords", "name": "Fractal Fjords", "kind": "region", "region": "The Girdlesea", "x": 651, "y": 427},
     {"id": "quintessence", "name": "Quintessence", "kind": "site", "region": "The Girdlesea", "x": 618, "y": 466},
     {"id": "quillkeep", "name": "Quillkeep", "kind": "stronghold", "region": "The Girdlesea", "x": 562, "y": 493},
@@ -129,7 +129,7 @@ export default {
     {"id": "aroth-strongpoint", "name": "Aroth Strongpoint", "kind": "stronghold", "region": "Ymetrica", "x": 1409, "y": 571},
     {"id": "malanias-lament", "name": "Malania's Lament", "kind": "site", "region": "Ymetrica", "x": 1403, "y": 671},
     {"id": "uel-tazalar", "name": "Uel Tazalar", "kind": "site", "region": "Ymetrica", "x": 1553, "y": 660},
-    {"id": "contrarian-river", "name": "Contrarian River", "kind": "region", "region": "Ymetrica", "x": 1676, "y": 647},
+    {"id": "hysh-contrarian-river", "name": "Contrarian River", "kind": "region", "region": "Ymetrica", "x": 1676, "y": 647},
     {"id": "saroir-aftermath", "name": "Saroir Aftermath", "kind": "site", "region": "Ymetrica", "x": 1816, "y": 552},
     {"id": "beaming-desert", "name": "Beaming Desert", "kind": "region", "region": "Ymetrica", "x": 1945, "y": 628},
     {"id": "scintilla-gate", "name": "Scintilla Gate", "kind": "site", "region": "Ymetrica", "x": 1936, "y": 732},
@@ -214,7 +214,7 @@ export default {
     // --- Beyond the plate --------------------------------------------------
     // The Ymetrican Geosegment does not cover these. They are pinned to the
     // frame in the direction the map runs out, not to any drawn feature.
-    {"id": "hysh", "name": "Hysh", "kind": "region", "region": "Hysh", "x": 1300, "y": 853},
+    {"id": "hysh", "name": "Hysh", "kind": "region", "region": "Hysh", "x": 1340, "y": 868},
     {"id": "syar", "name": "Syar", "kind": "region", "region": "Hysh", "x": 1850, "y": 24},
     {"id": "alumnia", "name": "Alumnia", "kind": "region", "region": "Hysh", "x": 16, "y": 690},
     {"id": "mirrorlight-peaks", "name": "Mirrorlight Peaks", "kind": "wilds", "region": "Hysh", "x": 16, "y": 845},

@@ -3,13 +3,18 @@
 // lands at 2600x1708; every point below was read at 1:1 off ruled tiles of that
 // exact image (scripts/map-tiles.py), so a coordinate here is a pixel there.
 // Points sit on the thing the label names — the settlement dot, the lake, the
-// middle of the named ground — not on the lettering.
+// middle of the named ground — not on the lettering. Display names use the
+// plate's own spelling; ids keep the spellings the rest of the app points at.
 export default {
   "id": "ghur",
   "name": "Ghur",
-  "title": "The Ghurish Heartlands",
+  "kind": "settlement",
+  "title": "The Realm of Beasts",
   "image": "/maps/realms/ghur.jpg",
   "width": 2600, "height": 1708,
+  // Nearest-neighbour distance across these 188 points has a median of 94px;
+  // maxEdge is set near 2.75x that, reach at 1x. Nothing is isolated, so
+  // extraLinks stays empty.
   "maxEdge": 260, "reach": 95,
   "nodes": [
     // ---- Rondhol and the north-western coast ----
