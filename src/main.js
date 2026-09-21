@@ -2,6 +2,7 @@ import './style.css';
 import { buildSettingGraph, computeInfluence, rollUp, RULES } from './engine.js';
 import { MapView } from './map.js';
 import { loreFor } from './data/lore/index.js';
+import { play as sfx, setSound, soundOn, soundForPlace } from './audio.js';
 import { SETTINGS, LEVELS, LEVEL_NAMES, LEVEL_HINTS, factionsFor, armyFactionsFor, startsFor, startPoint } from './data/settings.js';
 import { api } from './api.js';
 import { demoView, campaignView, dayToMs } from './sources.js';
@@ -663,6 +664,16 @@ function showPeek(i) {
 }
 
 function select(i) {
+  if (i != null && i !== state.selected) {
+    const n = NODES()[i];
+    const owner = state.influence?.[i]?.owner;
+    const alliance = owner ? (C().setting.allianceOf.get(C().setting.resolve(owner, 'codex')) ?? '') : '';
+    sfx(soundForPlace({
+      kind: n.kind,
+      alliance: alliance.replace(/^aos-|^ow-|^hh-|^li-/, ''),
+      hasEvents: upcoming().some(e => e.node === n.id),
+    }));
+  }
   if (i !== state.selected) state.regionTab = 'battle';
   state.selected = i;
   syncPlaceUrl(i);
@@ -1228,6 +1239,15 @@ const labelsBtn = $('#labels-toggle');
 let labelsOn = true;
 try { labelsOn = localStorage.getItem('labels') !== 'off'; } catch { /* private mode */ }
 const applyLabels = () => { mapView.setLabels(labelsOn); labelsBtn.setAttribute('aria-pressed', String(labelsOn)); labelsBtn.classList.toggle('off', !labelsOn); };
+const soundBtn = $('#sound-toggle');
+const applySound = () => {
+  soundBtn.setAttribute('aria-pressed', String(soundOn()));
+  soundBtn.classList.toggle('off', !soundOn());
+  soundBtn.textContent = soundOn() ? '♪' : '♪';
+};
+soundBtn.addEventListener('click', () => { setSound(!soundOn()); applySound(); });
+applySound();
+
 labelsBtn.addEventListener('click', () => {
   labelsOn = !labelsOn;
   try { localStorage.setItem('labels', labelsOn ? 'on' : 'off'); } catch { /* ignore */ }
@@ -1279,8 +1299,8 @@ document.addEventListener('click', e => {
     return showMap(d.realm);
   }
   if (d.node) return select(Number(d.node));
-  if (d.report) return openReport({ node: Number(d.report) });
-  if (d.challenge) return openChallenge({ node: Number(d.challenge) });
+  if (d.report) { sfx('accept'); return openReport({ node: Number(d.report) }); }
+  if (d.challenge) { sfx('challenge'); return openChallenge({ node: Number(d.challenge) }); }
   if (d.reportEvent) {
     const ev = V().events.find(x => String(x.id) === d.reportEvent);
     return openReport({ node: idx(ev.node), players: ev.players, eventId: ev.id });

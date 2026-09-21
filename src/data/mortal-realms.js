@@ -41,12 +41,18 @@ export const MORTAL_REALMS = {
       ],
     },
     {
-      id: 'fyreslayers', name: 'Fyreslayers', color: '#e8671c', home: 'vostargi-mont', alliance: 'aos-order',
+      // The duardin of the realms under one book: the Fyreslayer lodges and the
+      // Dispossessed holds both muster as Khazalid Holds, and a player picks
+      // which of them to begin among, the way an Orruk picks a warclan.
+      id: 'khazalid-holds', name: 'Khazalid Holds', color: '#e8671c', home: 'vostargi-mont', alliance: 'aos-order',
       subfactions: [
-        { id: 'lodge-vostarg', name: 'Vostarg', home: 'vostargi-mont' },
-        { id: 'lodge-greyfyrd', name: 'Greyfyrd', home: 'magmar-fjords' },
-        { id: 'lodge-hermdar', name: 'Hermdar', home: 'steel-spike' },
-        { id: 'lodge-lofnir', name: 'Lofnir', home: 'golvaria' },
+        { id: 'lodge-vostarg', name: 'Vostarg Lodge', home: 'vostargi-mont' },
+        { id: 'lodge-greyfyrd', name: 'Greyfyrd Lodge', home: 'magmar-fjords' },
+        { id: 'lodge-hermdar', name: 'Hermdar Lodge', home: 'steel-spike' },
+        { id: 'lodge-lofnir', name: 'Lofnir Lodge', home: 'golvaria' },
+        { id: 'hold-glymmsforge', name: 'The Dispossessed of Glymmsforge', home: 'glymmsforge' },
+        { id: 'hold-celestial-forges', name: 'The Dispossessed of the Celestial Forges', home: 'celestial-forges' },
+        { id: 'hold-hallowheart', name: 'The Dispossessed of Hallowheart', home: 'hallowhart' },
       ],
     },
     {
