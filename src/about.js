@@ -12,8 +12,9 @@ const ART = {
   'old-world': ['real', 'A fan-made 7-colour map of the Old World, with Norsca drawn from a dedicated regional map.'],
   'warhammer-fantasy': ['real', 'The Warhammer world map, with every point read off its own labelled edition.'],
   'mortal-realms': ['mixed', 'Aqshy is the published Great Parch. The other realms are drawn by a script — real place names on invented coastlines — until published focal-point maps replace them.'],
-  'legions-imperialis': ['real', 'The Age of Darkness galaxy.'],
-  'horus-heresy': ['real', 'The Age of Darkness galaxy.'],
+  'legions-imperialis': ['real', 'The Age of Darkness galaxy, and Terra’s own surface read off a labelled techno-barbarian chart.'],
+  'horus-heresy': ['real', 'The Age of Darkness galaxy, and Terra’s own surface read off a labelled techno-barbarian chart.'],
+  'middle-earth': ['real', 'A chart of the Third Age, with every point read off its own labelled edition of the same drawing.'],
   'warhammer-40k': ['real', "Games Workshop's galaxy art, plus the Armageddon and Necromunda surface maps."],
 };
 

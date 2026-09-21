@@ -12,7 +12,12 @@ import { MAPS } from './maps/index.js';
 export const LEGIONS_IMPERIALIS = {
   id: 'legions-imperialis',
   name: 'Legions Imperialis',
-  maps: [MAPS['heresy-galaxy']],
+  maps: [MAPS['heresy-galaxy'], MAPS['terra']],
+  // Terra is drawn twice: as the throneworld on the galaxy map, and as its own
+  // surface. Coming down from orbit puts you at the Palace under construction.
+  gates: [
+    ['terra', 'terra-the-imperial-palace', 'Planetfall'],
+  ],
   alliances: [
     { id: 'li-loyalist', name: 'Loyalists', color: '#0d47a1', home: 'terra' },
     { id: 'li-traitor', name: 'Traitors', color: '#8e0000', home: 'isstvan' },

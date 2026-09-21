@@ -27,6 +27,7 @@ import { MORTAL_REALMS } from './mortal-realms.js';
 import { HORUS_HERESY } from './horus-heresy.js';
 import { LEGIONS_IMPERIALIS } from './legions-imperialis.js';
 import { WARHAMMER_40K } from './warhammer-40k.js';
+import { MIDDLE_EARTH } from './middle-earth.js';
 
 export const LEVELS = ['alliance', 'codex'];
 export const LEVEL_NAMES = {
@@ -107,6 +108,7 @@ export const SETTINGS = {
   'legions-imperialis': defineSetting(LEGIONS_IMPERIALIS),
   'horus-heresy': defineSetting(HORUS_HERESY),
   'warhammer-40k': defineSetting(WARHAMMER_40K),
+  'middle-earth': defineSetting(MIDDLE_EARTH),
 };
 
 // The list a campaign plays with, at its chosen level of detail.

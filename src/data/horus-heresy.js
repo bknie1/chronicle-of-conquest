@@ -4,7 +4,12 @@ import { MAPS } from './maps/index.js';
 export const HORUS_HERESY = {
   id: 'horus-heresy',
   name: 'Horus Heresy',
-  maps: [MAPS['heresy-galaxy']],
+  maps: [MAPS['heresy-galaxy'], MAPS['terra']],
+  // Terra is drawn twice: as the throneworld on the galaxy map, and as its own
+  // surface. Coming down from orbit puts you at the Palace under construction.
+  gates: [
+    ['terra', 'terra-the-imperial-palace', 'Planetfall'],
+  ],
   // Simplest mode: which side of the Heresy you're on.
   // Loyalist or Traitor is the choice that matters most here.
   defaultLevel: 'alliance',
