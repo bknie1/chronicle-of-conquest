@@ -58,7 +58,7 @@ export const WARHAMMER_40K = {
         { id: 'company-of-redmaw', name: 'Great Company of Bran Redmaw', home: 'great-company-redmaw', color: '#2c4a52' },
       ] },
     { id: 'blood-angels', name: 'Blood Angels', color: '#e53935', home: 'baal-40k', alliance: 'imperium' },
-    { id: 'black-templars', name: 'Black Templars', color: '#dcdcdc', home: 'the-eternal-crusader', alliance: 'imperium' },
+    { id: 'black-templars', name: 'Black Templars', color: '#212121', home: 'the-eternal-crusader', alliance: 'imperium' },
     { id: 'deathwatch', name: 'Deathwatch', color: '#455a64', home: 'watch-fortress-erioch', alliance: 'imperium' },
     { id: 'astra-militarum', name: 'Astra Militarum', color: '#6d7b3a', home: 'cadia', alliance: 'imperium',
       subfactions: [
@@ -86,7 +86,7 @@ export const WARHAMMER_40K = {
       ] },
     { id: 'imperial-agents', name: 'Imperial Agents', color: '#4e342e', home: 'hydraphur', alliance: 'imperium' },
     // Chaos
-    { id: 'chaos-space-marines', name: 'Chaos Space Marines', color: '#1c1c1c', home: 'storm-of-the-emperors-wrath', alliance: 'chaos-alliance',
+    { id: 'chaos-space-marines', name: 'Chaos Space Marines', color: '#6b5010', home: 'storm-of-the-emperors-wrath', alliance: 'chaos-alliance',
       subfactions: [
         { id: 'black-legion', name: 'Black Legion', home: 'nemesis-tessera', color: '#111111' },
         { id: 'red-corsairs', name: 'Red Corsairs', home: 'badab', color: '#6a0dad' },
