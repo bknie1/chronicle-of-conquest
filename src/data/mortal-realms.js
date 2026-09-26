@@ -44,14 +44,28 @@ export const MORTAL_REALMS = {
     },
     {
       id: 'cities', name: 'Cities of Sigmar', color: '#2f5bd8', home: 'hammerhal-aqsha', alliance: 'aos-order',
+      // Every free city is a place a Cities player can begin, whoever else
+      // calls it home. Misthávn is the Idoneth's seat and Har Kuron fell to
+      // the Daughters of Khaine; a Cities army mustering there starts on
+      // contested ground, which is the point. A seat can never fall, but a
+      // starting ground is only ever a claim.
       subfactions: [
-        { id: 'city-hammerhal', name: 'Hammerhal', home: 'hammerhal-aqsha' },
-        { id: 'city-living-city', name: 'Living City', home: 'living-city' },
+        { id: 'city-hammerhal', name: 'Hammerhal Aqsha', home: 'hammerhal-aqsha' },
+        { id: 'city-hammerhal-ghyra', name: 'Hammerhal Ghyra', home: 'hammerhal-ghyra' },
+        { id: 'city-living-city', name: 'The Living City', home: 'living-city' },
         { id: 'city-greywater-fastness', name: 'Greywater Fastness', home: 'greywater-fastness' },
+        { id: 'city-phoenicium', name: 'Phoenicium', home: 'phoenicium' },
         { id: 'city-hallowheart', name: 'Hallowheart', home: 'hallowhart' },
         { id: 'city-anvilgard', name: 'Anvilgard (Har Kuron)', home: 'anvilgard' },
         { id: 'city-tempests-eye', name: "Tempest's Eye", home: 'tempests-eye' },
+        { id: 'city-brightspear', name: 'Brightspear', home: 'brightspear' },
         { id: 'city-excelsis', name: 'Excelsis', home: 'excelsis' },
+        { id: 'city-izalend', name: 'Izalend', home: 'izalend' },
+        { id: 'city-lethis', name: 'Lethis', home: 'lethis' },
+        { id: 'city-glymmsforge', name: 'Glymmsforge', home: 'glymmsforge' },
+        { id: 'city-misthavn', name: 'Misthávn', home: 'misthavn' },
+        { id: 'city-settlers-gain', name: "Settler's Gain", home: 'settlers-gain' },
+        { id: 'city-vindicarum', name: 'Vindicarum', home: 'vindicarum' },
       ],
     },
     {
