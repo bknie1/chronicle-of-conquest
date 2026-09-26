@@ -9,7 +9,8 @@ Where the map art comes from, and where to look for what's still missing.
 | The Old World | `public/maps/old-world.jpg` | "The Old World" 7-colour fan map |
 | The Old World (alternative, not yet placed) | `public/maps/old-world-gitzman.jpg` | Gitzman Old World campaign map, gitzmansgallery.com |
 | Age of Sigmar — Aqshy | `public/maps/realms/aqshy.jpg` | **Real art**: Lexicanum *Great Parch Map 06*, 4764×3246, shipped at 2600 wide. Points placed off its own labels |
-| Age of Sigmar — the other realms and Blight City | `public/maps/realms/*.jpg` | **Generated placeholders** (`scripts/make-placeholder-realms.py`). The place names are real; the coastlines and positions are invented, so they do not match any published map |
+| Age of Sigmar — Ghyran, Ghur, Shyish, Chamon, Ulgu, Hysh | `public/maps/realms/*.jpg` | Published focal-point plates (Everspring Swathe, Ghurish Heartlands, Prime Innerlands, Spiral Crux, Shadrac Convergence, Ymetrican Geosegment), graded by `scripts/realm-art.py`; every point read off ruled 1:1 tiles of the shipped plate |
+| Age of Sigmar — Azyr, the Eightpoints, Blight City | `public/maps/realms/{azyr,eightpoints,blight-city}.jpg` | **Painted here** (`scripts/paint-realm.py`). No published chart exists for any of the three. Each is composed on purpose — Azyr as a warm inland sea, the Eightpoints as eight arms round the Varanspire, Blight City as a cutaway of stone with the warrens gnawed out — and rendered in the manner of the published plates. The names are real; the geography is ours |
 | Horus Heresy | `public/maps/heresy-galaxy.jpg` | 30k galaxy map (official art, labeled) |
 | Warhammer 40,000 | `public/maps/galaxy-40k.jpg` | Games Workshop's unlabeled "Interactive Map" header art, with its logo painted out and upscaled 1.4× |
 
