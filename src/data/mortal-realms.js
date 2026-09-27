@@ -278,9 +278,14 @@ export const MORTAL_REALMS = {
   // [point, point, name]. A gate joins two points on different realms.
   gates: [
     ['hammerhal-aqsha', 'hammerhal-ghyra', 'The Stormrift Realmgate'],
-    ['brimstone-peninsula', 'gates-of-azyr', 'The Whispering Gate'],
+    // Azyr has more than one way out. Every gate used to run through the
+    // Gates of Azyr, which made that one place a bottleneck for a whole realm;
+    // the Watch on the southern headland opens onto Aqshy, and the Skydock
+    // is a Kharadron port with a run to Barak-Nar.
     ['gates-of-azyr', 'excelsis', 'Gate of Azyr'],
     ['gates-of-azyr', 'glymmsforge', 'Gate of Azyr'],
+    ['azyrite-watch', 'brimstone-peninsula', 'The Whispering Gate'],
+    ['skydock', 'barak-nar', 'The Skydock run'],
     ['syar', 'misthavn', 'The Twilight Gate'],
     ['argentine', 'floating-city', 'Skyport Route'],
     // The Arcways out of the Eightpoints. Azyr's, the Meteoric Gate, is sealed.

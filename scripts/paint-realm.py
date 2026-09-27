@@ -215,6 +215,52 @@ def ramp(t, stops):
     return out
 
 
+def texture(img, land, slope, rng, ink):
+    """What a render lacks and a painting has: paper under the paint, the
+    brush's direction changing from place to place, hatching where the ground
+    is steep, stipple where it is flat, and ink that has bled a little into the
+    paper at every coast. All of it is faint on its own; together it is the
+    difference between a heightmap and a plate."""
+    h, w = land.shape
+    img = img.astype(np.float32)
+
+    # Paper: a fine tooth, and a blotchier wash under it, both multiplicative.
+    tooth = cv2.GaussianBlur(rng.normal(0, 1, (h, w)).astype(np.float32), (0, 0), 0.6)
+    tooth = (tooth - tooth.mean()) / (tooth.std() + 1e-6)
+    wash = fbm(rng, (h, w), octaves=4, base=9) - 0.5
+    img *= (1 + tooth[..., None] * 0.035 + wash[..., None] * 0.07)
+
+    # Brush: streaks whose direction wanders across the sheet. Two directional
+    # blurs of the same noise, blended by a slow field, read as strokes laid
+    # by hand rather than one machine pass.
+    base = rng.normal(0, 1, (h, w)).astype(np.float32)
+    along = cv2.GaussianBlur(base, (21, 3), 0)
+    across = cv2.GaussianBlur(base, (3, 21), 0)
+    mixw = fbm(rng, (h, w), octaves=3, base=5)
+    stroke = along * mixw + across * (1 - mixw)
+    stroke = (stroke - stroke.mean()) / (stroke.std() + 1e-6)
+    img *= (1 + stroke[..., None] * 0.04)
+
+    # Hatching on the steep ground: short dark strokes, denser as it steepens.
+    hatch = cv2.GaussianBlur(rng.normal(0, 1, (h, w)).astype(np.float32), (9, 3), 0)
+    hatch = np.clip((hatch - hatch.mean()) / (hatch.std() + 1e-6) - 0.9, 0, 1)
+    steep = np.clip((slope - 0.6) / 1.4, 0, 1) * land
+    img = img * (1 - (hatch * steep)[..., None] * 0.35) + np.array(ink, np.float32) * (hatch * steep)[..., None] * 0.35
+
+    # Stipple on the flat: sparse dots, as the plates draw scrub and grass.
+    dots = rng.random((h, w)).astype(np.float32)
+    flat = np.clip(1 - slope / 0.5, 0, 1) * land
+    stip = ((dots > 0.9965) & (flat > 0.5)).astype(np.float32)
+    stip = cv2.GaussianBlur(stip, (0, 0), 0.8) * 6
+    img = img * (1 - np.clip(stip, 0, 1)[..., None] * 0.45) + np.array(ink, np.float32) * np.clip(stip, 0, 1)[..., None] * 0.45
+
+    # Ink bleed: the coast's line feathers into the paper on the water side.
+    edge = cv2.morphologyEx(land.astype(np.uint8), cv2.MORPH_GRADIENT, np.ones((3, 3), np.uint8)).astype(np.float32)
+    bleed = cv2.GaussianBlur(edge, (0, 0), 5) * (fbm(rng, (h, w), octaves=4, base=50) * 0.8 + 0.2) * (~land)
+    img = img * (1 - bleed[..., None] * 0.5) + np.array(ink, np.float32) * bleed[..., None] * 0.5
+    return img
+
+
 def paint(height, sea, palette, rng, *, forest=None, glow=None, ink=(30, 24, 20), shore_km=60, streams=None):
     """Turn a heightmap into a plate. Colours are RGB in the palette; BGR out."""
     h, w = height.shape
@@ -311,6 +357,8 @@ def paint(height, sea, palette, rng, *, forest=None, glow=None, ink=(30, 24, 20)
             halo = cv2.GaussianBlur(riv, (0, 0), 9) * palette['river_glow']
             img += halo[..., None] * col
         img = img * (1 - riv[..., None] * 0.85) + col * riv[..., None] * 0.85
+
+    img = texture(img, land, slope, rng, ink)
 
     # --- the realm's own light: a tint and a lift, if it has one.
     if 'tint' in palette:
@@ -497,22 +545,47 @@ def compose_eightpoints(rng):
     cx, cy = 1300, 850
     # The Allpoints as the name says: eight arms out from the Varanspire, with
     # the coast crumbling off every one of them into a sea that is not water.
-    field = star(shape, cx, cy, r_out=860, r_in=470, points=8, rot=np.pi / 8) ** 0.55
-    # Slag banks and broken ground off the arms, and skerries beyond them.
-    for _ in range(60):
-        a = rng.uniform(0, 2 * np.pi); d = rng.uniform(420, 900)
-        r = rng.uniform(40, 130)
-        field = np.maximum(field, blob(shape, cx + np.cos(a) * d, cy + np.sin(a) * d, r, r * 0.8, power=0.9) * rng.uniform(0.7, 1.0))
-    field += (fbm(rng, shape, octaves=6, base=16) - 0.5) * 0.5
-    field = coastify(field, rng, big=70, small=34)
-    land = field > 0.42
+    # Archaon did not find this shape; he made it. The Star of Chaos, drawn as
+    # ground: a disc for the Varanspire, eight straight arms out from it, and
+    # an arrowhead on the end of every one. The coast crumbles enough to be a
+    # coast and no more, so the symbol stays legible from the overview.
+    mask = np.zeros(shape, np.float32)
+    cv2.circle(mask, (cx, cy), 250, 1.0, -1)
+    for k in range(8):
+        a = -np.pi / 2 + k * np.pi / 4
+        ux, uy = np.cos(a), np.sin(a)
+        px, py = -uy, ux                       # across the arm
+        shaft_w, shaft_len, head_w, head_len = 64, 470, 180, 150
+        s0, s1 = 180, 180 + shaft_len
+        shaft = np.array([
+            (cx + ux * s0 + px * shaft_w, cy + uy * s0 + py * shaft_w),
+            (cx + ux * s1 + px * shaft_w, cy + uy * s1 + py * shaft_w),
+            (cx + ux * s1 - px * shaft_w, cy + uy * s1 - py * shaft_w),
+            (cx + ux * s0 - px * shaft_w, cy + uy * s0 - py * shaft_w),
+        ], np.int32)
+        head = np.array([
+            (cx + ux * s1 + px * head_w, cy + uy * s1 + py * head_w),
+            (cx + ux * (s1 + head_len), cy + uy * (s1 + head_len)),
+            (cx + ux * s1 - px * head_w, cy + uy * s1 - py * head_w),
+        ], np.int32)
+        cv2.fillPoly(mask, [shaft], 1.0)
+        cv2.fillPoly(mask, [head], 1.0)
+    field = cv2.GaussianBlur(mask, (0, 0), 6)
+    # Slag skerries off the arrowheads, so it is a realm and not a stencil.
+    for _ in range(50):
+        a = rng.uniform(0, 2 * np.pi); d = rng.uniform(780, 1000)
+        r = rng.uniform(24, 80)
+        field = np.maximum(field, blob(shape, cx + np.cos(a) * d, cy + np.sin(a) * d, r, r * 0.8, power=1.0) * rng.uniform(0.7, 1.0))
+    field += (fbm(rng, shape, octaves=6, base=18) - 0.5) * 0.28
+    field = coastify(field, rng, big=22, small=16)
+    land = field > 0.5
 
     # The Varanspire's mountain at the heart, and a spine down each arm.
-    ranges = blob(shape, cx, cy, 260, 260, power=1.1) * 1.4
+    ranges = blob(shape, cx, cy, 240, 240, power=1.1) * 1.4
     for k in range(8):
-        a = np.pi / 8 + k * np.pi / 4
+        a = -np.pi / 2 + k * np.pi / 4
         for t in np.linspace(0.25, 0.8, 8):
-            ranges = np.maximum(ranges, blob(shape, cx + np.cos(a) * 800 * t, cy + np.sin(a) * 800 * t, 90, 90, power=1.4) * (0.9 - 0.4 * t))
+            ranges = np.maximum(ranges, blob(shape, cx + np.cos(a) * 780 * t, cy + np.sin(a) * 780 * t, 70, 70, power=1.4) * (0.9 - 0.4 * t))
     ranges = cv2.GaussianBlur(ranges, (0, 0), 14)
     sea = 0.36
     height = relief(land, rng, ranges=ranges, sea=sea, rise=0.16, grain=0.12, crest_amp=0.55)
@@ -528,7 +601,7 @@ def compose_eightpoints(rng):
     # Fire at the top, then round the compass, so the star reads as a rose.
     for k, pid in enumerate(arcways):
         a = -np.pi / 2 + k * np.pi / 4
-        coords[pid] = tip_along(land, cx, cy, a)
+        coords[pid] = tip_along(land, cx, cy, a, back=110)   # inside the arrowhead
     coords['carngrad'] = (cx - 330, cy + 130)
     coords['flayhaunt'] = (cx + 340, cy - 100)
     coords['skarrgrim'] = (cx - 70, cy + 360)
