@@ -553,17 +553,40 @@ def compose_eightpoints(rng):
     # along the eight arms and has sunk between them, and even the arms are
     # cracked through by rifts and broken off into isles at the ends. Seen
     # once it is a wasteland. Seen twice, it is the symbol.
-    starf = star(shape, cx, cy, r_out=790, r_in=300, points=8, rot=-np.pi / 2) ** 0.32
-    starf = cv2.GaussianBlur(starf, (0, 0), 26)
+    # Eight arms, but no two alike: each has its own length, width and
+    # wander, one is all but drowned, and the body is lopsided. Equal arms
+    # round a disc is a starfish; this is a realm that was once a star.
+    starf = np.zeros(shape, np.float32)
+    starf = np.maximum(starf, blob(shape, cx - 60, cy + 40, 360, 270, power=0.8))
+    starf = np.maximum(starf, blob(shape, cx + 120, cy - 80, 250, 200, power=0.9) * 0.9)
+    lengths = [800, 600, 720, 660, 760, 540, 700, 420]     # fire ... heavens
+    widths = [120, 150, 105, 170, 112, 130, 145, 95]
+    arm_end = []                                            # where each arm actually finishes
+    for k in range(8):
+        a = -np.pi / 2 + k * np.pi / 4 + rng.uniform(-0.12, 0.12)
+        L, wd = lengths[k], widths[k]
+        drift = rng.uniform(-0.25, 0.25)
+        for t in np.linspace(0.12, 1.0, 16):
+            aa = a + drift * t                       # the arm bends
+            r = L * t
+            taper = 1.0 - 0.35 * t
+            # A drowned arm survives only as a chain.
+            keep = 0.7 if k == 7 else (0.85 if k == 5 else 1.0)
+            starf = np.maximum(starf, blob(shape, cx + np.cos(aa) * r, cy + np.sin(aa) * r,
+                                           wd * taper * rng.uniform(0.8, 1.3), wd * taper * rng.uniform(0.8, 1.3),
+                                           power=0.9) * keep * rng.uniform(0.85, 1.0))
+            if t >= 0.86 and len(arm_end) == k:
+                arm_end.append((int(cx + np.cos(aa) * r), int(cy + np.sin(aa) * r)))
+    starf = cv2.GaussianBlur(starf, (0, 0), 18)
     starf /= starf.max() + 1e-6
     base = fbm(rng, shape, octaves=6, base=5)
-    field = starf * 0.92 + base * 0.34 - 0.06
+    field = starf * 0.95 + base * 0.30 - 0.04
     # The heart holds: the Varanspire's plateau did not break.
     field += blob(shape, cx, cy, 260, 260, power=1.1) * 0.5
     # Rifts: the realm cracked when it was remade, and the sea got in.
-    rift = np.clip(ridged(rng, shape, octaves=5, base=5) - 0.82, 0, 1) * 6
+    rift = np.clip(ridged(rng, shape, octaves=5, base=5) - 0.84, 0, 1) * 6
     rift = cv2.GaussianBlur(rift, (0, 0), 4)
-    field -= rift * 0.6
+    field -= rift * 0.5
     # And the arm-ends are archipelagos, not points.
     field += (fbm(rng, shape, octaves=6, base=22) - 0.5) * 0.42
     field = coastify(field, rng, big=70, small=34)
@@ -589,8 +612,7 @@ def compose_eightpoints(rng):
                'arcway-metal', 'arcway-shadow', 'arcway-light', 'arcway-heavens']
     # Fire at the top, then round the compass, so the star reads as a rose.
     for k, pid in enumerate(arcways):
-        a = -np.pi / 2 + k * np.pi / 4
-        coords[pid] = tip_along(land, cx, cy, a, back=90)    # the last ground on the arm
+        coords[pid] = arm_end[k]                             # where that arm actually finishes
     coords['carngrad'] = (cx - 330, cy + 130)
     coords['flayhaunt'] = (cx + 340, cy - 100)
     coords['skarrgrim'] = (cx - 70, cy + 360)
