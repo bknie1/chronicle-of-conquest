@@ -131,7 +131,7 @@ def tip_along(land, cx, cy, angle, back=48):
             break
         if land[y, x]:
             last = r
-        elif last is not None and r - last > 60:
+        elif last is not None and r - last > 320:   # a torn arm has gaps; keep going past them
             break
     r = max(0, (last or 0) - back)
     return int(cx + np.cos(angle) * r), int(cy + np.sin(angle) * r)
@@ -520,23 +520,26 @@ def compose_azyr(rng):
 # arcway at the tip of every arm.
 
 EIGHTPOINTS = {
-    'water': [(0, (64, 14, 26)), (0.4, (34, 8, 18)), (1, (12, 4, 10))],
-    'shelf': (130, 48, 36),
-    'land': [(0, (78, 60, 52)), (0.12, (66, 52, 46)), (0.35, (98, 66, 48)),
-             (0.6, (124, 92, 66)), (0.85, (70, 48, 44)), (1, (44, 30, 30))],
-    'forest': (52, 40, 36),
-    'rock': (56, 44, 42),
-    'peak': (36, 22, 24),
+    'water': [(0, (38, 10, 16)), (0.4, (22, 6, 12)), (1, (8, 3, 6))],
+    'shelf': (84, 40, 36),
+    'land': [(0, (70, 62, 58)), (0.12, (62, 56, 52)), (0.35, (84, 70, 60)),
+             (0.6, (104, 88, 74)), (0.85, (66, 52, 48)), (1, (44, 34, 32))],
+    'land2': [(0, (58, 50, 50)), (0.12, (72, 58, 50)), (0.35, (92, 68, 54)),
+              (0.6, (86, 76, 70)), (0.85, (60, 48, 46)), (1, (40, 32, 32))],
+    'forest': (34, 30, 28),            # dead timber, standing black
+    'rock': (52, 46, 44),
+    'peak': (36, 28, 28),
     'peak_from': 0.76,
-    'drift': (22, 10, 6),
-    'river': (255, 120, 40),      # lava, not water
+    'drift': (16, 8, 6),
+    'river': (110, 12, 18),            # is that blood? maybe
     'river_width': 3,
-    'river_glow': 0.9,
-    'water_grain': 12,
+    'river_glow': 0.12,
+    'rubble': (18, 10, 10),            # scorched earth pooled in the hollows
+    'water_grain': 8,
     'water_scale': 12,
-    'water_streak': (12, 3, 8),
-    'tint': (70, 20, 30),
-    'tint_amount': 0.06,
+    'water_streak': (8, 2, 6),
+    'tint': (40, 16, 22),
+    'tint_amount': 0.10,
 }
 
 
@@ -545,39 +548,25 @@ def compose_eightpoints(rng):
     cx, cy = 1300, 850
     # The Allpoints as the name says: eight arms out from the Varanspire, with
     # the coast crumbling off every one of them into a sea that is not water.
-    # Archaon did not find this shape; he made it. The Star of Chaos, drawn as
-    # ground: a disc for the Varanspire, eight straight arms out from it, and
-    # an arrowhead on the end of every one. The coast crumbles enough to be a
-    # coast and no more, so the symbol stays legible from the overview.
-    mask = np.zeros(shape, np.float32)
-    cv2.circle(mask, (cx, cy), 250, 1.0, -1)
-    for k in range(8):
-        a = -np.pi / 2 + k * np.pi / 4
-        ux, uy = np.cos(a), np.sin(a)
-        px, py = -uy, ux                       # across the arm
-        shaft_w, shaft_len, head_w, head_len = 64, 470, 180, 150
-        s0, s1 = 180, 180 + shaft_len
-        shaft = np.array([
-            (cx + ux * s0 + px * shaft_w, cy + uy * s0 + py * shaft_w),
-            (cx + ux * s1 + px * shaft_w, cy + uy * s1 + py * shaft_w),
-            (cx + ux * s1 - px * shaft_w, cy + uy * s1 - py * shaft_w),
-            (cx + ux * s0 - px * shaft_w, cy + uy * s0 - py * shaft_w),
-        ], np.int32)
-        head = np.array([
-            (cx + ux * s1 + px * head_w, cy + uy * s1 + py * head_w),
-            (cx + ux * (s1 + head_len), cy + uy * (s1 + head_len)),
-            (cx + ux * s1 - px * head_w, cy + uy * s1 - py * head_w),
-        ], np.int32)
-        cv2.fillPoly(mask, [shaft], 1.0)
-        cv2.fillPoly(mask, [head], 1.0)
-    field = cv2.GaussianBlur(mask, (0, 0), 6)
-    # Slag skerries off the arrowheads, so it is a realm and not a stencil.
-    for _ in range(50):
-        a = rng.uniform(0, 2 * np.pi); d = rng.uniform(780, 1000)
-        r = rng.uniform(24, 80)
-        field = np.maximum(field, blob(shape, cx + np.cos(a) * d, cy + np.sin(a) * d, r, r * 0.8, power=1.0) * rng.uniform(0.7, 1.0))
-    field += (fbm(rng, shape, octaves=6, base=18) - 0.5) * 0.28
-    field = coastify(field, rng, big=22, small=16)
+    # Archaon did not find this shape; he made it — but the realm was torn,
+    # not stamped. The star is a BIAS on where the ground survived: land holds
+    # along the eight arms and has sunk between them, and even the arms are
+    # cracked through by rifts and broken off into isles at the ends. Seen
+    # once it is a wasteland. Seen twice, it is the symbol.
+    starf = star(shape, cx, cy, r_out=790, r_in=300, points=8, rot=-np.pi / 2) ** 0.32
+    starf = cv2.GaussianBlur(starf, (0, 0), 26)
+    starf /= starf.max() + 1e-6
+    base = fbm(rng, shape, octaves=6, base=5)
+    field = starf * 0.92 + base * 0.34 - 0.06
+    # The heart holds: the Varanspire's plateau did not break.
+    field += blob(shape, cx, cy, 260, 260, power=1.1) * 0.5
+    # Rifts: the realm cracked when it was remade, and the sea got in.
+    rift = np.clip(ridged(rng, shape, octaves=5, base=5) - 0.82, 0, 1) * 6
+    rift = cv2.GaussianBlur(rift, (0, 0), 4)
+    field -= rift * 0.6
+    # And the arm-ends are archipelagos, not points.
+    field += (fbm(rng, shape, octaves=6, base=22) - 0.5) * 0.42
+    field = coastify(field, rng, big=70, small=34)
     land = field > 0.5
 
     # The Varanspire's mountain at the heart, and a spine down each arm.
@@ -585,7 +574,7 @@ def compose_eightpoints(rng):
     for k in range(8):
         a = -np.pi / 2 + k * np.pi / 4
         for t in np.linspace(0.25, 0.8, 8):
-            ranges = np.maximum(ranges, blob(shape, cx + np.cos(a) * 780 * t, cy + np.sin(a) * 780 * t, 70, 70, power=1.4) * (0.9 - 0.4 * t))
+            ranges = np.maximum(ranges, blob(shape, cx + np.cos(a) * 780 * t, cy + np.sin(a) * 780 * t, 70, 70, power=1.4) * (0.9 - 0.4 * t) * rng.uniform(0.3, 1.0))
     ranges = cv2.GaussianBlur(ranges, (0, 0), 14)
     sea = 0.36
     height = relief(land, rng, ranges=ranges, sea=sea, rise=0.16, grain=0.12, crest_amp=0.55)
@@ -601,18 +590,17 @@ def compose_eightpoints(rng):
     # Fire at the top, then round the compass, so the star reads as a rose.
     for k, pid in enumerate(arcways):
         a = -np.pi / 2 + k * np.pi / 4
-        coords[pid] = tip_along(land, cx, cy, a, back=110)   # inside the arrowhead
+        coords[pid] = tip_along(land, cx, cy, a, back=90)    # the last ground on the arm
     coords['carngrad'] = (cx - 330, cy + 130)
     coords['flayhaunt'] = (cx + 340, cy - 100)
     coords['skarrgrim'] = (cx - 70, cy + 360)
     coords = snap_to_land(height, sea, coords)
 
-    glow = [(x, y, 46, (255, 120, 50), 0.4) for pid, (x, y) in coords.items() if pid.startswith('arcway') and pid != 'arcway-heavens']
-    glow.append((coords['arcway-heavens'][0], coords['arcway-heavens'][1], 40, (180, 200, 255), 0.12))
-    glow.append((cx, cy, 90, (255, 90, 40), 0.3))
-    # Lava runs down from the Varanspire and the spines.
-    lava = rivers(height, sea, rng, count=10, min_start=0.6)
-    return height, sea, forest, glow, coords, lava
+    glow = [(x, y, 40, (200, 70, 40), 0.18) for pid, (x, y) in coords.items() if pid.startswith('arcway') and pid != 'arcway-heavens']
+    glow.append((cx, cy, 80, (200, 60, 40), 0.16))
+    # Rivers run dark off the high ground. A couple off the Varanspire are lava.
+    dark = rivers(height, sea, rng, count=12, min_start=0.55)
+    return height, sea, forest, glow, coords, dark
 
 
 # --- Blight City ------------------------------------------------------------

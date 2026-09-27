@@ -27,16 +27,16 @@ export default {
       "name": "Carngrad",
       "kind": "fortress",
       "region": "The Eightpoints",
-      "x": 1027,
-      "y": 1036
+      "x": 1039,
+      "y": 1049
     },
     {
       "id": "flayhaunt",
       "name": "Flayhaunt",
       "kind": "fortress",
       "region": "The Eightpoints",
-      "x": 1646,
-      "y": 769
+      "x": 1640,
+      "y": 750
     },
     {
       "id": "arcway-fire",
@@ -44,22 +44,22 @@ export default {
       "kind": "settlement",
       "region": "The Eightpoints",
       "x": 1300,
-      "y": 161
+      "y": 155
     },
     {
       "id": "arcway-life",
       "name": "The Genesis Gate",
       "kind": "settlement",
       "region": "The Eightpoints",
-      "x": 1783,
-      "y": 366
+      "x": 1708,
+      "y": 441
     },
     {
       "id": "arcway-beasts",
       "name": "The Mawgate",
       "kind": "settlement",
       "region": "The Eightpoints",
-      "x": 1981,
+      "x": 1823,
       "y": 850
     },
     {
@@ -67,8 +67,8 @@ export default {
       "name": "The Endgate",
       "kind": "settlement",
       "region": "The Eightpoints",
-      "x": 1792,
-      "y": 1342
+      "x": 1560,
+      "y": 1110
     },
     {
       "id": "arcway-metal",
@@ -76,22 +76,22 @@ export default {
       "kind": "settlement",
       "region": "The Eightpoints",
       "x": 1300,
-      "y": 1540
+      "y": 1458
     },
     {
       "id": "arcway-shadow",
       "name": "The Penumbral Gate",
       "kind": "settlement",
       "region": "The Eightpoints",
-      "x": 812,
-      "y": 1337
+      "x": 889,
+      "y": 1260
     },
     {
       "id": "arcway-light",
       "name": "The Arcway of Hysh",
       "kind": "settlement",
       "region": "The Eightpoints",
-      "x": 616,
+      "x": 756,
       "y": 850
     },
     {
@@ -99,16 +99,16 @@ export default {
       "name": "The Meteoric Gate (sealed)",
       "kind": "settlement",
       "region": "The Eightpoints",
-      "x": 819,
-      "y": 369
+      "x": 870,
+      "y": 420
     },
     {
       "id": "skarrgrim",
       "name": "Skarrgrim",
       "kind": "fortress",
       "region": "The Eightpoints",
-      "x": 1234,
-      "y": 1210
+      "x": 1242,
+      "y": 1198
     }
   ],
   "extraLinks": [],
